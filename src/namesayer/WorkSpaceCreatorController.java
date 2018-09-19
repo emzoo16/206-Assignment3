@@ -59,6 +59,9 @@ public class WorkSpaceCreatorController implements Initializable {
 
     }
 
+    /**
+     * Invoked when the return button is pushed
+     */
     @FXML
     private void returnToMenu() {
         try {
