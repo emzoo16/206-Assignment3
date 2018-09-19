@@ -94,6 +94,7 @@ public class WorkSpaceCreatorController implements Initializable {
                 }
             }
         }
+        //Allow the selection of multiple items
         databaseRecordings.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         databaseRecordings.setOnMouseClicked(event ->
                 selectedDatabaseItems = databaseRecordings.getSelectionModel().getSelectedItems());
