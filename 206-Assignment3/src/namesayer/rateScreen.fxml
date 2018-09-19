@@ -3,23 +3,37 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-
-<AnchorPane prefHeight="200.0" prefWidth="320.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/10.0.1" fx:controller="rateScreenController">
+<AnchorPane prefHeight="250.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="namesayer.RateScreenController">
    <children>
-      <Button layoutX="-74.0" layoutY="-39.0" mnemonicParsing="false" text="Button" />
-      <VBox alignment="CENTER" layoutX="-12.0" layoutY="-1.0" prefHeight="200.0" prefWidth="320.0" spacing="30.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <VBox alignment="CENTER" layoutY="-50.0" prefHeight="250.0" prefWidth="300.0" spacing="15.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <Label text="What would you rate this recording?" />
-            <TextField />
-            <Button mnemonicParsing="false" text="Submit" />
+            <Label fx:id="rateText" alignment="CENTER" contentDisplay="CENTER" prefHeight="41.0" prefWidth="213.0" text="Rate this recording">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Label>
+            <TextArea fx:id="commentArea" prefHeight="109.0" prefWidth="257.0">
+               <VBox.margin>
+                  <Insets left="20.0" right="20.0" />
+               </VBox.margin>
+            </TextArea>
+            <Button fx:id="confirmButton" mnemonicParsing="false" onAction="#confirmButtonClicked" text="Confirm">
+               <font>
+                  <Font size="14.0" />
+               </font>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+            </Button>
          </children>
-         <padding>
-            <Insets left="20.0" right="20.0" />
-         </padding>
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets>
       </VBox>
    </children>
 </AnchorPane>

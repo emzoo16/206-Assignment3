@@ -63,15 +63,14 @@ public class WorkSpaceController implements Initializable{
 					public void changed(ObservableValue<? extends String> observable, String oldValue,
 							String newValue) {
 						findOwnRecording(newValue);
-					
 					}
 	        });
 	}
 	
 	@FXML
 	public void startButtonClicked(ActionEvent event) {
-		//AudioClip audioFile = new AudioClip(new File(CreateController.creationName + ".wav").toURI().toString());
-		//audioFile.play();
+		AudioClip audioFile = new AudioClip(new File(currentCreation + ".wav").toURI().toString());
+		audioFile.play();
 	}
 	
 	@FXML
@@ -96,9 +95,10 @@ public class WorkSpaceController implements Initializable{
 		recordingNameLabel.setText(currentName);
 		}
 	}
+	
 	@FXML
 	public void backButtonClicked(ActionEvent event) throws Exception{
-		Parent root = FXMLLoader.load(getClass().getResource("workSpaceCreator.fxml"));
+		Parent root = FXMLLoader.load(getClass().getResource("rateScreen.fxml"));
 		Scene recordingScene = new Scene(root);
 
 		Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
@@ -106,16 +106,18 @@ public class WorkSpaceController implements Initializable{
 		currentStage.show();
 		
 	}
+	
 	@FXML
 	public void rateButtonClicked(ActionEvent event) throws Exception{
-		Parent createSceneParent = FXMLLoader.load(getClass().getResource("rateScene.fxml"));
+		
+		Parent createSceneParent = FXMLLoader.load(getClass().getResource("rateScreen.fxml"));
 		Scene createScene = new Scene(createSceneParent);
 
 		Stage createStage = new Stage();
 		createStage.setScene(createScene);
 		createStage.show();
-		
 	}
+	
 	public void loadList() {
 		List<String> list = new ArrayList<String>();
 		for (final File fileEntry : sampleDir.listFiles()) {

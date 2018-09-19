@@ -12,10 +12,10 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception{
         Parent root = FXMLLoader.load(getClass().getResource("workspace.fxml"));
         primaryStage.setTitle("Name Sayer");
-        primaryStage.setScene(new Scene(root, 700, 500));
+        Scene rateScene = new Scene(root);
+        primaryStage.setScene(rateScene);
         primaryStage.show();
     }
-
 
     public static void main(String[] args) {
         launch(args);
