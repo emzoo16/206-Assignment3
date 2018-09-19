@@ -1,5 +1,6 @@
 package namesayer;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -44,6 +45,7 @@ public class StartMenuController {
      */
     @FXML
     private void quit() {
-
+        Platform.exit();
+        System.exit(0);
     }
 }
