@@ -32,24 +32,25 @@
                   <HBox alignment="CENTER" prefHeight="78.0" prefWidth="350.0" spacing="20.0">
                      <children>
                         <Button fx:id="previousButton" mnemonicParsing="false" onAction="#previousButtonClicked" prefHeight="33.0" prefWidth="84.0" text="Previous" />
-                        <Button fx:id="playButton" alignment="CENTER" mnemonicParsing="false" prefHeight="35.0" prefWidth="69.0" text="Play" />
+                        <Button fx:id="playButton" alignment="CENTER" mnemonicParsing="false" onAction="#playButtonClicked" prefHeight="35.0" prefWidth="69.0" text="Play" />
                         <Button fx:id="nextButton" mnemonicParsing="false" onAction="#nextButtonClicked" prefHeight="35.0" prefWidth="66.0" text="Next" />
                      </children>
                      <opaqueInsets>
                         <Insets />
                      </opaqueInsets>
                   </HBox>
-                  <HBox prefHeight="39.0" prefWidth="334.0" spacing="120.0">
+                  <HBox alignment="CENTER" prefHeight="39.0" prefWidth="334.0" spacing="10.0">
                      <children>
                         <Slider fx:id="volumeBar" prefHeight="33.0" prefWidth="162.0" />
+                        <Button fx:id="recordButton" mnemonicParsing="false" onAction="#recordButtonClicked" prefHeight="32.0" prefWidth="78.0" text="Record" />
                         <Button fx:id="rateButton" mnemonicParsing="false" onAction="#rateButtonClicked" prefHeight="32.0" prefWidth="78.0" text="Rate" />
                      </children>
                   </HBox>
                </children>
             </VBox>
-            <VBox layoutX="21.0" layoutY="21.0" prefHeight="465.0" prefWidth="303.0">
+            <VBox layoutX="21.0" layoutY="15.0" prefHeight="471.0" prefWidth="303.0">
                <children>
-                  <HBox prefHeight="36.0" prefWidth="200.0">
+                  <HBox prefHeight="36.0" prefWidth="303.0">
                      <children>
                         <Button fx:id="backButton" mnemonicParsing="false" onAction="#backButtonClicked" text="Back" />
                      </children>
@@ -65,7 +66,7 @@
                                           <Font size="18.0" />
                                        </font>
                                     </Label>
-                                    <ListView fx:id="dataListView" prefHeight="406.0" prefWidth="132.0" />
+                                    <ListView fx:id="dataListView" prefHeight="391.0" prefWidth="132.0" />
                                  </children>
                               </VBox>
                            </children>
@@ -78,6 +79,18 @@
                                  </font>
                               </Label>
                               <ListView fx:id="ownListView" prefHeight="400.0" prefWidth="142.0" />
+                              <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0">
+                                 <children>
+                                    <Button fx:id="creationPlayButton" mnemonicParsing="false" onAction="#creationPlayButtonClicked" text="Play" />
+                                    <Button fx:id="creationDeleteButton" mnemonicParsing="false" onAction="#creationDeleteButtonClicked" text="Delete" />
+                                 </children>
+                                 <opaqueInsets>
+                                    <Insets />
+                                 </opaqueInsets>
+                                 <VBox.margin>
+                                    <Insets />
+                                 </VBox.margin>
+                              </HBox>
                            </children>
                         </VBox>
                      </children>

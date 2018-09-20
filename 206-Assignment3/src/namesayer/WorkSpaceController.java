@@ -26,12 +26,20 @@ import javafx.stage.Stage;
 
 public class WorkSpaceController implements Initializable{
 	
+	//These are stubs to be replaced with the custom list passed in from the workspaceCreator
+	//sample would be replaced with the list and sampleCreations with the folder containing all
+	//user recordings.
+	
 	public File sampleDir = new File("./sample");
 	public File creationDir = new File("./sampleCreations");
 	
+	
 	String currentCreation;
+	
+	//Current index in the listView 
 	int currentIndex=0;
 	
+	//FXML variables
 	@FXML
 	Button startButton;
 	@FXML
@@ -45,6 +53,12 @@ public class WorkSpaceController implements Initializable{
 	@FXML
 	Label recordingNameLabel;
 	@FXML
+	Button creationPlayButton;
+	@FXML
+	Button creationDeleteButton;
+	@FXML
+	Button recordButton;
+	@FXML
 	ListView<String> dataListView;
 	ObservableList<String> dataList = FXCollections.observableArrayList();
 	@FXML
@@ -54,9 +68,12 @@ public class WorkSpaceController implements Initializable{
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+		//Initialises the listview. 
 		loadList();
 		dataListView.scrollTo(currentIndex);
 		dataListView.getSelectionModel().select(currentIndex);
+		
+		//Listener to get the current name the user is clicking on.
 		dataListView.getSelectionModel().selectedItemProperty().addListener(
 	            new ChangeListener<String>() {
 					@Override
@@ -67,12 +84,14 @@ public class WorkSpaceController implements Initializable{
 	        });
 	}
 	
+	//This method starts playing the current name.
 	@FXML
-	public void startButtonClicked(ActionEvent event) {
-		AudioClip audioFile = new AudioClip(new File(currentCreation + ".wav").toURI().toString());
-		audioFile.play();
+	public void playButtonClicked(ActionEvent event) {
+		
+		
 	}
 	
+	//This method takes the user to the next name on the play queue.
 	@FXML
 	public void nextButtonClicked(ActionEvent event) {
 		currentIndex++;
@@ -85,6 +104,7 @@ public class WorkSpaceController implements Initializable{
 		
 	}
 	
+	//This method takes the user to the previous name on the play queue.
 	@FXML
 	public void previousButtonClicked(ActionEvent event) {
 		currentIndex--;
@@ -96,9 +116,10 @@ public class WorkSpaceController implements Initializable{
 		}
 	}
 	
+	//This method takes the user back to the workspace creator scene.
 	@FXML
 	public void backButtonClicked(ActionEvent event) throws Exception{
-		Parent root = FXMLLoader.load(getClass().getResource("rateScreen.fxml"));
+		Parent root = FXMLLoader.load(getClass().getResource("workSpaceCreator.fxml"));
 		Scene recordingScene = new Scene(root);
 
 		Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
@@ -107,6 +128,7 @@ public class WorkSpaceController implements Initializable{
 		
 	}
 	
+	//This method takes the user to the rate screen.
 	@FXML
 	public void rateButtonClicked(ActionEvent event) throws Exception{
 		
@@ -118,6 +140,26 @@ public class WorkSpaceController implements Initializable{
 		createStage.show();
 	}
 	
+	//This method handles when the user wants to play an own recording.
+	@FXML
+	public void creationPlayButtonClicked(ActionEvent event) {
+		
+	}
+	
+	//This method handles when the user wants to delete an own recording.
+	@FXML
+	public void creationDeleteButtonClicked(ActionEvent event) {
+		
+	}
+	
+	//This method handles when the user wants to record their own recording.
+	@FXML
+	public void recordButtonClicked(ActionEvent event) {
+		
+	}
+	
+	//This method would be replaced with one that takes the list passed through workspaceCreator
+	//and loads it onto the left listView.
 	public void loadList() {
 		List<String> list = new ArrayList<String>();
 		for (final File fileEntry : sampleDir.listFiles()) {
@@ -130,12 +172,14 @@ public class WorkSpaceController implements Initializable{
 		dataListView.setItems(dataList);
 	}
 	
+	//This method iterates through the own recordings folder and adds any recordings of
+	//the given name to the right listView.
 	public void findOwnRecording(String name) {
 		List<String> list = new ArrayList<String>();
 		for (final File fileEntry : creationDir.listFiles()) {
 			if (fileEntry.getName().contains(name)) {
 				String listName = fileEntry.getName().substring(0, fileEntry.getName().length() - 4);
-				list.add(listName.replaceAll("@", " "));
+				list.add(listName);
 			}
 		}
 		ownList = FXCollections.observableArrayList(list);
@@ -145,4 +189,5 @@ public class WorkSpaceController implements Initializable{
 			ownListView.setItems(ownList);
 		//}
 	}
+	
 }

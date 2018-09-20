@@ -22,40 +22,49 @@ import javafx.stage.Stage;
 
 public class RateScreenController implements Initializable  {
 	
+	//The folder containing all the reviews.
 	public File sampleDir = new File("./reviews");
 	
+	//FXML variables
 	@FXML
 	Label rateText;
 	@FXML
 	TextArea commentArea;
 	@FXML
 	Button confirmButton;
+	
+	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+		//Sets a prompt for the textArea
 		commentArea.setPromptText("Write a review");
 		commentArea.setFocusTraversable(false); 
-		//commentArea.getParent().requestFocus();
+		
 	}
 	
 	@FXML
 	public void confirmButtonClicked(ActionEvent event){
 		
+		//Writes to a file (hardcoded as name.txt here so will need to change for the actual
+		//name variable). Creates a new file if none is found, else appends to the current file.
 		try(FileWriter fileWriter = new FileWriter("./reviews/name.txt", true);
 			    BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
 			    PrintWriter out = new PrintWriter(bufferedWriter))
 			{
+				//Write date/time of the new review and write to the given file.
 				out.println("\n\n");
 				String currentTime = new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date());
 				out.println("-------------------"+currentTime + "-------------------");
 				String review = commentArea.getText();
 			    out.println(review);
 			    
+			    //Close the rate window after confirmation.
 			    Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
 			    currentStage.close();
 			    
 			    
 			} catch (IOException e) {
-			    
+			    //Do something here. Not sure what?
 			}
 		
 		
