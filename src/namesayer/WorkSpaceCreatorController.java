@@ -73,6 +73,11 @@ public class WorkSpaceCreatorController implements Initializable {
         }
     }
 
+    /**
+     * Run on start-up
+     * @param location
+     * @param resources
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         databaseList = FXCollections.observableArrayList();
