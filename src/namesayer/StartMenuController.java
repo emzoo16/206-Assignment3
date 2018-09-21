@@ -25,7 +25,7 @@ public class StartMenuController {
     private void beginPractice() {
         try {
             Stage stage = (Stage) practiceButton.getScene().getWindow();
-            Parent createScene = FXMLLoader.load(getClass().getResource("WorkSpaceCreator.fxml"));
+            Parent createScene = FXMLLoader.load(getClass().getResource("workSpaceCreator.fxml"));
             stage.setScene(new Scene(createScene, 700, 500));
         } catch (IOException e) {
             e.printStackTrace();

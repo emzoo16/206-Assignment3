@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.HashMap;
 
 public class DatabaseList extends RecordingList {
-    private HashMap<String, Recording> databaseRecordings;
+    private HashMap<String, DatabaseRecording> databaseRecordings;
 
     public DatabaseList() {
         super();
@@ -18,15 +18,15 @@ public class DatabaseList extends RecordingList {
                 //Validates the file
                 if (file.isFile() && !file.toString().startsWith("Database/.")) {
                     String fileString = file.getName();
-                    Recording recording = new Recording(fileString);
                     //Removes extension and codes.
-                    fileString = fileString.substring(fileString.lastIndexOf("_") + 1, fileString.indexOf("."));
-                    String updatedFileString = fileString;
+                    String trimFileString = fileString.substring(fileString.lastIndexOf("_")+1,fileString.indexOf("."));
+                    String updatedFileString = trimFileString;
                     while (databaseRecordings.containsKey(updatedFileString)) {
-                        updatedFileString = fileString + "(" + count + ")";
+                        updatedFileString = trimFileString + "(" + count + ")";
                         count += 1;
                     }
                     count = 1;
+                    DatabaseRecording recording = new DatabaseRecording(fileString, updatedFileString);
                     databaseRecordings.put(updatedFileString, recording);
                 }
             }
