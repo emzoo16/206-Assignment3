@@ -36,14 +36,13 @@
                   <Insets left="20.0" />
                </VBox.margin>
             </TextField>
-            <ListView fx:id="databaseRecordings" prefHeight="325.0" prefWidth="200.0">
+            <ListView fx:id="databaseRecordingsView" prefHeight="325.0" prefWidth="200.0">
                <VBox.margin>
                   <Insets left="20.0" />
                </VBox.margin>
             </ListView>
             <HBox alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="200.0" spacing="30.0">
                <children>
-                  <CheckBox fx:id="selectAllBox" mnemonicParsing="false" text="Select All" />
                   <Button fx:id="addButton" mnemonicParsing="false" onAction="#addToWorkspace" text="Add" />
                </children>
             </HBox>
@@ -77,18 +76,18 @@
                   </Label>
                </children>
             </Pane>
-            <ListView fx:id="workspaceRecordings" prefHeight="350.0" prefWidth="200.0">
+            <ListView fx:id="workspaceRecordingsView" prefHeight="350.0" prefWidth="200.0">
                <VBox.margin>
                   <Insets right="20.0" />
                </VBox.margin>
             </ListView>
             <HBox prefHeight="75.0" prefWidth="200.0">
                <children>
-                  <Button fx:id="removeButton" mnemonicParsing="false" onAction="#removeFromWorkspace" text="Remove">
-                     <HBox.margin>
-                        <Insets left="40.0" top="10.0" />
-                     </HBox.margin>
-                  </Button>
+                  <Pane prefHeight="75.0" prefWidth="129.0">
+                     <children>
+                        <Button fx:id="removeButton" mnemonicParsing="false" onAction="#removeFromWorkspace" text="Remove" />
+                     </children>
+                  </Pane>
                   <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="150.0" spacing="10.0">
                      <children>
                         <Button fx:id="continueButton" mnemonicParsing="false" onAction="#continueToPractice" text="Continue">
