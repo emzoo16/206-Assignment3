@@ -23,7 +23,7 @@
                         <Font size="18.0" />
                      </font>
                   </Label>
-                  <Label fx:id="recordingNameLabel" alignment="CENTER" prefHeight="136.0" prefWidth="350.0" text="Name of recording...">
+                  <Label fx:id="recordingNameLabel" alignment="CENTER" prefHeight="136.0" prefWidth="350.0">
                      <font>
                         <Font name="System Bold" size="30.0" />
                      </font>

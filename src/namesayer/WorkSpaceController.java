@@ -26,6 +26,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 
@@ -34,15 +35,15 @@ public class WorkSpaceController implements Initializable{
 	//These are stubs to be replaced with the custom list passed in from the workspaceCreator
 	//sample would be replaced with the list and sampleCreations with the folder containing all
 	//user recordings.
-
-	public File sampleDir = new File("./sample");
+	
 	public File creationDir = new File("./sampleCreations");
 	
 	
-	String currentCreation;
+	String currentName;
 	
 	//Current index in the listView 
 	int currentIndex = 0;
+	RecordingList recordingList;
 	
 	MediaPlayer player;
 	
@@ -73,14 +74,11 @@ public class WorkSpaceController implements Initializable{
 	@FXML
 	ListView<String> ownListView;
 	ObservableList<String> ownList = FXCollections.observableArrayList();
-	RecordingList listOfRecordings;
-	String selectedDatabaseItem;
 
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		//Initialises the listview. 
-		//loadList();
+		
 		dataListView.scrollTo(currentIndex);
 		dataListView.getSelectionModel().select(currentIndex);
 		
@@ -90,6 +88,8 @@ public class WorkSpaceController implements Initializable{
 					@Override
 					public void changed(ObservableValue<? extends String> observable, String oldValue,
 							String newValue) {
+						findOwnRecording(newValue);
+						System.out.println(newValue);
 						recordingNameLabel.setText(newValue);
 					}
 	        });
@@ -99,26 +99,23 @@ public class WorkSpaceController implements Initializable{
 	//This method starts playing the current name.
 	@FXML
 	public void playButtonClicked(ActionEvent event) {
-		String name = dataListView.getSelectionModel().getSelectedItem();
-		Recording recording = listOfRecordings.getRecording(name);
-		recording.play();
-//	    progressBar.setProgress(0.1);
-//	    System.out.println();
+	    progressBar.setProgress(0.1);
+	    System.out.println();
+	    
+	    String uri =  new File("se206_2-5-2018_15-23-50_Mason.wav").toURI().toString();
+	    player = new MediaPlayer(new Media(uri));
+	    
+//	    player.currentTimeProperty().addListener(new InvalidationListener() {
+//			@Override
+//			public void invalidated(Observable observable) {
+//				Duration currentTime = player.getCurrentTime();
+//				Double totalTime = player.getTotalDuration().toMillis();
+//				progressBar.setProgress(currentTime.toMillis()/totalTime * 100.0);
+//			}
 //
-//	    String uri =  new File("se206_2-5-2018_15-23-50_Mason.wav").toURI().toString();
-//	    player = new MediaPlayer(new Media(uri));
-//
-////	    player.currentTimeProperty().addListener(new InvalidationListener() {
-////			@Override
-////			public void invalidated(Observable observable) {
-////				Duration currentTime = player.getCurrentTime();
-////				Double totalTime = player.getTotalDuration().toMillis();
-////				progressBar.setProgress(currentTime.toMillis()/totalTime * 100.0);
-////			}
-////
-////	    });
-//
-//	    player.play();
+//	    });
+	    
+	    player.play();
 		
 	}
 	
@@ -150,7 +147,7 @@ public class WorkSpaceController implements Initializable{
 	//This method takes the user back to the workspace creator scene.
 	@FXML
 	public void backButtonClicked(ActionEvent event) throws Exception{
-		Parent root = FXMLLoader.load(getClass().getResource("fxmlFiles/workSpaceCreator.fxml"));
+		Parent root = FXMLLoader.load(getClass().getResource("workSpaceCreator.fxml"));
 		Scene recordingScene = new Scene(root);
 
 		Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
@@ -162,8 +159,13 @@ public class WorkSpaceController implements Initializable{
 	//This method takes the user to the rate screen.
 	@FXML
 	public void rateButtonClicked(ActionEvent event) throws Exception{
-		
-		Parent createSceneParent = FXMLLoader.load(getClass().getResource("rateScreen.fxml"));
+		 
+		 currentName = dataListView.getSelectionModel().getSelectedItem();
+		 System.out.println(currentName);
+		 FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("rateScreen.fxml"));
+         Parent createSceneParent = fxmlLoader.load();
+         RateScreenController controller = fxmlLoader.getController();
+         controller.setCurrentName(currentName);
 		Scene createScene = new Scene(createSceneParent);
 
 		Stage createStage = new Stage();
@@ -216,9 +218,27 @@ public class WorkSpaceController implements Initializable{
 //		dataList = FXCollections.observableArrayList(list);
 //		dataListView.setItems(dataList);
 //	}
+	
+	//This method iterates through the own recordings folder and adds any recordings of
+	//the given name to the right listView.
+	public void findOwnRecording(String name) {
+		List<String> list = new ArrayList<String>();
+		for (final File fileEntry : creationDir.listFiles()) {
+			if (fileEntry.getName().contains(name)) {
+				String listName = fileEntry.getName().substring(0, fileEntry.getName().length() - 4);
+				list.add(listName);
+			}
+		}
+		ownList = FXCollections.observableArrayList(list);
+		ownListView.setItems(ownList);
+	}
 
 	public void setWorkspaceRecordings(RecordingList recordings) {
-		listOfRecordings = recordings;
+		dataList = FXCollections.observableArrayList(recordings.getRecordingNames());
 		dataListView.setItems(recordings.getRecordingNames());
+		
+		recordingNameLabel.setText();
+		System.out.println("Inside");
 	}
+	
 }
