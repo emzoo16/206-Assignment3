@@ -2,6 +2,7 @@ package namesayer;
 
 
 import java.io.File;
+
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,14 +37,14 @@ public class WorkSpaceController implements Initializable{
 	//sample would be replaced with the list and sampleCreations with the folder containing all
 	//user recordings.
 	
-	public File creationDir = new File("./sampleCreations");
+	public File creationDir = new File("./DatabaseRecordings");
 	
 	
 	String currentName;
 	
 	//Current index in the listView 
 	int currentIndex = 0;
-	RecordingList recordingList;
+	int ownCurrentIndex = 0;
 	
 	MediaPlayer player;
 	
@@ -67,6 +68,10 @@ public class WorkSpaceController implements Initializable{
 	@FXML
 	Button creationDeleteButton;
 	@FXML
+	Button creationNextButton;
+	@FXML
+	Button creationPreviousButton;
+	@FXML
 	Button recordButton;
 	@FXML
 	ListView<String> dataListView;
@@ -80,10 +85,7 @@ public class WorkSpaceController implements Initializable{
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		
-		dataListView.scrollTo(currentIndex);
-		dataListView.getSelectionModel().select(currentIndex);
-		
+
 		//Listener to get the current name the user is clicking on.
 		dataListView.getSelectionModel().selectedItemProperty().addListener(
 	            new ChangeListener<String>() {
@@ -91,44 +93,44 @@ public class WorkSpaceController implements Initializable{
 					public void changed(ObservableValue<? extends String> observable, String oldValue,
 							String newValue) {
 						findOwnRecording(newValue);
-						System.out.println(newValue);
 						recordingNameLabel.setText(newValue);
+						currentIndex = dataListView.getSelectionModel().getSelectedIndex();
 					}
 	        });
+		
+		ownListView.getSelectionModel().selectedItemProperty().addListener(
+	            new ChangeListener<String>() {
+					@Override
+					public void changed(ObservableValue<? extends String> observable, String oldValue,
+							String newValue) {
+						ownCurrentIndex = ownListView.getSelectionModel().getSelectedIndex();
+					}
+	        });
+		
 		
 	}
 	
 	//This method starts playing the current name.
 	@FXML
 	public void playButtonClicked(ActionEvent event) {
+		
 		String currentRecordingName = dataListView.getSelectionModel().getSelectedItem();
+		if(recordingNameLabel.getText() != currentRecordingName) {
+			recordingNameLabel.setText(currentRecordingName);
+		}
+		
 		Recording currentRecording = listOfRecordings.getRecording(currentRecordingName);
 		currentRecording.play();
-//	    progressBar.setProgress(0.1);
-//	    System.out.println();
-//
-//	    String uri =  new File("se206_2-5-2018_15-23-50_Mason.wav").toURI().toString();
-//	    player = new MediaPlayer(new Media(uri));
-//
-////	    player.currentTimeProperty().addListener(new InvalidationListener() {
-////			@Override
-////			public void invalidated(Observable observable) {
-////				Duration currentTime = player.getCurrentTime();
-////				Double totalTime = player.getTotalDuration().toMillis();
-////				progressBar.setProgress(currentTime.toMillis()/totalTime * 100.0);
-////			}
-////
-////	    });
-//
-//	    player.play();
+		recordingNameLabel.setText(currentRecordingName);
 		
 	}
 	
 	//This method takes the user to the next name on the play queue.
 	@FXML
 	public void nextButtonClicked(ActionEvent event) {
+	
+		if (currentIndex < dataList.size()-1) {
 		currentIndex++;
-		if (currentIndex < dataList.size()) {
 		dataListView.scrollTo(currentIndex);
 		dataListView.getSelectionModel().select(currentIndex);
 		String currentName = dataListView.getSelectionModel().getSelectedItem();
@@ -140,8 +142,9 @@ public class WorkSpaceController implements Initializable{
 	//This method takes the user to the previous name on the play queue.
 	@FXML
 	public void previousButtonClicked(ActionEvent event) {
+
+		if (currentIndex > 0) {
 		currentIndex--;
-		if (currentIndex >= 0) {
 		dataListView.scrollTo(currentIndex);
 		dataListView.getSelectionModel().select(currentIndex);
 		String currentName = dataListView.getSelectionModel().getSelectedItem();
@@ -178,6 +181,32 @@ public class WorkSpaceController implements Initializable{
 		createStage.show();
 	}
 	
+	@FXML
+	public void creationPreviousButtonClicked() {
+		if(ownList != null) {
+			
+			if (ownCurrentIndex > 0) {
+				ownCurrentIndex--;
+				ownListView.scrollTo(ownCurrentIndex);
+				ownListView.getSelectionModel().select(ownCurrentIndex);
+				String currentName = ownListView.getSelectionModel().getSelectedItem();
+				}
+		}
+	}
+	
+	@FXML
+	public void creationNextButtonClicked() {
+		if(ownList != null) {
+			
+			if (ownCurrentIndex < ownList.size()-1) {
+				ownCurrentIndex++;
+				ownListView.scrollTo(ownCurrentIndex);
+				ownListView.getSelectionModel().select(ownCurrentIndex);
+				String currentName = ownListView.getSelectionModel().getSelectedItem();
+				}
+		}
+	}
+	
 	//This method handles when the user wants to play an own recording.
 	@FXML
 	public void creationPlayButtonClicked(ActionEvent event) {
@@ -188,8 +217,9 @@ public class WorkSpaceController implements Initializable{
 	//This method handles when the user wants to delete an own recording.
 	@FXML
 	public void creationDeleteButtonClicked(ActionEvent event) {
-		String currentCreation = ownListView.getSelectionModel().getSelectedItem();
-		if (currentCreation != null) {
+		String ownCurrentName = ownListView.getSelectionModel().getSelectedItem();
+		String currentName = dataListView.getSelectionModel().getSelectedItem();
+		if (ownCurrentName != null) {
 			Alert alert = new Alert(AlertType.CONFIRMATION);
 			alert.setTitle("Delete Confirmation");
 			alert.setHeaderText(null);
@@ -197,8 +227,20 @@ public class WorkSpaceController implements Initializable{
 			Optional<ButtonType> action = alert.showAndWait();
 			
 			if (action.get() == ButtonType.OK) {
-				File creationFile = new File("./sampleCreations/" + currentCreation + ".wav");
-				creationFile.delete();
+				File creationFile = new File("./DatabaseRecordings/"+currentName);
+				
+				for (final File fileEntry : creationFile.listFiles()) {
+		
+					String currentFile = fileEntry.getName();
+					System.out.println(currentFile);
+					String pathSegment = currentFile.substring(currentFile.lastIndexOf("_")+1,
+							currentFile.lastIndexOf("."));
+					
+					if (pathSegment.equals(ownCurrentName)) {
+						fileEntry.delete();
+						findOwnRecording(currentName);
+					}
+				}
 			}
 		}
 		
@@ -210,32 +252,32 @@ public class WorkSpaceController implements Initializable{
 		
 	}
 	
-	//This method would be replaced with one that takes the list passed through workspaceCreator
-	//and loads it onto the left listView.
-//	public void loadList() {
-//		List<String> list = new ArrayList<String>();
-//		for (final File fileEntry : sampleDir.listFiles()) {
-//			if (fileEntry.getName().endsWith(".txt")) {
-//				String listName = fileEntry.getName().substring(0, fileEntry.getName().length() - 4);
-//				list.add(listName.replaceAll("@", " "));
-//			}
-//		}
-//		dataList = FXCollections.observableArrayList(list);
-//		dataListView.setItems(dataList);
-//	}
-	
 	//This method iterates through the own recordings folder and adds any recordings of
 	//the given name to the right listView.
 	public void findOwnRecording(String name) {
+		
+		File ownDir = new File("./DatabaseRecordings/"+name);
 		List<String> list = new ArrayList<String>();
-		for (final File fileEntry : creationDir.listFiles()) {
-			if (fileEntry.getName().contains(name)) {
-				String listName = fileEntry.getName().substring(0, fileEntry.getName().length() - 4);
-				list.add(listName);
+		if (ownDir.exists()) {
+		
+			for (final File fileEntry : ownDir.listFiles()) {
+				if (fileEntry.getName().contains(name)) {
+					String listName = fileEntry.getName();
+					String pathSegment = listName.substring(listName.lastIndexOf("_")+1,
+							listName.lastIndexOf("."));
+					list.add(pathSegment);
+				}
 			}
 		}
-		ownList = FXCollections.observableArrayList(list);
-		ownListView.setItems(ownList);
+			ownList = FXCollections.observableArrayList(list);
+			ownListView.setItems(ownList);
+			
+			if (list.size()>0) {
+				ownCurrentIndex = 0;
+				ownListView.scrollTo(ownCurrentIndex);
+				ownListView.getSelectionModel().select(currentIndex);
+			}
+		
 	}
 
 	public void setWorkspaceRecordings(RecordingList recordings) {
@@ -243,8 +285,11 @@ public class WorkSpaceController implements Initializable{
 		dataListView.setItems(recordings.getRecordingNames());
 		listOfRecordings = recordings;
 		
-		recordingNameLabel.setText();
-		System.out.println("Inside");
+		dataListView.scrollTo(currentIndex);
+		dataListView.getSelectionModel().select(currentIndex);
+		String currentName = dataListView.getSelectionModel().getSelectedItem();
+		recordingNameLabel.setText(currentName);
+	
 	}
 	
 }

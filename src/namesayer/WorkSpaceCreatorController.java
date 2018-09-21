@@ -87,7 +87,7 @@ public class WorkSpaceCreatorController implements Initializable {
     private void returnToMenu() {
         try {
             Stage stage = (Stage) returnButton.getScene().getWindow();
-            Parent createScene = FXMLLoader.load(getClass().getResource("fxmlFiles/startMenu.fxml"));
+            Parent createScene = FXMLLoader.load(getClass().getResource("startMenu.fxml"));
             stage.setScene(new Scene(createScene, 700, 500));
         } catch (IOException e) {
             e.printStackTrace();
