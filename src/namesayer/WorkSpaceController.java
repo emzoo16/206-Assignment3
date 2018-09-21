@@ -75,6 +75,8 @@ public class WorkSpaceController implements Initializable{
 	ListView<String> ownListView;
 	ObservableList<String> ownList = FXCollections.observableArrayList();
 
+	RecordingList listOfRecordings;
+
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -99,23 +101,26 @@ public class WorkSpaceController implements Initializable{
 	//This method starts playing the current name.
 	@FXML
 	public void playButtonClicked(ActionEvent event) {
-	    progressBar.setProgress(0.1);
-	    System.out.println();
-	    
-	    String uri =  new File("se206_2-5-2018_15-23-50_Mason.wav").toURI().toString();
-	    player = new MediaPlayer(new Media(uri));
-	    
-//	    player.currentTimeProperty().addListener(new InvalidationListener() {
-//			@Override
-//			public void invalidated(Observable observable) {
-//				Duration currentTime = player.getCurrentTime();
-//				Double totalTime = player.getTotalDuration().toMillis();
-//				progressBar.setProgress(currentTime.toMillis()/totalTime * 100.0);
-//			}
+		String currentRecordingName = dataListView.getSelectionModel().getSelectedItem();
+		Recording currentRecording = listOfRecordings.getRecording(currentRecordingName);
+		currentRecording.play();
+//	    progressBar.setProgress(0.1);
+//	    System.out.println();
 //
-//	    });
-	    
-	    player.play();
+//	    String uri =  new File("se206_2-5-2018_15-23-50_Mason.wav").toURI().toString();
+//	    player = new MediaPlayer(new Media(uri));
+//
+////	    player.currentTimeProperty().addListener(new InvalidationListener() {
+////			@Override
+////			public void invalidated(Observable observable) {
+////				Duration currentTime = player.getCurrentTime();
+////				Double totalTime = player.getTotalDuration().toMillis();
+////				progressBar.setProgress(currentTime.toMillis()/totalTime * 100.0);
+////			}
+////
+////	    });
+//
+//	    player.play();
 		
 	}
 	
@@ -236,6 +241,7 @@ public class WorkSpaceController implements Initializable{
 	public void setWorkspaceRecordings(RecordingList recordings) {
 		dataList = FXCollections.observableArrayList(recordings.getRecordingNames());
 		dataListView.setItems(recordings.getRecordingNames());
+		listOfRecordings = recordings;
 		
 		recordingNameLabel.setText();
 		System.out.println("Inside");
