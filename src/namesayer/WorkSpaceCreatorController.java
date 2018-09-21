@@ -39,7 +39,7 @@ public class WorkSpaceCreatorController implements Initializable {
     CheckBox randomiseBox;
 
     DatabaseList databaseList;
-    WorkspaceList workspaceList;
+    WorkSpaceList workspaceList;
     ObservableSet<String> selectedDatabaseItems;
     ObservableSet<String> selectedWorkspaceItems;
 
@@ -71,8 +71,8 @@ public class WorkSpaceCreatorController implements Initializable {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("workspace.fxml"));
             Parent createScene = fxmlLoader.load();
-            WorkspaceController controller = fxmlLoader.getController();
-            //controller.setWorkspaceRecordings(workspaceList);
+            WorkSpaceController controller = fxmlLoader.getController();
+            controller.setWorkspaceRecordings(workspaceList);
             Stage stage = (Stage) continueButton.getScene().getWindow();
             stage.setScene(new Scene(createScene, 700, 500));
         } catch (IOException e) {
@@ -119,7 +119,7 @@ public class WorkSpaceCreatorController implements Initializable {
         }));
 
         selectedWorkspaceItems = FXCollections.observableSet();
-        workspaceList = new WorkspaceList();
+        workspaceList = new WorkSpaceList();
         workspaceRecordingsView.setItems(workspaceList.getRecordingNames());
         workspaceRecordingsView.setCellFactory(CheckBoxListCell.forListView(new Callback<String, ObservableValue<Boolean>>() {
             @Override

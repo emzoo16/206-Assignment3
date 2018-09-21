@@ -85,7 +85,7 @@ public class WorkSpaceController implements Initializable{
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		//Initialises the listview. 
-		loadList();
+		//loadList();
 		dataListView.scrollTo(currentIndex);
 		dataListView.getSelectionModel().select(currentIndex);
 		
@@ -208,17 +208,17 @@ public class WorkSpaceController implements Initializable{
 	
 	//This method would be replaced with one that takes the list passed through workspaceCreator
 	//and loads it onto the left listView.
-	public void loadList() {
-		List<String> list = new ArrayList<String>();
-		for (final File fileEntry : sampleDir.listFiles()) {
-			if (fileEntry.getName().endsWith(".txt")) {
-				String listName = fileEntry.getName().substring(0, fileEntry.getName().length() - 4);
-				list.add(listName.replaceAll("@", " "));
-			}
-		}
-		dataList = FXCollections.observableArrayList(list);
-		dataListView.setItems(dataList);
-	}
+//	public void loadList() {
+//		List<String> list = new ArrayList<String>();
+//		for (final File fileEntry : sampleDir.listFiles()) {
+//			if (fileEntry.getName().endsWith(".txt")) {
+//				String listName = fileEntry.getName().substring(0, fileEntry.getName().length() - 4);
+//				list.add(listName.replaceAll("@", " "));
+//			}
+//		}
+//		dataList = FXCollections.observableArrayList(list);
+//		dataListView.setItems(dataList);
+//	}
 	
 	//This method iterates through the own recordings folder and adds any recordings of
 	//the given name to the right listView.
@@ -237,5 +237,8 @@ public class WorkSpaceController implements Initializable{
 			ownListView.setItems(ownList);
 		//}
 	}
-	
+
+	public void setWorkspaceRecordings(WorkSpaceList recordings) {
+		dataListView.setItems(recordings.getRecordingNames());
+	}
 }

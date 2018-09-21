@@ -6,10 +6,10 @@ import javafx.collections.ObservableList;
 import java.util.Collections;
 import java.util.HashMap;
 
-public class WorkspaceList {
+public class WorkSpaceList {
     private HashMap<String, Recording> recordingsMap;
 
-    public WorkspaceList() {
+    public WorkSpaceList() {
         recordingsMap = new HashMap<>();
     }
 
