@@ -6,10 +6,10 @@ import javafx.collections.ObservableList;
 import java.util.Collections;
 import java.util.HashMap;
 
-public class WorkSpaceList {
-    private HashMap<String, Recording> recordingsMap;
+public class RecordingList {
+    protected HashMap<String, Recording> recordingsMap;
 
-    public WorkSpaceList() {
+    public RecordingList() {
         recordingsMap = new HashMap<>();
     }
 
@@ -29,5 +29,9 @@ public class WorkSpaceList {
         if (recordingsMap.keySet().contains(name)) {
             recordingsMap.remove(name);
         }
+    }
+
+    public Recording getRecording(String name) {
+        return recordingsMap.get(name);
     }
 }

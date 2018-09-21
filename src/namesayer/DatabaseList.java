@@ -1,24 +1,19 @@
 package namesayer;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-
 import java.io.File;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.Map;
 
-public class DatabaseList {
-    private HashMap<String, Recording> recordingsMap;
-    private HashMap<String, Recording> unselectedRecordingsMap;
+public class DatabaseList extends RecordingList {
+    private HashMap<String, Recording> databaseRecordings;
 
     public DatabaseList() {
-        recordingsMap = new HashMap<>();
+        super();
+        databaseRecordings = new HashMap<>();
         //Gets the files in an array
         File folder = new File("Database/");
         File[] ArrayOfFiles = folder.listFiles();
         int count = 1;
-        if (ArrayOfFiles.length != 0) {
+        if (ArrayOfFiles != null) {
             for (File file : ArrayOfFiles) {
                 //Validates the file
                 if (file.isFile() && !file.toString().startsWith("Database/.")) {
@@ -27,37 +22,21 @@ public class DatabaseList {
                     //Removes extension and codes.
                     fileString = fileString.substring(fileString.lastIndexOf("_") + 1, fileString.indexOf("."));
                     String updatedFileString = fileString;
-                    while (recordingsMap.containsKey(updatedFileString)) {
+                    while (databaseRecordings.containsKey(updatedFileString)) {
                         updatedFileString = fileString + "(" + count + ")";
                         count += 1;
                     }
                     count = 1;
-                    recordingsMap.put(updatedFileString, recording);
+                    databaseRecordings.put(updatedFileString, recording);
                 }
             }
+        } else {
+            //Cant find the database/nothing in it
         }
-        unselectedRecordingsMap = new HashMap<>(recordingsMap);
-    }
-
-    public ObservableList<String> getRecordingNames() {
-        ObservableList<String> recordingsList = FXCollections.observableArrayList(unselectedRecordingsMap.keySet());
-        Collections.sort(recordingsList);
-        return recordingsList;
-    }
-
-    public Recording getRecording(String name) {
-        return unselectedRecordingsMap.get(name);
-    }
-
-    public void remove(String name) {
-        if (unselectedRecordingsMap.keySet().contains(name)) {
-            unselectedRecordingsMap.remove(name);
-        }
+        recordingsMap = new HashMap<>(databaseRecordings);
     }
 
     public void add(String name) {
-        if (!unselectedRecordingsMap.keySet().contains(name)) {
-            unselectedRecordingsMap.put(name, recordingsMap.get(name));
-        }
+        recordingsMap.put(name, databaseRecordings.get(name));
     }
 }

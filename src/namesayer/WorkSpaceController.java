@@ -1,18 +1,13 @@
 package namesayer;
 
 
-import javafx.util.Duration;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
-import javafx.beans.InvalidationListener;
-import javafx.beans.Observable;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -31,7 +26,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.media.AudioClip;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
@@ -238,7 +232,7 @@ public class WorkSpaceController implements Initializable{
 		//}
 	}
 
-	public void setWorkspaceRecordings(WorkSpaceList recordings) {
+	public void setWorkspaceRecordings(RecordingList recordings) {
 		dataListView.setItems(recordings.getRecordingNames());
 	}
 }

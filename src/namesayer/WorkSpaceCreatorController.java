@@ -39,7 +39,7 @@ public class WorkSpaceCreatorController implements Initializable {
     CheckBox randomiseBox;
 
     DatabaseList databaseList;
-    WorkSpaceList workspaceList;
+    RecordingList workspaceList;
     ObservableSet<String> selectedDatabaseItems;
     ObservableSet<String> selectedWorkspaceItems;
 
@@ -119,7 +119,7 @@ public class WorkSpaceCreatorController implements Initializable {
         }));
 
         selectedWorkspaceItems = FXCollections.observableSet();
-        workspaceList = new WorkSpaceList();
+        workspaceList = new RecordingList();
         workspaceRecordingsView.setItems(workspaceList.getRecordingNames());
         workspaceRecordingsView.setCellFactory(CheckBoxListCell.forListView(new Callback<String, ObservableValue<Boolean>>() {
             @Override
