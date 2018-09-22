@@ -90,7 +90,7 @@ public class RecordController implements Initializable {
         String selectedRecording = parentController.dataListView.getSelectionModel().getSelectedItem();
         parentController.listOfRecordings.getRecording(selectedRecording).addAttempt(recording);
         File originalFile = new File("audio.wav");
-        File newFile = new File("/PersonalRecordings/" + recording.getShortName() + ".wav");
+        File newFile = new File("PersonalRecordings/" + recording.getShortName() + ".wav");
         originalFile.renameTo(newFile);
         Stage currentStage = (Stage) returnButton.getScene().getWindow();
         currentStage.close();

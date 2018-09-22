@@ -2,7 +2,9 @@ package namesayer;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Paths;
 import java.util.ResourceBundle;
 
 import javafx.animation.KeyFrame;
@@ -22,6 +24,8 @@ import javafx.stage.Stage;
 
 import javafx.scene.control.*;
 import javafx.util.Duration;
+
+import javax.sound.sampled.*;
 
 public class testMicrophoneController implements Initializable{
 	
@@ -80,7 +84,7 @@ public class testMicrophoneController implements Initializable{
 		
 			@Override
 			protected Void call() throws Exception{
-				String command = "ffmpeg -f pulse -loglevel quiet -i default -t 5 test.wav";
+				String command = "ffmpeg -y -f alsa -loglevel quiet -t 5 -i default test.wav";
 				ProcessBuilder builder = new ProcessBuilder("bash", "-c", command);
 				Process recordingProcess = builder.start();
 				recordingProcess.waitFor();
@@ -95,8 +99,22 @@ public class testMicrophoneController implements Initializable{
 		
 	}
 	public void playAudio() {
-		AudioClip audioFile = new AudioClip(new File("test.wav").toURI().toString());
-		audioFile.play();
+		try {
+			URL url = Paths.get("test.wav").toUri().toURL();
+			AudioInputStream stream = AudioSystem.getAudioInputStream(url);
+			DataLine.Info info = new DataLine.Info(Clip.class, stream.getFormat());
+			Clip clip = (Clip) AudioSystem.getLine(info);
+			clip.open(stream);
+			clip.start();
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (UnsupportedAudioFileException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (LineUnavailableException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public void runProgressBar() {
