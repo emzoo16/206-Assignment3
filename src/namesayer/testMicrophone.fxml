@@ -3,10 +3,12 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
@@ -14,7 +16,7 @@
    <children>
       <VBox alignment="CENTER" layoutX="243.0" layoutY="110.0" prefHeight="500.0" prefWidth="700.0" spacing="30.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <HBox prefHeight="40.0" prefWidth="700.0">
+            <HBox prefHeight="25.0" prefWidth="700.0">
                <children>
                   <Button fx:id="backButton" mnemonicParsing="false" onAction="#backButtonClicked" text="Back" />
                </children>
@@ -27,21 +29,23 @@
                   <Font size="36.0" />
                </font>
             </Label>
-            <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+            <Label text="Audio will be recorded for 5 seconds and played back." />
+            <ImageView fitHeight="112.0" fitWidth="127.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@../../../../../Downloads/voice-mic-ios-7-interface-symbol_318-33733.jpg" />
                </image>
             </ImageView>
-            <Label alignment="CENTER" prefHeight="23.0" prefWidth="259.0" text="blah blah blah">
-               <font>
-                  <Font size="18.0" />
-               </font>
-            </Label>
-            <Button fx:id="testButton" mnemonicParsing="false" onAction="#testButtonClicked" text="Test">
-               <font>
-                  <Font size="18.0" />
-               </font>
-            </Button>
+            <ProgressBar fx:id="progressBar" prefHeight="20.0" prefWidth="267.0" progress="0.0" />
+            <StackPane prefHeight="86.0" prefWidth="700.0">
+               <children>
+                  <Button fx:id="playButton" mnemonicParsing="false" onAction="#playButtonClicked" prefHeight="35.0" prefWidth="62.0" text="Play" />
+                  <Button fx:id="testButton" mnemonicParsing="false" onAction="#testButtonClicked" text="Test">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </Button>
+               </children>
+            </StackPane>
          </children>
       </VBox>
    </children>
