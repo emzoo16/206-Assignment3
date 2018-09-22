@@ -48,7 +48,8 @@ public class RateScreenController implements Initializable  {
 	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		
+		File file = new File("Review");
+		file.mkdirs();
 	}
 	
 	//This method writes the users comment to a file.

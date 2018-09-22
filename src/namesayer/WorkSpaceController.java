@@ -226,6 +226,9 @@ public class WorkSpaceController implements Initializable{
 	public void creationPlayButtonClicked(ActionEvent event) {
 		String currentName = ownListView.getSelectionModel().getSelectedItem();
 		recordingNameLabel.setText(currentName);
+		String databaseName = dataListView.getSelectionModel().getSelectedItem();
+		DatabaseRecording databaseRecording = listOfRecordings.getRecording(databaseName);
+		databaseRecording.getUserRecording(currentName).play();
 	}
 	
 	//This method handles when the user wants to delete an own recording.
