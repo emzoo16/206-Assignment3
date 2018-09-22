@@ -39,7 +39,7 @@ public class WorkSpaceCreatorController implements Initializable {
     CheckBox randomiseBox;
 
     DatabaseList databaseList;
-    RecordingList workspaceList;
+    DatabaseList workspaceList;
     ObservableSet<String> selectedDatabaseItems;
     ObservableSet<String> selectedWorkspaceItems;
 
@@ -47,7 +47,7 @@ public class WorkSpaceCreatorController implements Initializable {
     private void addToWorkspace() {
         for (String recordingName : selectedDatabaseItems) {
             Recording recording = databaseList.getRecording(recordingName);
-            workspaceList.add(recordingName, recording);
+            workspaceList.add(recordingName);
             databaseList.remove(recordingName);
         }
         selectedDatabaseItems.clear();
@@ -72,7 +72,7 @@ public class WorkSpaceCreatorController implements Initializable {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("workspace.fxml"));
             Parent createScene = fxmlLoader.load();
             WorkSpaceController controller = fxmlLoader.getController();
-            controller.setWorkspaceRecordings(workspaceList);
+            controller.setWorkspaceRecordingsAndController(workspaceList, controller);
             Stage stage = (Stage) continueButton.getScene().getWindow();
             stage.setScene(new Scene(createScene, 700, 500));
         } catch (IOException e) {
@@ -99,6 +99,7 @@ public class WorkSpaceCreatorController implements Initializable {
         //Sets up the two list views to work with checkboxes
         selectedDatabaseItems = FXCollections.observableSet();
         databaseList = new DatabaseList();
+        databaseList.displayAll();
         databaseRecordingsView.setItems(databaseList.getRecordingNames());
         databaseRecordingsView.setCellFactory(CheckBoxListCell.forListView(new Callback<String, ObservableValue<Boolean>>() {
             @Override
@@ -119,7 +120,7 @@ public class WorkSpaceCreatorController implements Initializable {
         }));
 
         selectedWorkspaceItems = FXCollections.observableSet();
-        workspaceList = new RecordingList();
+        workspaceList = new DatabaseList();
         workspaceRecordingsView.setItems(workspaceList.getRecordingNames());
         workspaceRecordingsView.setCellFactory(CheckBoxListCell.forListView(new Callback<String, ObservableValue<Boolean>>() {
             @Override

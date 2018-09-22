@@ -12,6 +12,7 @@ import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
+import java.io.File;
 import java.net.URL;
 import javafx.util.Duration;
 import java.util.ResourceBundle;
@@ -37,6 +38,8 @@ public class RecordController implements Initializable {
     Label nameLabel;
 
     Recording recording;
+    DatabaseRecording databaseRecording;
+    WorkSpaceController parentController;
 
     @FXML
     private void redoRecording() {
@@ -45,30 +48,28 @@ public class RecordController implements Initializable {
 
     @FXML
     private void record() {
-        if (!nameTextField.getText().isEmpty()) {
-            recording = new Recording(nameTextField.getText());
-            recordButton.setDisable(true);
-            nameTextField.setVisible(false);
-            nameLabel.setVisible(false);
-            Task<Void> recordTask = new Task<Void>() {
-                @Override
-                protected Void call() throws Exception {
-                    //Record Bash process
-                    String recordCMD = "ffmpeg -y -f alsa -loglevel quiet -t 5 -i default audio.wav";
-                    ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", recordCMD);
-                    Process process = builder.start();
-                    process.waitFor();
-                    return null;
-                }
-                protected void succeeded() {
+        String databaseRecordingName = databaseRecording.getShortName();
+        int databaseRecordingAttempts = databaseRecording.getAttemptsNumber();
+        recording = new Recording(databaseRecordingName + "-" + (databaseRecordingAttempts + 1));
+        recordButton.setDisable(true);
+        Task<Void> recordTask = new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                //Record Bash process
+                String recordCMD = "ffmpeg -y -f alsa -loglevel quiet -t 5 -i default audio.wav";
+                ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", recordCMD);
+                Process process = builder.start();
+                process.waitFor();
+                return null;
+            }
+            protected void succeeded() {
                     setComponentsForProcessingRecording();
                 }
-            };
-            Thread thread = new Thread(recordTask);
-            thread.setDaemon(true);
-            startIndicator();
-            thread.start();
-        }
+        };
+        Thread thread = new Thread(recordTask);
+        thread.setDaemon(true);
+        startIndicator();
+        thread.start();
     }
 
     private void startIndicator() {
@@ -85,7 +86,14 @@ public class RecordController implements Initializable {
 
     @FXML
     private void keepRecording() {
-
+        parentController.ownList.add(recording.getShortName());
+        String selectedRecording = parentController.dataListView.getSelectionModel().getSelectedItem();
+        parentController.listOfRecordings.getRecording(selectedRecording).addAttempt(recording);
+        File originalFile = new File("audio.wav");
+        File newFile = new File("/PersonalRecordings/" + recording.getShortName() + ".wav");
+        originalFile.renameTo(newFile);
+        Stage currentStage = (Stage) returnButton.getScene().getWindow();
+        currentStage.close();
     }
 
     @FXML
@@ -98,22 +106,24 @@ public class RecordController implements Initializable {
     private void setComponentsForRecording() {
         instructionLabel.setText("Press to begin recording for five seconds");
         recordButton.setVisible(true);
+        recordButton.setDisable(false);
         playButton.setVisible(false);
         redoButton.setVisible(false);
         keepButton.setVisible(false);
-        nameTextField.setVisible(true);
-        nameLabel.setVisible(true);
         progressIndicator.setProgress(0);
     }
 
     private void setComponentsForProcessingRecording() {
-        instructionLabel.setText("What do you want to do with this recording: " + nameTextField.getText());
+        instructionLabel.setText("What do you want to do with this recording");
         recordButton.setVisible(false);
         playButton.setVisible(true);
         redoButton.setVisible(true);
         keepButton.setVisible(true);
-        nameTextField.setVisible(false);
-        nameLabel.setVisible(false);
+    }
+
+    public void passInformation(DatabaseRecording databaseRecording, WorkSpaceController controller) {
+        this.databaseRecording = databaseRecording;
+        parentController = controller;
     }
 
     @Override

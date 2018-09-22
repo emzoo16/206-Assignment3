@@ -12,14 +12,15 @@ import java.nio.file.Paths;
 
 public class Recording {
     protected String fileName;
+    protected String shortName;
     protected String path;
 
     public Recording() {}
 
     public Recording(String name) {
+        shortName = name;
         fileName = name + ".wav";
-        String pathSegment = name.substring(1, name.lastIndexOf(")"));
-        path = "PersonalRecordings/" + pathSegment + "/";
+        path = "PersonalRecordings/";
     }
 
     public void play() {
@@ -39,5 +40,9 @@ public class Recording {
         } catch (LineUnavailableException e) {
             e.printStackTrace();
         }
+    }
+
+    public String getShortName() {
+        return shortName;
     }
 }

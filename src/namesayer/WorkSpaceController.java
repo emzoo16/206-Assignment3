@@ -83,7 +83,9 @@ public class WorkSpaceController implements Initializable{
 	ListView<String> ownListView;
 	ObservableList<String> ownList = FXCollections.observableArrayList();
 
-	RecordingList listOfRecordings;
+	DatabaseList listOfRecordings;
+	WorkSpaceController selfController;
+
 
 
 	@Override
@@ -100,7 +102,7 @@ public class WorkSpaceController implements Initializable{
 						recordingNameLabel.setText(newValue);
 						currentIndex = dataListView.getSelectionModel().getSelectedIndex();
 						setRating(currentName);
-						
+						refreshPersonalRecordings(newValue);
 					}
 	        });
 		
@@ -114,6 +116,12 @@ public class WorkSpaceController implements Initializable{
 	        });
 		
 		
+	}
+
+	private void refreshPersonalRecordings(String recordingName) {
+		DatabaseRecording currentDatabaseRecording = listOfRecordings.getRecording(recordingName);
+		ownList = currentDatabaseRecording.getUserAttempts();
+		ownListView.setItems(ownList);
 	}
 	
 	//This method starts playing the current name.
@@ -258,8 +266,10 @@ public class WorkSpaceController implements Initializable{
 		try {
 			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("record.fxml"));
 			Parent createSceneParent = fxmlLoader.load();
+			RecordController controller = fxmlLoader.getController();
+			DatabaseRecording currentDatabaseRecording = listOfRecordings.getRecording(dataListView.getSelectionModel().getSelectedItem());
+			controller.passInformation(currentDatabaseRecording, selfController);
 			Scene createScene = new Scene(createSceneParent);
-
 			Stage createStage = new Stage();
 			createStage.setScene(createScene);
 			createStage.show();
@@ -296,16 +306,17 @@ public class WorkSpaceController implements Initializable{
 		
 	}
 
-	public void setWorkspaceRecordings(RecordingList recordings) {
-		dataList = FXCollections.observableArrayList(recordings.getRecordingNames());
-		dataListView.setItems(recordings.getRecordingNames());
+	public void setWorkspaceRecordingsAndController(DatabaseList recordings, WorkSpaceController controller) {
+		dataList = recordings.getRecordingNames();
+		dataListView.setItems(dataList);
 		listOfRecordings = recordings;
 		
 		dataListView.scrollTo(currentIndex);
 		dataListView.getSelectionModel().select(currentIndex);
 		String currentName = dataListView.getSelectionModel().getSelectedItem();
 		recordingNameLabel.setText(currentName);
-	
+
+		selfController = controller;
 	}
 	
 	public void setRating(String currentName) {
