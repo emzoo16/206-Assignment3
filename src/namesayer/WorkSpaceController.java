@@ -1,8 +1,10 @@
 package namesayer;
 
 
+import java.io.BufferedReader;
 import java.io.File;
-
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -73,6 +75,8 @@ public class WorkSpaceController implements Initializable{
 	@FXML
 	Button recordButton;
 	@FXML
+	Label ratingLabel;
+	@FXML
 	ListView<String> dataListView;
 	ObservableList<String> dataList = FXCollections.observableArrayList();
 	@FXML
@@ -91,9 +95,12 @@ public class WorkSpaceController implements Initializable{
 					@Override
 					public void changed(ObservableValue<? extends String> observable, String oldValue,
 							String newValue) {
+						currentName = dataListView.getSelectionModel().getSelectedItem();
 						findOwnRecording(newValue);
 						recordingNameLabel.setText(newValue);
 						currentIndex = dataListView.getSelectionModel().getSelectedIndex();
+						setRating(currentName);
+						
 					}
 	        });
 		
@@ -299,6 +306,54 @@ public class WorkSpaceController implements Initializable{
 		String currentName = dataListView.getSelectionModel().getSelectedItem();
 		recordingNameLabel.setText(currentName);
 	
+	}
+	
+	public void setRating(String currentName) {
+		
+		double ratingNumber = getAverageRating(currentName);
+		if (ratingNumber >= 0) {
+			ratingLabel.setText(String.format("Average Rating: %.2f",ratingNumber));
+		}else {
+			ratingLabel.setText("Not Yet Rated");
+		}
+	}
+	
+	public double getAverageRating(String currentName) {
+		int count = 0;
+		int total = 0;
+		
+		File file = new File("./Review/" + currentName + ".txt");
+		if (file.exists()) {
+		BufferedReader reader = null;
+
+		try {
+		    reader = new BufferedReader(new FileReader(file));
+		    String text = null;
+
+		    while ((text = reader.readLine()) != null) {
+		    	count++;
+		        total = Integer.parseInt(text) + total;
+		    }
+		    
+		    if (count > 0) {
+		    	return (double)total/count;
+		    }
+		    	return -1;
+		    	
+		}catch(FileNotFoundException e) {
+		    e.printStackTrace();
+		} catch (IOException e) {
+		    e.printStackTrace();
+		} finally {
+		    try {
+		        if (reader != null) {
+		            reader.close();
+		        }
+		    } catch (IOException e) {
+		    }
+		}
+		}
+		return -1;
 	}
 	
 }

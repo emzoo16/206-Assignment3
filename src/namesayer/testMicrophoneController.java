@@ -62,14 +62,17 @@ public class testMicrophoneController implements Initializable{
 		playButton.setVisible(false);
 		recordAudio();
 		testButton.setVisible(false);
+		playButton.setVisible(true);
 		
 	}
 	
 	@FXML
 	public void playButtonClicked() {
-		testButton.setVisible(false);
-		playButton.setVisible(true);
+		
 		playAudio();
+		testButton.setVisible(true);
+		playButton.setVisible(false);
+		
 	}
 	
 	public void recordAudio(){
