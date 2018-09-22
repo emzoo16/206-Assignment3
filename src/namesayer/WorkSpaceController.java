@@ -3,6 +3,7 @@ package namesayer;
 
 import java.io.File;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,9 +46,7 @@ public class WorkSpaceController implements Initializable{
 	//Current index in the listView 
 	int currentIndex = 0;
 	int ownCurrentIndex = 0;
-	
-	MediaPlayer player;
-	
+
 	//FXML variables
 	@FXML
 	ProgressBar progressBar;
@@ -174,11 +173,11 @@ public class WorkSpaceController implements Initializable{
          Parent createSceneParent = fxmlLoader.load();
          RateScreenController controller = fxmlLoader.getController();
          controller.setCurrentName(currentName);
-		Scene createScene = new Scene(createSceneParent);
+         Scene createScene = new Scene(createSceneParent);
 
-		Stage createStage = new Stage();
-		createStage.setScene(createScene);
-		createStage.show();
+         Stage createStage = new Stage();
+         createStage.setScene(createScene);
+         createStage.show();
 	}
 	
 	@FXML
@@ -249,7 +248,17 @@ public class WorkSpaceController implements Initializable{
 	//This method handles when the user wants to record their own recording.
 	@FXML
 	public void recordButtonClicked(ActionEvent event) {
-		
+		try {
+			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("record.fxml"));
+			Parent createSceneParent = fxmlLoader.load();
+			Scene createScene = new Scene(createSceneParent);
+
+			Stage createStage = new Stage();
+			createStage.setScene(createScene);
+			createStage.show();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	//This method iterates through the own recordings folder and adds any recordings of

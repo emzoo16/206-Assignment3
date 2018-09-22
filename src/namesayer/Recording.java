@@ -17,7 +17,7 @@ public class Recording {
     public Recording() {}
 
     public Recording(String name) {
-        fileName = name;
+        fileName = name + ".wav";
         String pathSegment = name.substring(1, name.lastIndexOf(")"));
         path = "PersonalRecordings/" + pathSegment + "/";
     }
