@@ -35,10 +35,11 @@
             </ProgressIndicator>
             <StackPane prefHeight="60.0" prefWidth="400.0">
                <children>
-                  <HBox alignment="CENTER" prefHeight="85.0" prefWidth="400.0" spacing="50.0">
+                  <HBox alignment="CENTER" prefHeight="85.0" prefWidth="400.0" spacing="20.0">
                      <children>
                         <Button fx:id="redoButton" mnemonicParsing="false" onAction="#redoRecording" text="Redo" />
-                        <Button fx:id="playButton" mnemonicParsing="false" text="Play" />
+                        <Button fx:id="demoButton" mnemonicParsing="false" onAction="#playDemo" text="Play Demo" />
+                        <Button fx:id="playButton" mnemonicParsing="false" onAction="#playRecording" text="Play" />
                         <Button fx:id="keepButton" mnemonicParsing="false" onAction="#keepRecording" text="Keep" />
                      </children>
                   </HBox>

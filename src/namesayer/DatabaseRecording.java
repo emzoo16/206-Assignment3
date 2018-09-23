@@ -7,6 +7,7 @@ import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 public class DatabaseRecording extends Recording {
     private HashMap<String, Recording> userAttempts;
@@ -20,8 +21,9 @@ public class DatabaseRecording extends Recording {
         if (ArrayOfFiles != null) {
             for (File file : ArrayOfFiles) {
                 //Validates the file
-                if (file.isFile() && file.getName().matches(shortName)) {
-                    userAttempts.put(file.getName(), new Recording(this.shortName + "-" + (userAttempts.size() + 1)));
+                if (file.isFile() && file.getName().contains(shortName)) {
+                    String recordingName = (this.shortName + "-" + (userAttempts.size() + 1));
+                    userAttempts.put(recordingName, new Recording(recordingName));
                 }
             }
         } else {
@@ -46,5 +48,9 @@ public class DatabaseRecording extends Recording {
 
     public void addAttempt(Recording attempt) {
         userAttempts.put(attempt.getShortName() ,attempt);
+    }
+
+    public void deleteAttempt(String attempt) {
+        userAttempts.remove(attempt);
     }
 }

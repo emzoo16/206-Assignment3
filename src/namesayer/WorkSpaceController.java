@@ -23,12 +23,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.ProgressBar;
+import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -40,11 +35,6 @@ public class WorkSpaceController implements Initializable{
 	//sample would be replaced with the list and sampleCreations with the folder containing all
 	//user recordings.
 	
-	public File creationDir = new File("./DatabaseRecordings");
-	
-	
-	String currentName;
-	
 	//Current index in the listView 
 	int currentIndex = 0;
 	int ownCurrentIndex = 0;
@@ -52,8 +42,6 @@ public class WorkSpaceController implements Initializable{
 	//FXML variables
 	@FXML
 	ProgressBar progressBar;
-	@FXML
-	Button startButton;
 	@FXML
 	Button nextButton;
 	@FXML
@@ -65,26 +53,27 @@ public class WorkSpaceController implements Initializable{
 	@FXML
 	Label recordingNameLabel;
 	@FXML
-	Button creationPlayButton;
-	@FXML
-	Button creationDeleteButton;
-	@FXML
-	Button creationNextButton;
-	@FXML
-	Button creationPreviousButton;
-	@FXML
 	Button recordButton;
 	@FXML
 	Label ratingLabel;
+	@FXML
+	Button toggleButton;
+	@FXML
+	Button returnButton;
+	@FXML
+	Button deleteButton;
 	@FXML
 	ListView<String> dataListView;
 	ObservableList<String> dataList = FXCollections.observableArrayList();
 	@FXML
 	ListView<String> ownListView;
 	ObservableList<String> ownList = FXCollections.observableArrayList();
+	@FXML
+	TabPane tabPane;
 
 	DatabaseList listOfRecordings;
 	WorkSpaceController selfController;
+	Boolean isOnDatabase = true;
 
 
 
@@ -97,12 +86,11 @@ public class WorkSpaceController implements Initializable{
 					@Override
 					public void changed(ObservableValue<? extends String> observable, String oldValue,
 							String newValue) {
-						currentName = dataListView.getSelectionModel().getSelectedItem();
-						findOwnRecording(newValue);
 						recordingNameLabel.setText(newValue);
 						currentIndex = dataListView.getSelectionModel().getSelectedIndex();
-						setRating(currentName);
+						setRating(newValue);
 						refreshPersonalRecordings(newValue);
+						ownCurrentIndex = 0;
 					}
 	        });
 		
@@ -114,11 +102,24 @@ public class WorkSpaceController implements Initializable{
 						ownCurrentIndex = ownListView.getSelectionModel().getSelectedIndex();
 					}
 	        });
-		
-		
+		tabPane.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
+			@Override
+			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+				if (isOnDatabase) {
+					System.out.println("Switched to personal");
+					isOnDatabase = false;
+					deleteButton.setDisable(false);
+					ownListView.getSelectionModel().select(ownCurrentIndex);
+				} else {
+					System.out.println("Switched to database");
+					isOnDatabase = true;
+					deleteButton.setDisable(true);
+				}
+			}
+		});
 	}
 
-	private void refreshPersonalRecordings(String recordingName) {
+	public void refreshPersonalRecordings(String recordingName) {
 		DatabaseRecording currentDatabaseRecording = listOfRecordings.getRecording(recordingName);
 		ownList = currentDatabaseRecording.getUserAttempts();
 		ownListView.setItems(ownList);
@@ -127,42 +128,62 @@ public class WorkSpaceController implements Initializable{
 	//This method starts playing the current name.
 	@FXML
 	public void playButtonClicked(ActionEvent event) {
-		
-		String currentRecordingName = dataListView.getSelectionModel().getSelectedItem();
-		if(recordingNameLabel.getText() != currentRecordingName) {
-			recordingNameLabel.setText(currentRecordingName);
+		if (isOnDatabase) {
+			String currentRecordingName = dataListView.getSelectionModel().getSelectedItem();
+			Recording currentRecording = listOfRecordings.getRecording(currentRecordingName);
+			currentRecording.play();
+		} else {
+			String currentName = ownListView.getSelectionModel().getSelectedItem();
+			String databaseName = dataListView.getSelectionModel().getSelectedItem();
+			DatabaseRecording databaseRecording = listOfRecordings.getRecording(databaseName);
+			databaseRecording.getUserRecording(currentName).play();
 		}
-		
-		Recording currentRecording = listOfRecordings.getRecording(currentRecordingName);
-		currentRecording.play();
-		recordingNameLabel.setText(currentRecordingName);
 		
 	}
 	
 	//This method takes the user to the next name on the play queue.
 	@FXML
 	public void nextButtonClicked(ActionEvent event) {
-	
-		if (currentIndex < dataList.size()-1) {
-		currentIndex++;
-		dataListView.scrollTo(currentIndex);
-		dataListView.getSelectionModel().select(currentIndex);
-		String currentName = dataListView.getSelectionModel().getSelectedItem();
-		recordingNameLabel.setText(currentName);
+		if (isOnDatabase) {
+			System.out.println("Wrong place");
+			if (currentIndex < dataList.size() - 1) {
+
+				currentIndex++;
+				dataListView.scrollTo(currentIndex);
+				dataListView.getSelectionModel().select(currentIndex);
+				String currentName = dataListView.getSelectionModel().getSelectedItem();
+				recordingNameLabel.setText(currentName);
+			}
+		} else {
+			if(ownList != null) {
+				if (ownCurrentIndex < ownList.size() - 1) {
+					ownCurrentIndex++;
+					ownListView.scrollTo(ownCurrentIndex);
+					ownListView.getSelectionModel().select(ownCurrentIndex);
+				}
+			}
 		}
-		
 	}
 	
 	//This method takes the user to the previous name on the play queue.
 	@FXML
 	public void previousButtonClicked(ActionEvent event) {
-
-		if (currentIndex > 0) {
-		currentIndex--;
-		dataListView.scrollTo(currentIndex);
-		dataListView.getSelectionModel().select(currentIndex);
-		String currentName = dataListView.getSelectionModel().getSelectedItem();
-		recordingNameLabel.setText(currentName);
+		if (isOnDatabase) {
+			if (currentIndex > 0) {
+				currentIndex--;
+				dataListView.scrollTo(currentIndex);
+				dataListView.getSelectionModel().select(currentIndex);
+				String currentName = dataListView.getSelectionModel().getSelectedItem();
+				recordingNameLabel.setText(currentName);
+			}
+		} else {
+			if(ownList != null) {
+				if (ownCurrentIndex > 0) {
+					ownCurrentIndex--;
+					ownListView.scrollTo(ownCurrentIndex);
+					ownListView.getSelectionModel().select(ownCurrentIndex);
+				}
+			}
 		}
 	}
 	
@@ -171,19 +192,15 @@ public class WorkSpaceController implements Initializable{
 	public void backButtonClicked(ActionEvent event) throws Exception{
 		Parent root = FXMLLoader.load(getClass().getResource("workSpaceCreator.fxml"));
 		Scene recordingScene = new Scene(root);
-
 		Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
 		currentStage.setScene(recordingScene);
 		currentStage.show();
-		
 	}
 	
 	//This method takes the user to the rate screen.
 	@FXML
 	public void rateButtonClicked(ActionEvent event) throws Exception{
-		 
-		 currentName = dataListView.getSelectionModel().getSelectedItem();
-		 System.out.println(currentName);
+		 String currentName = dataListView.getSelectionModel().getSelectedItem();
 		 FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("rateScreen.fxml"));
          Parent createSceneParent = fxmlLoader.load();
          RateScreenController controller = fxmlLoader.getController();
@@ -193,42 +210,6 @@ public class WorkSpaceController implements Initializable{
          Stage createStage = new Stage();
          createStage.setScene(createScene);
          createStage.show();
-	}
-	
-	@FXML
-	public void creationPreviousButtonClicked() {
-		if(ownList != null) {
-			
-			if (ownCurrentIndex > 0) {
-				ownCurrentIndex--;
-				ownListView.scrollTo(ownCurrentIndex);
-				ownListView.getSelectionModel().select(ownCurrentIndex);
-				String currentName = ownListView.getSelectionModel().getSelectedItem();
-				}
-		}
-	}
-	
-	@FXML
-	public void creationNextButtonClicked() {
-		if(ownList != null) {
-			
-			if (ownCurrentIndex < ownList.size()-1) {
-				ownCurrentIndex++;
-				ownListView.scrollTo(ownCurrentIndex);
-				ownListView.getSelectionModel().select(ownCurrentIndex);
-				String currentName = ownListView.getSelectionModel().getSelectedItem();
-				}
-		}
-	}
-	
-	//This method handles when the user wants to play an own recording.
-	@FXML
-	public void creationPlayButtonClicked(ActionEvent event) {
-		String currentName = ownListView.getSelectionModel().getSelectedItem();
-		recordingNameLabel.setText(currentName);
-		String databaseName = dataListView.getSelectionModel().getSelectedItem();
-		DatabaseRecording databaseRecording = listOfRecordings.getRecording(databaseName);
-		databaseRecording.getUserRecording(currentName).play();
 	}
 	
 	//This method handles when the user wants to delete an own recording.
@@ -244,7 +225,7 @@ public class WorkSpaceController implements Initializable{
 			Optional<ButtonType> action = alert.showAndWait();
 			
 			if (action.get() == ButtonType.OK) {
-				File creationFile = new File("./DatabaseRecordings/"+currentName);
+				File creationFile = new File("PersonalRecordings/");
 				
 				for (final File fileEntry : creationFile.listFiles()) {
 		
@@ -255,7 +236,9 @@ public class WorkSpaceController implements Initializable{
 					
 					if (pathSegment.equals(ownCurrentName)) {
 						fileEntry.delete();
-						findOwnRecording(currentName);
+						listOfRecordings.getRecording(currentName).deleteAttempt(ownCurrentName);
+						refreshPersonalRecordings(currentName);
+						ownListView.getSelectionModel().select(0);
 					}
 				}
 			}
@@ -280,33 +263,25 @@ public class WorkSpaceController implements Initializable{
 			e.printStackTrace();
 		}
 	}
-	
-	//This method iterates through the own recordings folder and adds any recordings of
-	//the given name to the right listView.
-	public void findOwnRecording(String name) {
-		
-		File ownDir = new File("./DatabaseRecordings/"+name);
-		List<String> list = new ArrayList<String>();
-		if (ownDir.exists()) {
-		
-			for (final File fileEntry : ownDir.listFiles()) {
-				if (fileEntry.getName().contains(name)) {
-					String listName = fileEntry.getName();
-					String pathSegment = listName.substring(listName.lastIndexOf("_")+1,
-							listName.lastIndexOf("."));
-					list.add(pathSegment);
-				}
-			}
+
+	@FXML
+	private void toggleTab() {
+		if (isOnDatabase) {
+			tabPane.getSelectionModel().select(1);
+		} else {
+			tabPane.getSelectionModel().select(0);
 		}
-			ownList = FXCollections.observableArrayList(list);
-			ownListView.setItems(ownList);
-			
-			if (list.size()>0) {
-				ownCurrentIndex = 0;
-				ownListView.scrollTo(ownCurrentIndex);
-				ownListView.getSelectionModel().select(currentIndex);
-			}
-		
+	}
+
+	@FXML
+	private void returnToStart() {
+		try {
+			Stage stage = (Stage) returnButton.getScene().getWindow();
+			Parent createScene = FXMLLoader.load(getClass().getResource("starMenu.fxml"));
+			stage.setScene(new Scene(createScene, 700, 500));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void setWorkspaceRecordingsAndController(DatabaseList recordings, WorkSpaceController controller) {
@@ -320,6 +295,7 @@ public class WorkSpaceController implements Initializable{
 		recordingNameLabel.setText(currentName);
 
 		selfController = controller;
+		refreshPersonalRecordings(dataListView.getSelectionModel().getSelectedItem());
 	}
 	
 	public void setRating(String currentName) {

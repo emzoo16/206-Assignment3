@@ -13,13 +13,16 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import javafx.util.Duration;
+
+import javax.sound.sampled.*;
+import java.nio.file.Paths;
 import java.util.ResourceBundle;
 
 public class RecordController implements Initializable {
-    @FXML
-    TextField nameTextField;
     @FXML
     Label instructionLabel;
     @FXML
@@ -35,7 +38,7 @@ public class RecordController implements Initializable {
     @FXML
     Button returnButton;
     @FXML
-    Label nameLabel;
+    Button demoButton;
 
     Recording recording;
     DatabaseRecording databaseRecording;
@@ -81,17 +84,41 @@ public class RecordController implements Initializable {
 
     @FXML
     private void playRecording() {
-        recording.play();
+        try {
+            URL url = Paths.get("audio.wav").toUri().toURL();
+            AudioInputStream stream = AudioSystem.getAudioInputStream(url);
+            DataLine.Info info = new DataLine.Info(Clip.class, stream.getFormat());
+            Clip clip = (Clip) AudioSystem.getLine(info);
+            clip.open(stream);
+            clip.start();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (UnsupportedAudioFileException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (LineUnavailableException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void playDemo() {
+        databaseRecording.play();
     }
 
     @FXML
     private void keepRecording() {
-        parentController.ownList.add(recording.getShortName());
-        String selectedRecording = parentController.dataListView.getSelectionModel().getSelectedItem();
-        parentController.listOfRecordings.getRecording(selectedRecording).addAttempt(recording);
         File originalFile = new File("audio.wav");
         File newFile = new File("PersonalRecordings/" + recording.getShortName() + ".wav");
         originalFile.renameTo(newFile);
+
+        String databaseRecordingName = databaseRecording.getShortName();
+        int databaseRecordingAttempts = databaseRecording.getAttemptsNumber();
+        recording = new Recording(databaseRecordingName + "-" + (databaseRecordingAttempts + 1));
+        databaseRecording.addAttempt(recording);
+        parentController.refreshPersonalRecordings(databaseRecording.getShortName());
+
         Stage currentStage = (Stage) returnButton.getScene().getWindow();
         currentStage.close();
     }
@@ -110,6 +137,7 @@ public class RecordController implements Initializable {
         playButton.setVisible(false);
         redoButton.setVisible(false);
         keepButton.setVisible(false);
+        demoButton.setVisible(false);
         progressIndicator.setProgress(0);
     }
 
@@ -119,6 +147,7 @@ public class RecordController implements Initializable {
         playButton.setVisible(true);
         redoButton.setVisible(true);
         keepButton.setVisible(true);
+        demoButton.setVisible(true);
     }
 
     public void passInformation(DatabaseRecording databaseRecording, WorkSpaceController controller) {
