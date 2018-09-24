@@ -7,6 +7,13 @@ import java.net.URL;
 import java.nio.file.Paths;
 import java.util.ResourceBundle;
 
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.DataLine;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
+
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -24,8 +31,6 @@ import javafx.stage.Stage;
 
 import javafx.scene.control.*;
 import javafx.util.Duration;
-
-import javax.sound.sampled.*;
 
 public class testMicrophoneController implements Initializable{
 	
@@ -46,7 +51,7 @@ public class testMicrophoneController implements Initializable{
 	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		playButton.setVisible(false);
+		recordLayout();
 	}
 	
 	@FXML
@@ -61,60 +66,56 @@ public class testMicrophoneController implements Initializable{
 	}
 	@FXML
 	public void testButtonClicked() {
-		testButton.setVisible(true);
-		playButton.setVisible(false);
 		recordAudio();
-		testButton.setVisible(false);
-		playButton.setVisible(true);
-		
 	}
 	
 	@FXML
 	public void playButtonClicked() {
 		
 		playAudio();
-		testButton.setVisible(true);
-		playButton.setVisible(false);
+		recordLayout();
 		
 	}
 	
 	public void recordAudio(){
+		Task<Void> recordTask = new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                //Record Bash process
+                String recordCMD = "ffmpeg -y -f alsa -loglevel quiet -t 5 -i default audio.wav";
+                ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", recordCMD);
+                Process process = builder.start();
+                process.waitFor();
+                return null;
+            }
+            protected void succeeded() {
+                    playLayout();
+                }
+        };
 		
-		Task<Void> task = new Task<Void>() {
-		
-			@Override
-			protected Void call() throws Exception{
-				String command = "ffmpeg -y -f alsa -loglevel quiet -t 5 -i default test.wav";
-				ProcessBuilder builder = new ProcessBuilder("bash", "-c", command);
-				Process recordingProcess = builder.start();
-				recordingProcess.waitFor();
-				return null;
-			}
-		};
-	
-		Thread thread = new Thread(task);
+		Thread thread = new Thread(recordTask);
 		thread.setDaemon(true);
 		thread.start();
 		runProgressBar();
-		
+	
 	}
+	
 	public void playAudio() {
-		try {
-			URL url = Paths.get("test.wav").toUri().toURL();
-			AudioInputStream stream = AudioSystem.getAudioInputStream(url);
-			DataLine.Info info = new DataLine.Info(Clip.class, stream.getFormat());
-			Clip clip = (Clip) AudioSystem.getLine(info);
-			clip.open(stream);
-			clip.start();
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		} catch (UnsupportedAudioFileException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (LineUnavailableException e) {
-			e.printStackTrace();
-		}
+	   try { URL url = Paths.get("test.wav").toUri().toURL();
+         AudioInputStream stream = AudioSystem.getAudioInputStream(url);
+         DataLine.Info info = new DataLine.Info(Clip.class, stream.getFormat());
+         Clip clip = (Clip) AudioSystem.getLine(info);
+         clip.open(stream);
+         clip.start();
+     } catch (MalformedURLException e) {
+         e.printStackTrace();
+     } catch (UnsupportedAudioFileException e) {
+         e.printStackTrace();
+     } catch (IOException e) {
+         e.printStackTrace();
+     } catch (LineUnavailableException e) {
+         e.printStackTrace();
+     }
 	}
 	
 	public void runProgressBar() {
@@ -122,6 +123,14 @@ public class testMicrophoneController implements Initializable{
         KeyFrame keyFrameEnd = new KeyFrame(Duration.seconds(5), new KeyValue(progressBar.progressProperty(), 1));
         Timeline timeLine = new Timeline(keyFrameStart, keyFrameEnd);
         timeLine.play();
+	}
+	public void playLayout() {
+		testButton.setVisible(false);
+		playButton.setVisible(true);
+	}
+	public void recordLayout() {
+		testButton.setVisible(true);
+		playButton.setVisible(false);
 	}
 }
 
