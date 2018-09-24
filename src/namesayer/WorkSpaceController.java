@@ -301,8 +301,10 @@ public class WorkSpaceController implements Initializable{
 	public void setRating(String currentName) {
 		
 		double ratingNumber = getAverageRating(currentName);
-		if (ratingNumber >= 0) {
-			ratingLabel.setText(String.format("Average Rating: %.2f",ratingNumber));
+		if(ratingNumber> 2.5){
+			ratingLabel.setText(String.format("Average Rating: .2%f", ratingNumber));
+		}else if (ratingNumber >= 0) {
+			ratingLabel.setText(String.format("Average Rating: .2%f *Poor Quality*", ratingNumber));
 		}else {
 			ratingLabel.setText("Not Yet Rated");
 		}

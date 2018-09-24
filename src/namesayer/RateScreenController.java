@@ -35,7 +35,8 @@ public class RateScreenController implements Initializable  {
 	//The folder containing all the reviews.
 	public File sampleDir = new File("./Reviews");
 	String currentName;
-	
+	WorkSpaceController controller;
+
 	//FXML variables
 	@FXML
 	Label rateText;
@@ -122,6 +123,15 @@ public class RateScreenController implements Initializable  {
 	public void setCurrentName(String name) {
 		currentName = name;
 	}
-	
+
+	public void setWorkSpaceController(WorkSpaceController controller){
+		controller = controller;
+	}
+
+	public void refreshRating(){
+
+	}
+
+
 	
 }
