@@ -106,12 +106,10 @@ public class WorkSpaceController implements Initializable{
 			@Override
 			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
 				if (isOnDatabase) {
-					System.out.println("Switched to personal");
 					isOnDatabase = false;
 					deleteButton.setDisable(false);
 					ownListView.getSelectionModel().select(ownCurrentIndex);
 				} else {
-					System.out.println("Switched to database");
 					isOnDatabase = true;
 					deleteButton.setDisable(true);
 				}
@@ -145,7 +143,6 @@ public class WorkSpaceController implements Initializable{
 	@FXML
 	public void nextButtonClicked(ActionEvent event) {
 		if (isOnDatabase) {
-			System.out.println("Wrong place");
 			if (currentIndex < dataList.size() - 1) {
 
 				currentIndex++;
@@ -190,11 +187,16 @@ public class WorkSpaceController implements Initializable{
 	//This method takes the user back to the workspace creator scene.
 	@FXML
 	public void backButtonClicked(ActionEvent event) throws Exception{
-		Parent root = FXMLLoader.load(getClass().getResource("workSpaceCreator.fxml"));
-		Scene recordingScene = new Scene(root);
-		Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-		currentStage.setScene(recordingScene);
-		currentStage.show();
+		try {
+			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("workSpaceCreator.fxml"));
+			Parent createScene = fxmlLoader.load();
+			WorkSpaceCreatorController controller = fxmlLoader.getController();
+			controller.setWorkspaceRecordings(dataList);
+			Stage stage = (Stage) backButton.getScene().getWindow();
+			stage.setScene(new Scene(createScene, 700, 500));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	//This method takes the user to the rate screen.
@@ -217,6 +219,7 @@ public class WorkSpaceController implements Initializable{
 	public void creationDeleteButtonClicked(ActionEvent event) {
 		String ownCurrentName = ownListView.getSelectionModel().getSelectedItem();
 		String currentName = dataListView.getSelectionModel().getSelectedItem();
+		String ownCurrentFileName = listOfRecordings.getRecording(currentName).getUserRecording(ownCurrentName).getFileName();
 		if (ownCurrentName != null) {
 			Alert alert = new Alert(AlertType.CONFIRMATION);
 			alert.setTitle("Delete Confirmation");
@@ -230,11 +233,8 @@ public class WorkSpaceController implements Initializable{
 				for (final File fileEntry : creationFile.listFiles()) {
 		
 					String currentFile = fileEntry.getName();
-					System.out.println(currentFile);
-					String pathSegment = currentFile.substring(currentFile.lastIndexOf("_")+1,
-							currentFile.lastIndexOf("."));
-					
-					if (pathSegment.equals(ownCurrentName)) {
+
+					if (currentFile.equals(ownCurrentFileName)) {
 						fileEntry.delete();
 						listOfRecordings.getRecording(currentName).deleteAttempt(ownCurrentName);
 						refreshPersonalRecordings(currentName);
@@ -277,15 +277,15 @@ public class WorkSpaceController implements Initializable{
 	private void returnToStart() {
 		try {
 			Stage stage = (Stage) returnButton.getScene().getWindow();
-			Parent createScene = FXMLLoader.load(getClass().getResource("starMenu.fxml"));
+			Parent createScene = FXMLLoader.load(getClass().getResource("startMenu.fxml"));
 			stage.setScene(new Scene(createScene, 700, 500));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-	public void setWorkspaceRecordingsAndController(DatabaseList recordings, WorkSpaceController controller) {
-		dataList = recordings.getRecordingNames();
+	public void setWorkspaceRecordingsAndController(DatabaseList recordings, ObservableList<String> recordingNames, WorkSpaceController controller) {
+		dataList = recordingNames;
 		dataListView.setItems(dataList);
 		listOfRecordings = recordings;
 		

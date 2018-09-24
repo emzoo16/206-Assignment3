@@ -22,8 +22,10 @@ public class DatabaseRecording extends Recording {
             for (File file : ArrayOfFiles) {
                 //Validates the file
                 if (file.isFile() && file.getName().contains(shortName)) {
-                    String recordingName = (this.shortName + "-" + (userAttempts.size() + 1));
-                    userAttempts.put(recordingName, new Recording(recordingName));
+                    String recordingFileName = file.getName();
+                    String recordingNumber = recordingFileName.substring(recordingFileName.length() - 1);
+                    String recordingName = (this.shortName + "-" + recordingNumber);
+                    userAttempts.put(recordingName, new Recording(recordingFileName));
                 }
             }
         } else {
@@ -38,8 +40,21 @@ public class DatabaseRecording extends Recording {
         return personalRecordingsList;
     }
 
-    public int getAttemptsNumber() {
-        return userAttempts.size();
+    public int getUnusedAttemptsNumber() {
+        int[] usedNumbers = new int[userAttempts.size()];
+        int index = 0;
+        for (String attempt : userAttempts.keySet()) {
+            Recording recording = userAttempts.get(attempt);
+            usedNumbers[index] = recording.getNumber();
+        }
+        java.util.Arrays.sort(usedNumbers);
+        for (int i = 0; i < usedNumbers.length - 1; i++) {
+            if (usedNumbers[i] != i + 1) {
+                System.out.println("Reaches here");
+                return i + 1;
+            }
+        }
+        return usedNumbers.length + 1;
     }
 
     public Recording getUserRecording(String name) {
@@ -52,5 +67,9 @@ public class DatabaseRecording extends Recording {
 
     public void deleteAttempt(String attempt) {
         userAttempts.remove(attempt);
+    }
+
+    public String getFileName() {
+        return fileName;
     }
 }

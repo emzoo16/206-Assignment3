@@ -4,6 +4,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.collections.ObservableSet;
 import javafx.collections.SetChangeListener;
 import javafx.fxml.FXML;
@@ -18,6 +19,7 @@ import javafx.util.Callback;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Collections;
 import java.util.ResourceBundle;
 
 public class WorkSpaceCreatorController implements Initializable {
@@ -46,7 +48,6 @@ public class WorkSpaceCreatorController implements Initializable {
     @FXML
     private void addToWorkspace() {
         for (String recordingName : selectedDatabaseItems) {
-            Recording recording = databaseList.getRecording(recordingName);
             workspaceList.add(recordingName);
             databaseList.remove(recordingName);
         }
@@ -72,7 +73,13 @@ public class WorkSpaceCreatorController implements Initializable {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("workspace.fxml"));
             Parent createScene = fxmlLoader.load();
             WorkSpaceController controller = fxmlLoader.getController();
-            controller.setWorkspaceRecordingsAndController(workspaceList, controller);
+            if (randomiseBox.isSelected()) {
+                ObservableList<String> randomisedList = workspaceList.getRecordingNames();
+                Collections.shuffle(randomisedList);
+                controller.setWorkspaceRecordingsAndController(workspaceList, randomisedList, controller);
+            } else {
+                controller.setWorkspaceRecordingsAndController(workspaceList, workspaceList.getRecordingNames(), controller);
+            }
             Stage stage = (Stage) continueButton.getScene().getWindow();
             stage.setScene(new Scene(createScene, 700, 500));
         } catch (IOException e) {
@@ -92,6 +99,16 @@ public class WorkSpaceCreatorController implements Initializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void setWorkspaceRecordings(ObservableList<String> keptRecordings) {
+        for (String recordingName : keptRecordings) {
+            workspaceList.add(recordingName);
+            databaseList.remove(recordingName);
+        }
+        selectedDatabaseItems.clear();
+        databaseRecordingsView.setItems(databaseList.getRecordingNames());
+        workspaceRecordingsView.setItems(workspaceList.getRecordingNames());
     }
 
     @Override

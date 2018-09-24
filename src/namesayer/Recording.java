@@ -18,13 +18,15 @@ public class Recording {
     public Recording() {}
 
     public Recording(String name) {
-        shortName = name;
-        fileName = name + ".wav";
+        String subString = name.substring(name.lastIndexOf("_") + 1);
+        shortName = subString.replaceAll(".wav", "");
+        fileName = name;
         path = "PersonalRecordings/";
     }
 
     public void play() {
         try {
+            System.out.println(path + fileName);
             URL url = Paths.get(path + fileName).toUri().toURL();
             AudioInputStream stream = AudioSystem.getAudioInputStream(url);
             DataLine.Info info = new DataLine.Info(Clip.class, stream.getFormat());
@@ -44,5 +46,12 @@ public class Recording {
 
     public String getShortName() {
         return shortName;
+    }
+
+    public String getFileName() { return fileName; }
+
+    public int getNumber() {
+        String digitString = fileName.substring((fileName.lastIndexOf("-") + 1) + 1);
+        return Integer.parseInt(digitString);
     }
 }

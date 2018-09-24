@@ -51,9 +51,6 @@ public class RecordController implements Initializable {
 
     @FXML
     private void record() {
-        String databaseRecordingName = databaseRecording.getShortName();
-        int databaseRecordingAttempts = databaseRecording.getAttemptsNumber();
-        recording = new Recording(databaseRecordingName + "-" + (databaseRecordingAttempts + 1));
         recordButton.setDisable(true);
         Task<Void> recordTask = new Task<Void>() {
             @Override
@@ -109,14 +106,13 @@ public class RecordController implements Initializable {
 
     @FXML
     private void keepRecording() {
-        File originalFile = new File("audio.wav");
-        File newFile = new File("PersonalRecordings/" + recording.getShortName() + ".wav");
-        originalFile.renameTo(newFile);
-
-        String databaseRecordingName = databaseRecording.getShortName();
-        int databaseRecordingAttempts = databaseRecording.getAttemptsNumber();
-        recording = new Recording(databaseRecordingName + "-" + (databaseRecordingAttempts + 1));
+        String databaseRecordingName = databaseRecording.getFileName();
+        int recordingNumber = databaseRecording.getUnusedAttemptsNumber();
+        recording = new Recording(databaseRecordingName + "-" + (recordingNumber));
         databaseRecording.addAttempt(recording);
+        File originalFile = new File("audio.wav");
+        File newFile = new File("PersonalRecordings/" + recording.getFileName());
+        originalFile.renameTo(newFile);
         parentController.refreshPersonalRecordings(databaseRecording.getShortName());
 
         Stage currentStage = (Stage) returnButton.getScene().getWindow();
