@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+
+<AnchorPane prefHeight="250.0" prefWidth="350.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/10.0.1" fx:controller="namesayer.RateScreenController">
+   <children>
+      <VBox alignment="CENTER" layoutX="24.0" layoutY="-29.0" prefHeight="250.0" prefWidth="350.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <Label text="Rate This Recording">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Label>
+            <HBox alignment="CENTER" prefHeight="55.0" prefWidth="350.0" spacing="10.0">
+               <children>
+                  <CheckBox fx:id="check1" mnemonicParsing="false" onAction="#check1Clicked" />
+                  <CheckBox fx:id="check2" mnemonicParsing="false" onAction="#check2Clicked" />
+                  <CheckBox fx:id="check3" mnemonicParsing="false" onAction="#check3Clicked" />
+                  <CheckBox fx:id="check4" mnemonicParsing="false" onAction="#check4Clicked" />
+                  <CheckBox fx:id="check5" mnemonicParsing="false" onAction="#check5Clicked" />
+               </children>
+            </HBox>
+            <Button fx:id="confirmButton" mnemonicParsing="false" onAction="#confirmButtonClicked" text="Confirm" />
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>
