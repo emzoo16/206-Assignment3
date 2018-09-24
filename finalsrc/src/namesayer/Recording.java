@@ -1,5 +1,6 @@
 package namesayer;
 
+import javafx.concurrent.Task;
 import javafx.scene.media.MediaPlayer;
 
 import javax.sound.sampled.*;
@@ -34,11 +35,11 @@ public class Recording {
             clip.start();
         } catch (MalformedURLException e) {
             e.printStackTrace();
-        } catch (UnsupportedAudioFileException e) {
+        } catch (LineUnavailableException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
-        } catch (LineUnavailableException e) {
+        } catch (UnsupportedAudioFileException e) {
             e.printStackTrace();
         }
     }

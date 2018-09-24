@@ -21,7 +21,7 @@ public class DatabaseRecording extends Recording {
         if (ArrayOfFiles != null) {
             for (File file : ArrayOfFiles) {
                 //Validates the file
-                if (file.isFile() && file.getName().contains(shortName)) {
+                if (file.isFile() && (file.getName() + "-").contains(shortName + "-")) {
                     String recordingFileName = file.getName();
                     Character digit = recordingFileName.charAt(recordingFileName.lastIndexOf("-") + 1);
                     String recordingNumber = digit.toString();

@@ -109,7 +109,12 @@ public class RecordController implements Initializable {
         String databaseRecordingName = databaseRecording.getFileName();
         int recordingNumber = databaseRecording.getUnusedAttemptsNumber();
         String recordingFileName = databaseRecordingName.substring(0, databaseRecordingName.lastIndexOf("."));
-        recording = new Recording(recordingFileName + "-" + (recordingNumber) + ".wav");
+        String version = "";
+        String shortName = databaseRecording.getShortName();
+        if (shortName.contains("(")) {
+            version = shortName.substring(shortName.indexOf("("), shortName.lastIndexOf(")") + 1);
+        }
+        recording = new Recording(recordingFileName + version + "-" + (recordingNumber) + ".wav");
         databaseRecording.addAttempt(recording);
         File originalFile = new File("audio.wav");
         File newFile = new File("PersonalRecordings/" + recording.getFileName());

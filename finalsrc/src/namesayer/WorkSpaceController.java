@@ -111,6 +111,7 @@ public class WorkSpaceController implements Initializable {
 				}
 			}
 		});
+		deleteButton.setDisable(true);
 	}
 
 	public void refreshPersonalRecordings(String recordingName) {
