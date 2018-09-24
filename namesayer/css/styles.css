@@ -1,0 +1,9 @@
+.root {
+    -fx-background: "lightblue";
+}
+
+.button {
+    -fx-background-color: "darkgrey";
+    -fx-background-radius: 20;
+    -fx-background-insets: (0, 1, 1)
+}
