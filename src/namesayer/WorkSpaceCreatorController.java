@@ -20,11 +20,10 @@ import javafx.util.Callback;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class WorkSpaceCreatorController implements Initializable {
-    @FXML
-    TextField textField;
     @FXML
     ListView<String> databaseRecordingsView;
     @FXML
@@ -69,21 +68,30 @@ public class WorkSpaceCreatorController implements Initializable {
 
     @FXML
     private void continueToPractice() {
-        try {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("workspace.fxml"));
-            Parent createScene = fxmlLoader.load();
-            WorkSpaceController controller = fxmlLoader.getController();
-            if (randomiseBox.isSelected()) {
-                ObservableList<String> randomisedList = workspaceList.getRecordingNames();
-                Collections.shuffle(randomisedList);
-                controller.setWorkspaceRecordingsAndController(workspaceList, randomisedList, controller);
-            } else {
-                controller.setWorkspaceRecordingsAndController(workspaceList, workspaceList.getRecordingNames(), controller);
+        if (!workspaceList.getRecordingNames().isEmpty()) {
+            try {
+                FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("workspace.fxml"));
+                Parent createScene = fxmlLoader.load();
+                WorkSpaceController controller = fxmlLoader.getController();
+                if (randomiseBox.isSelected()) {
+                    ObservableList<String> randomisedList = workspaceList.getRecordingNames();
+                    Collections.shuffle(randomisedList);
+                    controller.setWorkspaceRecordingsAndController(workspaceList, randomisedList, controller);
+                } else {
+                    controller.setWorkspaceRecordingsAndController(workspaceList, workspaceList.getRecordingNames(), controller);
+                }
+                Stage stage = (Stage) continueButton.getScene().getWindow();
+                stage.setScene(new Scene(createScene, 700, 500));
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-            Stage stage = (Stage) continueButton.getScene().getWindow();
-            stage.setScene(new Scene(createScene, 700, 500));
-        } catch (IOException e) {
-            e.printStackTrace();
+        } else {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Invalid WorkSpace");
+            alert.setHeaderText(null);
+            alert.setContentText("Please select atleast one recording to add to the workspace");
+
+            alert.showAndWait();
         }
     }
 

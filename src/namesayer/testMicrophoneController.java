@@ -33,96 +33,96 @@ import javafx.scene.control.*;
 import javafx.util.Duration;
 
 public class testMicrophoneController implements Initializable{
-	
+
 	@FXML
 	Button backButton;
-	
+
 	@FXML
 	Button testButton;
-	
+
 	@FXML
 	Button playButton;
-	
+
 	@FXML
 	Label testLabel;
-	
+
 	@FXML
 	ProgressBar progressBar;
-	
+
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		recordLayout();
 	}
-	
+
 	@FXML
 	public void backButtonClicked() {
 		try {
-            Stage stage = (Stage) backButton.getScene().getWindow();
-            Parent createScene = FXMLLoader.load(getClass().getResource("startMenu.fxml"));
-            stage.setScene(new Scene(createScene, 700, 500));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+			Stage stage = (Stage) backButton.getScene().getWindow();
+			Parent createScene = FXMLLoader.load(getClass().getResource("startMenu.fxml"));
+			stage.setScene(new Scene(createScene, 700, 500));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	@FXML
 	public void testButtonClicked() {
 		recordAudio();
 	}
-	
+
 	@FXML
 	public void playButtonClicked() {
-		
+
 		playAudio();
 		recordLayout();
-		
+
 	}
-	
+
 	public void recordAudio(){
 		Task<Void> recordTask = new Task<Void>() {
-            @Override
-            protected Void call() throws Exception {
-                //Record Bash process
-                String recordCMD = "ffmpeg -y -f alsa -loglevel quiet -t 5 -i default audio.wav";
-                ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", recordCMD);
-                Process process = builder.start();
-                process.waitFor();
-                return null;
-            }
-            protected void succeeded() {
-                    playLayout();
-                }
-        };
-		
+			@Override
+			protected Void call() throws Exception {
+				//Record Bash process
+				String recordCMD = "ffmpeg -y -f alsa -loglevel quiet -t 5 -i default audio.wav";
+				ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", recordCMD);
+				Process process = builder.start();
+				process.waitFor();
+				return null;
+			}
+			protected void succeeded() {
+				playLayout();
+			}
+		};
+
 		Thread thread = new Thread(recordTask);
 		thread.setDaemon(true);
 		thread.start();
 		runProgressBar();
-	
+
 	}
-	
+
 	public void playAudio() {
-	   try { URL url = Paths.get("test.wav").toUri().toURL();
-         AudioInputStream stream = AudioSystem.getAudioInputStream(url);
-         DataLine.Info info = new DataLine.Info(Clip.class, stream.getFormat());
-         Clip clip = (Clip) AudioSystem.getLine(info);
-         clip.open(stream);
-         clip.start();
-     } catch (MalformedURLException e) {
-         e.printStackTrace();
-     } catch (UnsupportedAudioFileException e) {
-         e.printStackTrace();
-     } catch (IOException e) {
-         e.printStackTrace();
-     } catch (LineUnavailableException e) {
-         e.printStackTrace();
-     }
+		try { URL url = Paths.get("test.wav").toUri().toURL();
+			AudioInputStream stream = AudioSystem.getAudioInputStream(url);
+			DataLine.Info info = new DataLine.Info(Clip.class, stream.getFormat());
+			Clip clip = (Clip) AudioSystem.getLine(info);
+			clip.open(stream);
+			clip.start();
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (UnsupportedAudioFileException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (LineUnavailableException e) {
+			e.printStackTrace();
+		}
 	}
-	
+
 	public void runProgressBar() {
 		KeyFrame keyFrameStart = new KeyFrame(Duration.ZERO, new KeyValue(progressBar.progressProperty(), 0));
-        KeyFrame keyFrameEnd = new KeyFrame(Duration.seconds(5), new KeyValue(progressBar.progressProperty(), 1));
-        Timeline timeLine = new Timeline(keyFrameStart, keyFrameEnd);
-        timeLine.play();
+		KeyFrame keyFrameEnd = new KeyFrame(Duration.seconds(5), new KeyValue(progressBar.progressProperty(), 1));
+		Timeline timeLine = new Timeline(keyFrameStart, keyFrameEnd);
+		timeLine.play();
 	}
 	public void playLayout() {
 		testButton.setVisible(false);
@@ -133,5 +133,4 @@ public class testMicrophoneController implements Initializable{
 		playButton.setVisible(false);
 	}
 }
-
 

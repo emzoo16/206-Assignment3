@@ -10,11 +10,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URL;
+import java.nio.Buffer;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -33,7 +31,6 @@ public class RateScreenController implements Initializable  {
 	int rating = 0;
 	
 	//The folder containing all the reviews.
-	public File sampleDir = new File("./Reviews");
 	String currentName;
 	WorkSpaceController controller;
 
@@ -51,30 +48,48 @@ public class RateScreenController implements Initializable  {
 	public void initialize(URL location, ResourceBundle resources) {
 		File file = new File("Review");
 		file.mkdirs();
+
 	}
 	
 	//This method writes the users comment to a file.
 	@FXML
 	public void confirmButtonClicked(ActionEvent event){
-		
-		//Writes to a file (hardcoded as name.txt here so will need to change for the actual
-		//name variable). Creates a new file if none is found, else appends to the current file.
-		try(FileWriter fileWriter = new FileWriter("./Review/" + currentName + ".txt", true);
-			    BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-			    PrintWriter out = new PrintWriter(bufferedWriter))
-			{
-				
-				String ratingString = rating + "";
-				out.println(ratingString);
-			    
-			    //Close the rate window after confirmation.
-			    Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-			    currentStage.close();
-			    
-			    
-			} catch (IOException e) {
-			    //Do something here. Not sure what?
+
+		File file = new File("./Review/" + currentName + ".txt");
+
+		if (!file.exists()) {
+			try {
+				PrintWriter writer = new PrintWriter(file);
+				writer.println(rating);
+				writer.println(1);
+				writer.close();
+				controller.updateRating(rating, currentName);
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
 			}
+		} else {
+			int[] ratingArray = new int[2];
+			Scanner scanner = null;
+			int count = 0;
+			try {
+				scanner = new Scanner(file);
+				while (scanner.hasNextLine()) {
+					ratingArray[count] = Integer.parseInt(scanner.nextLine());
+					count++;
+				}
+				int ratingSum = ratingArray[0] + rating;
+				double averageRating = (double) ratingSum / (ratingArray[1] + 1);
+				controller.updateRating(averageRating, currentName);
+				PrintWriter writer = new PrintWriter(file);
+				writer.println(ratingSum);
+				writer.println(ratingArray[1] + 1);
+				writer.close();
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
+		}
+		Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+		currentStage.close();
 	}
 	
 	@FXML 
@@ -124,14 +139,12 @@ public class RateScreenController implements Initializable  {
 		currentName = name;
 	}
 
-	public void setWorkSpaceController(WorkSpaceController controller){
-		controller = controller;
+	public void setWorkSpaceController(WorkSpaceController workSpaceController){
+		controller = workSpaceController;
 	}
 
 	public void refreshRating(){
-
+		controller.setRating(currentName);
 	}
 
-
-	
 }
