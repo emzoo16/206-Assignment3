@@ -11,6 +11,9 @@ public class DatabaseList {
     private HashMap<String, DatabaseRecording> dataBaseRecordings;
     private HashMap<String, DatabaseRecording> recordingsMap;
 
+    /*
+     * This class represents the list of database recordings.
+     */
     public DatabaseList() {
         dataBaseRecordings = new HashMap<>();
         recordingsMap = new HashMap<>();
@@ -40,10 +43,12 @@ public class DatabaseList {
         }
     }
 
+ 
     public void add(String name) {
         recordingsMap.put(name, dataBaseRecordings.get(name));
     }
 
+   
     public DatabaseRecording getRecording(String name) {
         return dataBaseRecordings.get(name);
     }
@@ -59,7 +64,6 @@ public class DatabaseList {
             recordingsMap.remove(name);
         }
     }
-
     public void displayAll() {
         recordingsMap = new HashMap<>(dataBaseRecordings);
     }

@@ -44,6 +44,10 @@ public class WorkSpaceCreatorController implements Initializable {
     ObservableSet<String> selectedDatabaseItems;
     ObservableSet<String> selectedWorkspaceItems;
 
+    /*
+     * This methods the selected names from the database to the playQueue list. It then removes
+     *  the selected items from the database list. 
+     */
     @FXML
     private void addToWorkspace() {
         for (String recordingName : selectedDatabaseItems) {
@@ -54,7 +58,10 @@ public class WorkSpaceCreatorController implements Initializable {
         databaseRecordingsView.setItems(databaseList.getRecordingNames());
         workspaceRecordingsView.setItems(workspaceList.getRecordingNames());
     }
-
+    
+    /*
+     * This methods removes selected names from the playQueue list.
+     */
     @FXML
     private void removeFromWorkspace() {
         for (String recordingName : selectedWorkspaceItems) {
@@ -66,6 +73,9 @@ public class WorkSpaceCreatorController implements Initializable {
         databaseRecordingsView.setItems(databaseList.getRecordingNames());
     }
 
+    /*
+     * This method takes the user to the workspace scene.
+     */
     @FXML
     private void continueToPractice() {
         if (!workspaceList.getRecordingNames().isEmpty()) {
@@ -109,6 +119,7 @@ public class WorkSpaceCreatorController implements Initializable {
         }
     }
 
+    
     public void setWorkspaceRecordings(ObservableList<String> keptRecordings) {
         for (String recordingName : keptRecordings) {
             workspaceList.add(recordingName);

@@ -12,6 +12,10 @@ import java.util.Objects;
 public class DatabaseRecording extends Recording {
     private HashMap<String, Recording> userAttempts;
 
+    /*
+     * This class represents a single database recording and its corresponding personal
+     * recordings.
+     */
     public DatabaseRecording(String fullyQualifiedName, String shortName) {
         userAttempts = new HashMap<>();
         fileName = fullyQualifiedName;
@@ -21,9 +25,10 @@ public class DatabaseRecording extends Recording {
         if (ArrayOfFiles != null) {
             for (File file : ArrayOfFiles) {
                 //Validates the file
-                if (file.isFile() && file.getName().contains(shortName)) {
+                if (file.isFile() && (file.getName() + "-").contains(shortName + "-")) {
                     String recordingFileName = file.getName();
-                    String recordingNumber = recordingFileName.substring(recordingFileName.length() - 1);
+                    Character digit = recordingFileName.charAt(recordingFileName.lastIndexOf("-") + 1);
+                    String recordingNumber = digit.toString();
                     String recordingName = (this.shortName + "-" + recordingNumber);
                     userAttempts.put(recordingName, new Recording(recordingFileName));
                 }
@@ -34,23 +39,29 @@ public class DatabaseRecording extends Recording {
         path = "Database/";
     }
 
+    /*
+     * Returns all personal recordings for the given name.
+     */
     public ObservableList<String> getUserAttempts() {
         ObservableList<String> personalRecordingsList = FXCollections.observableArrayList(userAttempts.keySet());
         Collections.sort(personalRecordingsList);
         return personalRecordingsList;
     }
 
+    /*
+     * Returns an unused number to be used in naming the personal recording.
+     */
     public int getUnusedAttemptsNumber() {
         int[] usedNumbers = new int[userAttempts.size()];
         int index = 0;
         for (String attempt : userAttempts.keySet()) {
             Recording recording = userAttempts.get(attempt);
             usedNumbers[index] = recording.getNumber();
+            index++;
         }
         java.util.Arrays.sort(usedNumbers);
-        for (int i = 0; i < usedNumbers.length - 1; i++) {
+        for (int i = 0; i < usedNumbers.length; i++) {
             if (usedNumbers[i] != i + 1) {
-                System.out.println("Reaches here");
                 return i + 1;
             }
         }

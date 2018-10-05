@@ -2,11 +2,21 @@ package namesayer;
 
 
 import java.io.*;
+
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.FloatControl;
+import javax.sound.sampled.Line;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.Mixer;
+
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -22,6 +32,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+
 import javafx.stage.Stage;
 
 public class WorkSpaceController implements Initializable {
@@ -33,8 +44,12 @@ public class WorkSpaceController implements Initializable {
 	//Current index in the listView 
 	int currentIndex = 0;
 	int ownCurrentIndex = 0;
-
+	double volume;
 	//FXML variables
+	@FXML
+	ProgressBar progressBar;
+	@FXML
+	Slider volumeSlider;
 	@FXML
 	Label playingLabel;
 	@FXML
@@ -73,21 +88,25 @@ public class WorkSpaceController implements Initializable {
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-
+		
 		//Listener to get the current name the user is clicking on.
 		dataListView.getSelectionModel().selectedItemProperty().addListener(
 				new ChangeListener<String>() {
 					@Override
 					public void changed(ObservableValue<? extends String> observable, String oldValue,
 										String newValue) {
+						//Sets the recording label to the current selected recording.
 						recordingNameLabel.setText(newValue);
+						//Resets the progressBar.
+						progressBar.setProgress(0.0);
 						currentIndex = dataListView.getSelectionModel().getSelectedIndex();
 						setRating(newValue);
 						refreshPersonalRecordings(newValue);
 						ownCurrentIndex = 0;
 					}
 				});
-
+		
+		//Listener to get the current selected element in the personal recordings list.
 		ownListView.getSelectionModel().selectedItemProperty().addListener(
 				new ChangeListener<String>() {
 					@Override
@@ -96,6 +115,8 @@ public class WorkSpaceController implements Initializable {
 						ownCurrentIndex = ownListView.getSelectionModel().getSelectedIndex();
 					}
 				});
+		
+		//Listener to see which tab the user is currently on.
 		tabPane.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
 			@Override
 			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
@@ -111,8 +132,26 @@ public class WorkSpaceController implements Initializable {
 				}
 			}
 		});
+		
+		//Listener to observe changes in the volume slider. The volume field is set according to the value of the 
+		//of the slider.
+		volumeSlider.valueProperty().addListener(new InvalidationListener() {
+
+			@Override
+			public void invalidated(Observable observable) {
+				volume = volumeSlider.getValue();
+			}
+			
+		});
+		
+		//Delete button is initially disabled prior to users selecting a recording.
+		deleteButton.setDisable(true);
 	}
 
+	/*
+	 * This method updates the list view with the list of personal recordings for a given recording
+	 * object.
+	 */
 	public void refreshPersonalRecordings(String recordingName) {
 		DatabaseRecording currentDatabaseRecording = listOfRecordings.getRecording(recordingName);
 		ownList = currentDatabaseRecording.getUserAttempts();
@@ -125,12 +164,12 @@ public class WorkSpaceController implements Initializable {
 		if (isOnDatabase) {
 			String currentRecordingName = dataListView.getSelectionModel().getSelectedItem();
 			Recording currentRecording = listOfRecordings.getRecording(currentRecordingName);
-			currentRecording.play();
+			currentRecording.play(volume, progressBar);
 		} else {
 			String currentName = ownListView.getSelectionModel().getSelectedItem();
 			String databaseName = dataListView.getSelectionModel().getSelectedItem();
 			DatabaseRecording databaseRecording = listOfRecordings.getRecording(databaseName);
-			databaseRecording.getUserRecording(currentName).play();
+			databaseRecording.getUserRecording(currentName).play(volume, progressBar);
 		}
 
 	}
@@ -205,7 +244,6 @@ public class WorkSpaceController implements Initializable {
 		controller.setCurrentName(currentName);
 		controller.setWorkSpaceController(this);
 		Scene createScene = new Scene(createSceneParent);
-
 		Stage createStage = new Stage();
 		createStage.setScene(createScene);
 		createStage.show();
@@ -251,7 +289,7 @@ public class WorkSpaceController implements Initializable {
 			Parent createSceneParent = fxmlLoader.load();
 			RecordController controller = fxmlLoader.getController();
 			DatabaseRecording currentDatabaseRecording = listOfRecordings.getRecording(dataListView.getSelectionModel().getSelectedItem());
-			controller.passInformation(currentDatabaseRecording, selfController);
+			controller.passInformation(currentDatabaseRecording, selfController);			
 			Scene createScene = new Scene(createSceneParent);
 			Stage createStage = new Stage();
 			createStage.setScene(createScene);
@@ -270,6 +308,9 @@ public class WorkSpaceController implements Initializable {
 		}
 	}
 
+	/*
+	 * This method takes the user back to the menu scene.
+	 */
 	@FXML
 	private void returnToStart() {
 		try {
@@ -295,6 +336,9 @@ public class WorkSpaceController implements Initializable {
 		refreshPersonalRecordings(dataListView.getSelectionModel().getSelectedItem());
 	}
 
+	/*
+	 * This method writes the rating for a recording to a file.
+	 */
 	public void setRating(String currentName) {
 		File file = new File("./Review/" + currentName + ".txt");
 		if (file.exists()) {
@@ -318,6 +362,9 @@ public class WorkSpaceController implements Initializable {
 		}
 	}
 
+	/*
+	 * This method updates the rating shown on the UI.
+	 */
 	public void updateRating(double rating, String name) {
 		if (rating > 2.5) {
 			ratingLabel.setText(String.format("Average Rating: %.2f", rating));
@@ -337,35 +384,47 @@ public class WorkSpaceController implements Initializable {
 		}
 	}
 
+	/*
+	 * This method removes the name of a recording from the 'bad recording' list once it's
+	 * rating exceeds 2.5.
+	 */
 	public void removeFromBadFile(String name) {
 		File tmpFile = new File("./Review/temp.txt");
 		File file = new File("./Review/BadRecordings.txt");
 		try {
-			PrintWriter writer = new PrintWriter(tmpFile);
-			Scanner scanner = new Scanner(file);
-			while (scanner.hasNextLine()) {
-				writer.println(scanner.nextLine());
+
+			BufferedReader reader = new BufferedReader(new FileReader(file));
+			BufferedWriter writer = new BufferedWriter(new FileWriter(tmpFile));
+
+			String lineToRemove = name;
+			String currentLine;
+
+			while((currentLine = reader.readLine()) != null) {
+				String trimmedLine = currentLine.trim();
+				if(trimmedLine.equals(lineToRemove)) continue;
+				writer.write(currentLine + System.getProperty("line.separator"));
 			}
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-		try {
-			Files.delete(Paths.get(file.getPath()));
-			Files.move(Paths.get(tmpFile.getPath()), Paths.get(file.getPath()));
+			writer.close();
+			reader.close();
+			boolean successful = tmpFile.renameTo(file);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
+	/*
+	 * This method adds the name of the recording to the bad recording list once its rating falls
+	 * below 2.5
+	 */
 	public void addToBadFile(String name) {
 		File file = new File("./Review/BadRecordings.txt");
 		if (file.exists()) {
-
 			try {
-				FileWriter writer = new FileWriter(file, true);
-				BufferedWriter out = new BufferedWriter(writer);
-				out.write(name);
-				out.newLine();
+				Writer output;
+				output = new BufferedWriter(new FileWriter(file, true));
+				output.append(name);
+				((BufferedWriter) output).newLine();
+				output.close();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -380,6 +439,9 @@ public class WorkSpaceController implements Initializable {
 		}
 	}
 
+	/*
+	 * This method checks if the recording is of bad quality.
+	 */
 	public Boolean isBadRecording(String name) {
 		File file = new File("./Review/BadRecordings.txt");
 		if (file.exists()) {
@@ -398,5 +460,11 @@ public class WorkSpaceController implements Initializable {
 		}
 		return false;
 	}
+	
+	public double getVolume() {
+		return volume;
+	}
+	
+	
 
 }

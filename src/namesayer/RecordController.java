@@ -1,6 +1,7 @@
 package namesayer;
 
 import javafx.animation.KeyFrame;
+
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.concurrent.Task;
@@ -23,6 +24,12 @@ import java.nio.file.Paths;
 import java.util.ResourceBundle;
 
 public class RecordController implements Initializable {
+	
+	Double volume;
+	
+	Boolean running;
+	@FXML
+	Button stop;
     @FXML
     Label instructionLabel;
     @FXML
@@ -51,25 +58,72 @@ public class RecordController implements Initializable {
 
     @FXML
     private void record() {
-        recordButton.setDisable(true);
-        Task<Void> recordTask = new Task<Void>() {
-            @Override
-            protected Void call() throws Exception {
-                //Record Bash process
-                String recordCMD = "ffmpeg -y -f alsa -loglevel quiet -t 5 -i default audio.wav";
-                ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", recordCMD);
-                Process process = builder.start();
-                process.waitFor();
-                return null;
-            }
-            protected void succeeded() {
-                    setComponentsForProcessingRecording();
-                }
-        };
-        Thread thread = new Thread(recordTask);
-        thread.setDaemon(true);
-        startIndicator();
-        thread.start();
+    	recordButton.setDisable(true);
+    	running = true;
+    	AudioFormat format =  new AudioFormat(8000, 8, 1, true, true);
+ 		
+        try {
+        	DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
+			TargetDataLine line = (TargetDataLine) AudioSystem.getLine(info);
+			line.open(format);
+			
+			Task<Void> task = new Task<Void>() {
+
+				@Override
+				protected Void call() throws Exception {
+					AudioInputStream inputStream = new AudioInputStream(line);
+					
+					File audioFile = new File("./audio.wav");
+					
+					line.start();
+					
+					while(running) {
+						
+						
+						AudioSystem.write(inputStream,AudioFileFormat.Type.WAVE, audioFile);
+						
+					}
+					return null;
+				}
+		
+			};
+			Thread thread = new Thread(task);
+			thread.setDaemon(true);
+			thread.start();
+			
+			
+		} catch (LineUnavailableException e) {
+			e.printStackTrace();
+		}
+    	
+   
+    	
+//        recordButton.setDisable(true);
+//        Task<Void> recordTask = new Task<Void>() {
+//            @Override
+//            protected Void call() throws Exception {
+//          	
+////Record Bash process
+//String recordCMD = "ffmpeg -y -f alsa -loglevel quiet -t 5 -i default audio.wav";
+//ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", recordCMD);
+//Process process = builder.start();
+// process.waitFor();
+//              return null;
+//            }
+//            protected void succeeded() {
+//                    setComponentsForProcessingRecording();
+//                }
+//        };
+//        Thread thread = new Thread(recordTask);
+//        thread.setDaemon(true);
+//        startIndicator();
+//        thread.start();
+    }
+    
+    @FXML
+    public void stopButtonClicked() {
+    	setComponentsForProcessingRecording();
+    	running = false;
     }
 
     private void startIndicator() {
@@ -99,26 +153,41 @@ public class RecordController implements Initializable {
         }
     }
 
+    /*
+     * Plays the database recording of the current name.
+     */
     @FXML
     private void playDemo() {
-        databaseRecording.play();
+        //databaseRecording.play(volume);
     }
 
+    /*
+     * Method is called when the user chooses to keep their recording. The new recording is saved
+     * and added to the personal recording listView.
+     */
     @FXML
     private void keepRecording() {
         String databaseRecordingName = databaseRecording.getFileName();
         int recordingNumber = databaseRecording.getUnusedAttemptsNumber();
-        recording = new Recording(databaseRecordingName + "-" + (recordingNumber));
+        String recordingFileName = databaseRecordingName.substring(0, databaseRecordingName.lastIndexOf("."));
+        String version = "";
+        String shortName = databaseRecording.getShortName();
+        if (shortName.contains("(")) {
+            version = shortName.substring(shortName.indexOf("("), shortName.lastIndexOf(")") + 1);
+        }
+        recording = new Recording(recordingFileName + version + "-" + (recordingNumber) + ".wav");
         databaseRecording.addAttempt(recording);
         File originalFile = new File("audio.wav");
         File newFile = new File("PersonalRecordings/" + recording.getFileName());
         originalFile.renameTo(newFile);
         parentController.refreshPersonalRecordings(databaseRecording.getShortName());
-
         Stage currentStage = (Stage) returnButton.getScene().getWindow();
         currentStage.close();
     }
 
+    /*
+     * Takes the user back to the workspace.
+     */
     @FXML
     private void returnToWorkspace() {
         //Close the recording window
@@ -126,6 +195,9 @@ public class RecordController implements Initializable {
         currentStage.close();
     }
 
+    /*
+     * Sets the UI layout for recording.
+     */
     private void setComponentsForRecording() {
         instructionLabel.setText("Press to begin recording for five seconds");
         recordButton.setVisible(true);
@@ -137,6 +209,9 @@ public class RecordController implements Initializable {
         progressIndicator.setProgress(0);
     }
 
+    /*
+     * Sets the UI for asking user if they want ot keep their recording.
+     */
     private void setComponentsForProcessingRecording() {
         instructionLabel.setText("What do you want to do with this recording");
         recordButton.setVisible(false);
@@ -146,11 +221,14 @@ public class RecordController implements Initializable {
         demoButton.setVisible(true);
     }
 
+    /*
+     * Passes information between recordController and WorkSpaceController
+     */
     public void passInformation(DatabaseRecording databaseRecording, WorkSpaceController controller) {
         this.databaseRecording = databaseRecording;
         parentController = controller;
     }
-
+ 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         setComponentsForRecording();

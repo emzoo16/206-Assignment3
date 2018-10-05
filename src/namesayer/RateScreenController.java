@@ -92,6 +92,7 @@ public class RateScreenController implements Initializable  {
 		currentStage.close();
 	}
 	
+	
 	@FXML 
 	public void check1Clicked() {
 		rating = 1;
@@ -139,10 +140,16 @@ public class RateScreenController implements Initializable  {
 		currentName = name;
 	}
 
+	/*
+	 * Gets an instance of workspace controller so rateController can pass information to the workspace.
+	 */
 	public void setWorkSpaceController(WorkSpaceController workSpaceController){
 		controller = workSpaceController;
 	}
 
+	/*
+	 * Sets the rating of the recording in the workspace
+	 */
 	public void refreshRating(){
 		controller.setRating(currentName);
 	}
