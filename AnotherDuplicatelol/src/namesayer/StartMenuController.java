@@ -14,6 +14,8 @@ public class StartMenuController {
     @FXML
     private Button practiceButton;
     @FXML
+    private Button playListButton;
+    @FXML
     private Button testButton;
     @FXML
     private Button quitButton;
@@ -31,6 +33,21 @@ public class StartMenuController {
             e.printStackTrace();
         }
     }
+    
+    /*
+     * Invoked when the user presses the playlist button
+     */
+    @FXML
+    private void playlistButtonClicked() {
+    	try {
+            Stage stage = (Stage) practiceButton.getScene().getWindow();
+            Parent createScene = FXMLLoader.load(getClass().getResource("playlistScreen.fxml"));
+            stage.setScene(new Scene(createScene, 700, 500));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    		
 
     /**
      * Invoked when the user presses the test microphone button

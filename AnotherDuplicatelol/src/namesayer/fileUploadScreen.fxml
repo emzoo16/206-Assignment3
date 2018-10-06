@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+
+<AnchorPane prefHeight="250.0" prefWidth="400.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/10.0.1" fx:controller="namesayer.FileUploadController">
+   <children>
+      <VBox alignment="CENTER" layoutX="200.0" layoutY="10.0" prefHeight="250.0" prefWidth="400.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <Label text="Upload New Playlist">
+               <font>
+                  <Font size="24.0" />
+               </font>
+            </Label>
+            <Label prefHeight="33.0" prefWidth="246.0" text="New Playlist Name:" />
+            <HBox prefHeight="37.0" prefWidth="360.0">
+               <children>
+                  <TextField fx:id="playlistName" prefHeight="27.0" prefWidth="263.0">
+                     <padding>
+                        <Insets right="10.0" />
+                     </padding>
+                  </TextField>
+                  <Button fx:id="createButton" mnemonicParsing="false" onAction="#createButtonClicked" text="Create" />
+               </children>
+            </HBox>
+            <HBox alignment="CENTER" prefHeight="36.0" prefWidth="360.0">
+               <children>
+                  <Button fx:id="uploadButton" mnemonicParsing="false" onAction="#uploadButtonClicked" text="Upload File" />
+                  <Button fx:id="cancelButton" mnemonicParsing="false" onAction="#cancelButtonClicked" text="Cancel" />
+               </children>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+               <VBox.margin>
+                  <Insets top="25.0" />
+               </VBox.margin>
+            </HBox>
+         </children>
+         <padding>
+            <Insets left="20.0" right="20.0" />
+         </padding>
+      </VBox>
+   </children>
+</AnchorPane>
