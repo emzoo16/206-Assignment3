@@ -40,7 +40,7 @@
                </VBox.margin></Label>
             <ImageView fitHeight="155.0" fitWidth="210.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../../../../../Downloads/Antu_mic-on.svg.png" />
+                  <Image url="@../Resources/Mic.png" />
                </image>
             </ImageView>
             <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="20.0">

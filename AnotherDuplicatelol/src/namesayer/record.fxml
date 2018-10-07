@@ -32,7 +32,7 @@
                </VBox.margin></Label>
             <ImageView fitHeight="72.0" fitWidth="105.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../../../../../Downloads/Antu_mic-on.svg.png" />
+                  <Image url="@../Resources/Mic.png" />
                </image>
                <VBox.margin>
                   <Insets top="15.0" />

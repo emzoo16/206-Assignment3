@@ -49,7 +49,7 @@
                      <children>
                         <ImageView fitHeight="27.0" fitWidth="28.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@../../../../../Downloads/768px-Speaker_Icon.svg.png" />
+                              <Image url="@../Resources/Speaker.png" />
                            </image>
                         </ImageView>
                         <Slider fx:id="volumeSlider" blockIncrement="0.1" max="1.0" prefHeight="26.0" prefWidth="106.0">
