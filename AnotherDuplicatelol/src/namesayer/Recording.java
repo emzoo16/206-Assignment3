@@ -16,16 +16,22 @@ import java.util.TimerTask;
 
 public class Recording {
 
-	//
+	//Variable storing the full name of the file and the trimmed name (only the actual name)
+	//respectively.
     protected String fileName;
     protected String shortName;
+    
+    //Path to the audio file of the name.
     protected String path;
+    
+    //Clip object to play recordings.
     Clip clip;
 
     public Recording() {}
 
     /*
-     * Constructor for the recording class that 
+     * Constructor for the recording class. Takes in the full name of the file and the path
+     * to the file.
      */
     public Recording(String name, String path) {
         String subString = name.substring(name.lastIndexOf("_") + 1);
@@ -44,7 +50,7 @@ public class Recording {
         try {
         	File file = new File(path + fileName);
             
-        	//
+        	//Sets up the dataline and clip to start playback of the audio.
             AudioInputStream stream = AudioSystem.getAudioInputStream(file);
             DataLine.Info info = new DataLine.Info(Clip.class, stream.getFormat());
             clip = (Clip) AudioSystem.getLine(info);
@@ -89,8 +95,10 @@ public class Recording {
      */
     public void setVolume(double volume) {
     	
+  
     	FloatControl gain = (FloatControl)clip.getControl(FloatControl.Type.MASTER_GAIN);
         
+    	//Converts the current volume to decibels and adjusts the gain in volume accordingly.
     	float decibel = 20f*(float)Math.log10(volume/0.65);
     	gain.setValue(decibel);
     }
@@ -108,7 +116,7 @@ public class Recording {
     public String getFileName() { return fileName; }
 
     /*
-     * 
+     * Returns the version number of the recording.
      */
     public int getNumber() {
         Character digitString = fileName.charAt(fileName.lastIndexOf("-") + 1);
