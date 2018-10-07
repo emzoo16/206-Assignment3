@@ -4,10 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
-import java.util.Scanner;
+import java.util.*;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -58,12 +55,14 @@ public class PlaylistController implements Initializable {
 	
 	File currentFile;
 	String[] namesNotFound;
+
+	DatabaseList workspaceRecordings;
 	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		//Listener to get the current name the user is clicking on in the playListView.
 				
-		
+		workspaceRecordings = new DatabaseList();
 	}
 
 	@FXML
@@ -81,8 +80,10 @@ public class PlaylistController implements Initializable {
 	@FXML
 	public void continueButtonClicked() {
 		try {
-			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("workSpaceController.fxml"));
+			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("workspace.fxml"));
 			Parent playlistScene = fxmlLoader.load();
+			WorkSpaceController controller = fxmlLoader.getController();
+			controller.setWorkspaceRecordingsAndController(workspaceRecordings, workspaceRecordings.getRecordingNames());
 			Stage stage = (Stage) continueButton.getScene().getWindow();
 			stage.setScene(new Scene(playlistScene, 700, 500));
 		} catch (IOException e) {
@@ -166,6 +167,30 @@ public class PlaylistController implements Initializable {
 						alert.showAndWait();
 					}else {
 						namesList.add(line);
+					}
+				}
+
+				//A list to get the file names of all recordings to create a concatenated recording
+				DatabaseList referenceList = new DatabaseList();
+				referenceList.displayAll();
+
+				//Loops through all names in the list adding them to the workspace
+				for (String name : namesList) {
+					//If the name is a concatenated one
+					if (name.trim().contains(" ")) {
+						//Gets the list of the names
+						List<String> names = Arrays.asList(name.split(" "));
+						List<String> fileNames = new ArrayList<>();
+						//Gets the file names for all these names
+						for (String recording : names) {
+							fileNames.add(referenceList.getRecording(recording).getFileName());
+						}
+						//Creates the concatenated recording and adds it to the workspace
+						DemoRecording concatenatedRecording = new ConcatenatedRecording(fileNames, name);
+						workspaceRecordings.add(concatenatedRecording);
+					} else {
+						//If the name is a single name, it simply gets added
+						workspaceRecordings.add(name);
 					}
 				}
 				nameList = FXCollections.observableArrayList(namesList);

@@ -3,25 +3,14 @@ package namesayer;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
-import javafx.scene.control.ProgressBar;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.InputStreamReader;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
 /**
- * This is just a few notes about this class and how I think I can get it to work with everything.
- * It needs all the functionality of a database recording so:
- * fileName: The name of the file created when concatenating
- * shortName: the full name etc George Edwin Mcerlean
- * For this part maybe create a new constructor in recording for personal recordings of concatenations.
- * userAttempts file names: fileName with a number
- * Als
  *
  *
  */
@@ -141,11 +130,6 @@ public class ConcatenatedRecording extends Recording implements DemoRecording {
                     ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
                     Process process = builder.start();
                     process.waitFor();
-                    BufferedReader err = new BufferedReader(new InputStreamReader(process.getInputStream()));
-                    String line = null;
-                    while ((line = err.readLine()) != null) {
-                        System.out.println(line);
-                    }
                 }
                 return null;
             }
@@ -174,14 +158,8 @@ public class ConcatenatedRecording extends Recording implements DemoRecording {
                 String cmd = "ffmpeg -y " + catInput +
                         "-filter_complex '"+inputStreams+"concat=n="+number+":v=0:a=1[out]' " +
                         "-map '[out]' " + tmpFileName;
-                System.out.println(cmd);
                 ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
                 Process process = builder.start();
-                BufferedReader err = new BufferedReader(new InputStreamReader(process.getErrorStream()));
-                String line = null;
-                while ((line = err.readLine()) != null) {
-                    System.out.println(line);
-                }
                 process.waitFor();
                 return null;
             }

@@ -163,9 +163,9 @@ public class WorkSpaceCreatorController implements Initializable {
                 if (randomiseBox.isSelected()) {
                     ObservableList<String> randomisedList = workspaceList.getRecordingNames();
                     Collections.shuffle(randomisedList);
-                    controller.setWorkspaceRecordingsAndController(workspaceList, randomisedList, controller);
+                    controller.setWorkspaceRecordingsAndController(workspaceList, randomisedList);
                 } else {
-                    controller.setWorkspaceRecordingsAndController(workspaceList, workspaceList.getRecordingNames(), controller);
+                    controller.setWorkspaceRecordingsAndController(workspaceList, workspaceList.getRecordingNames());
                 }
                 Stage stage = (Stage) continueButton.getScene().getWindow();
                 stage.setScene(new Scene(createScene, 700, 500));

@@ -82,7 +82,6 @@ public class WorkSpaceController implements Initializable {
 	TabPane tabPane;
 
 	DatabaseList listOfRecordings;
-	WorkSpaceController selfController;
 	Boolean isOnDatabase = true;
 	int recordClicked = 0;
 
@@ -295,7 +294,7 @@ public class WorkSpaceController implements Initializable {
 			Parent createSceneParent = fxmlLoader.load();
 			RecordController controller = fxmlLoader.getController();
 			DemoRecording currentDatabaseRecording = listOfRecordings.getRecording(dataListView.getSelectionModel().getSelectedItem());
-			controller.passInformation(currentDatabaseRecording, selfController);			
+			controller.passInformation(currentDatabaseRecording, this);
 			Scene createScene = new Scene(createSceneParent);
 			Stage createStage = new Stage();
 			createStage.setScene(createScene);
@@ -328,7 +327,7 @@ public class WorkSpaceController implements Initializable {
 		}
 	}
 
-	public void setWorkspaceRecordingsAndController(DatabaseList recordings, ObservableList<String> recordingNames, WorkSpaceController controller) {
+	public void setWorkspaceRecordingsAndController(DatabaseList recordings, ObservableList<String> recordingNames) {
 		dataList = recordingNames;
 		dataListView.setItems(dataList);
 		listOfRecordings = recordings;
@@ -337,8 +336,6 @@ public class WorkSpaceController implements Initializable {
 		dataListView.getSelectionModel().select(currentIndex);
 		String currentName = dataListView.getSelectionModel().getSelectedItem();
 		recordingNameLabel.setText(currentName);
-
-		selfController = controller;
 	}
 
 	/*

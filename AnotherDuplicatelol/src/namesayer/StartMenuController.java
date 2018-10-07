@@ -14,15 +14,14 @@ public class StartMenuController {
     @FXML
     private Button practiceButton;
     @FXML
-    private Button uploadButton;
+    private Button playListButton;
     @FXML
     private Button testButton;
     @FXML
     private Button quitButton;
 
     /**
-     * Invoked when the user presses the practice button and takes the user to the workspace
-     * creator scene.
+     * Invoked when the user presses the practice button
      */
     @FXML
     private void beginPractice() {
@@ -36,10 +35,10 @@ public class StartMenuController {
     }
     
     /*
-     * Invoked when the user presses the upload button and takes the user to the upload screen.
+     * Invoked when the user presses the playlist button
      */
     @FXML
-    private void uploadButtonClicked() {
+    private void playlistButtonClicked() {
     	try {
             Stage stage = (Stage) practiceButton.getScene().getWindow();
             Parent createScene = FXMLLoader.load(getClass().getResource("playlistScreen.fxml"));
@@ -51,8 +50,7 @@ public class StartMenuController {
     		
 
     /**
-     * Invoked when the user presses the test microphone button and takes the user to the test 
-     * microphone screen
+     * Invoked when the user presses the test microphone button
      */
     @FXML
     private void testMicrophone() {
