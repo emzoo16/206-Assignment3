@@ -14,7 +14,7 @@ public class StartMenuController {
     @FXML
     private Button practiceButton;
     @FXML
-    private Button playListButton;
+    private Button uploadButton;
     @FXML
     private Button testButton;
     @FXML
@@ -39,7 +39,7 @@ public class StartMenuController {
      * Invoked when the user presses the upload button and takes the user to the upload screen.
      */
     @FXML
-    private void playlistButtonClicked() {
+    private void uploadButtonClicked() {
     	try {
             Stage stage = (Stage) practiceButton.getScene().getWindow();
             Parent createScene = FXMLLoader.load(getClass().getResource("playlistScreen.fxml"));
