@@ -27,12 +27,6 @@ import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
 
 public class RateScreenController implements Initializable  {
-	
-	int rating = 0;
-	
-	//The folder containing all the reviews.
-	String currentName;
-	WorkSpaceController controller;
 
 	//FXML variables
 	@FXML
@@ -43,7 +37,19 @@ public class RateScreenController implements Initializable  {
 	@FXML
 	CheckBox check1,check2,check3,check4,check5;
 	
+	//The folder containing all the reviews.
+	String currentName;
 	
+	//Reference to the workspace.
+	WorkSpaceController controller;
+	
+	//Stores the rating the user gives.
+	int rating = 0;
+
+	/*
+	 * On initialising, creates a review folder if it doesn't yet exist to store all
+	 * the reviews from users.
+	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		File file = new File("Review");
@@ -51,10 +57,13 @@ public class RateScreenController implements Initializable  {
 
 	}
 	
-	//This method writes the users comment to a file.
+	/*
+	 * This method writes the users review to the file with the corresponding name.
+	 */
 	@FXML
 	public void confirmButtonClicked(ActionEvent event){
-
+		
+		//Creating the new file if it doesn't already exist
 		File file = new File("./Review/" + currentName + ".txt");
 
 		if (!file.exists()) {
@@ -92,7 +101,10 @@ public class RateScreenController implements Initializable  {
 		currentStage.close();
 	}
 	
-	
+	/*
+	 * The following methods updates all checkboxes when the user clicks on one to give
+	 * a rating.
+	 */
 	@FXML 
 	public void check1Clicked() {
 		rating = 1;
@@ -135,7 +147,10 @@ public class RateScreenController implements Initializable  {
 		check4.setSelected(true);
 	}
 	
-	@FXML
+	/*
+	 * Used to pass the current recording name from the workspace controller to
+	 * the recordController. This method is called from the workspace controller.
+	 */
 	public void setCurrentName(String name) {
 		currentName = name;
 	}
@@ -148,7 +163,7 @@ public class RateScreenController implements Initializable  {
 	}
 
 	/*
-	 * Sets the rating of the recording in the workspace
+	 * Refreshes the rating indicator in the workspace to show the updated rating.
 	 */
 	public void refreshRating(){
 		controller.setRating(currentName);
