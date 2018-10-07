@@ -1,9 +1,13 @@
 package namesayer;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
+import java.util.Scanner;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -14,9 +18,11 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.control.Alert.AlertType;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -38,8 +44,7 @@ public class PlaylistController implements Initializable {
 	@FXML
 	ProgressBar progressbar;	
 	@FXML
-	ListView<String> playListView;
-	ObservableList<String> playList = FXCollections.observableArrayList();
+	Button continueButton;
 	@FXML 
 	ListView<String> nameListView;
 	ObservableList<String> nameList = FXCollections.observableArrayList();
@@ -51,42 +56,16 @@ public class PlaylistController implements Initializable {
 	int playlistIndex;
 	int nameIndex;
 	
+	File currentFile;
+	String[] namesNotFound;
+	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		//Listener to get the current name the user is clicking on in the playListView.
-				playListView.getSelectionModel().selectedItemProperty().addListener(
-						new ChangeListener<String>() {
-							@Override
-							public void changed(ObservableValue<? extends String> observable, String oldValue,
-												String newValue) {
-								
-								//Resets the progressBar.
-								progressbar.setProgress(0.0);
-								playlistIndex = playListView.getSelectionModel().getSelectedIndex();
-								//refreshPersonalRecordings(newValue);
-								nameIndex = 0;
-							}
-						});
-				//Listener to get the current selected element in the personal recordings list.
-				nameListView.getSelectionModel().selectedItemProperty().addListener(
-						new ChangeListener<String>() {
-							@Override
-							public void changed(ObservableValue<? extends String> observable, String oldValue,
-												String newValue) {
-								nameIndex = nameListView.getSelectionModel().getSelectedIndex();
-							}
-						});
+				
 		
 	}
-	
-	@FXML
-	public void playButtonClicked() {
-		
-	}
-	@FXML
-	public void previousButtonClicked() {
-		
-	}
+
 	@FXML
 	public void backButtonClicked() {
 		try {
@@ -98,24 +77,129 @@ public class PlaylistController implements Initializable {
 			e.printStackTrace();
 		}
 	}
+
 	@FXML
-	public void nextButtonClicked() {
-		
+	public void continueButtonClicked() {
+		try {
+			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("workSpaceController.fxml"));
+			Parent playlistScene = fxmlLoader.load();
+			Stage stage = (Stage) continueButton.getScene().getWindow();
+			stage.setScene(new Scene(playlistScene, 700, 500));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@FXML
 	public void uploadButtonClicked() {
-		try {
-			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("fileUploadScreen.fxml"));
-			Parent playlistParent = fxmlLoader.load();
-			Scene playlistScene = new Scene(playlistParent);
-			Stage playlistStage = new Stage();
-			playlistStage.setScene(playlistScene);
-			playlistStage.show();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		//Creating a new FileChooser and creating a filter so it only accepts .txt files.
+				FileChooser fileChooser = new FileChooser();
+				FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT files (*.txt)", "*.txt");
+				fileChooser.getExtensionFilters().add(extFilter);
+				
+				File selectedFile = fileChooser.showOpenDialog(null);
+				
+				if (selectedFile != null) {
+					currentFile = selectedFile;
+					scanFile();
+				}else {
+					
+				}
 
+	}
+	
+	/*
+	 * This method scans the file the user chooses. It parses each line into the individual 
+	 * names and searches if they are present in the database. If they are, the names are 
+	 * added to the list to be played.
+	 */
+	public void scanFile() {
+		
+		//Indexers to keep track of current position in the arrays.
+		int notFoundIndex=0;
+		int foundIndex=0;
+		List<String> namesList = new ArrayList<>();
+		//
+		if (currentFile.exists()) {
+			try {
+				Scanner scanner = new Scanner(currentFile);
+				
+				//Iterate through each line in the text file.
+				while (scanner.hasNextLine()) {
+					String line = scanner.nextLine();
+					
+					//Two arrays of strings to store the names of the names that have been found and 
+					//have not been found in the database respectively
+					String[] foundFileNames = {""};
+					String[] notFound = {""};
+
+					//Seperate the line by spaces or underscores to create an array of single names.
+					String[] splitLine = line.trim().split("[\\s+,_]");
+					
+					//Iterate through each single name in the line to check if the name is in the
+					//database.
+					for (int i=0; i<splitLine.length; i++ ) {
+						
+						//If the name is not in the database, add the name to the not found list.
+						if (inDatabase(splitLine[i]) == "") {
+							notFound[notFoundIndex] = splitLine[i];
+							
+						//If the name is in the database, add its fully qualified name to the found names
+						//array
+						}else {
+							foundFileNames[foundIndex] = inDatabase(splitLine[i]);
+						}
+					}
+					
+					//If there are names in the notFound list, show a warning to the user to ask them if they want to concatenate
+					//the found names anyway or cancel.
+					if(notFound.length > 0 && notFound[0] != "") {
+						Alert alert = new Alert(AlertType.WARNING);
+						alert.setTitle("Warning");
+						alert.setHeaderText("The following names were not found: ");
+						
+						String errorText = "";
+						for(int i=0; i<notFound.length; i++) {
+							errorText=errorText+ notFound[i];
+						}
+						alert.setContentText(errorText + "\n" + "The name "+ line + " was not created." );
+						alert.showAndWait();
+					}else {
+						namesList.add(line);
+					}
+				}
+				nameList = FXCollections.observableArrayList(namesList);
+				nameListView.setItems(nameList);
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
+		} 
+	}
+	
+	/*
+	 * This method checks if the provided filename is a name in the database directory.
+	 * Returns a string of the full name of the file if it exists. Otherwise return an empty string.
+	 */
+	public String inDatabase(String fileName) {
+		File database = new File("Database/");
+		File[] databaseFiles = database.listFiles();
+		String fullFileName = "";
+		
+		for (int i=0; i< databaseFiles.length; i++) {
+			
+			//Parsing the actual name from the long file name.
+			String name = databaseFiles[i].getName();
+			String shortName = name.substring(name.lastIndexOf("_") + 1).replaceAll(".wav", "");
+			
+			//Checks if the given file name and the current file in the database directory
+			//match.
+			if (shortName.equals(fileName)) {
+				fullFileName = name;
+				return fullFileName;
+			}
+		}		
+		return fullFileName;
+		
 	}
 	
 	
