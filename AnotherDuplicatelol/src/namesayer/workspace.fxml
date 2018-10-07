@@ -8,6 +8,8 @@
 <?import javafx.scene.control.Slider?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
@@ -16,9 +18,9 @@
 
 <AnchorPane prefHeight="500.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="namesayer.WorkSpaceController">
    <children>
-      <Pane prefHeight="500.0" prefWidth="700.0">
+      <Pane layoutX="-6.0" prefHeight="500.0" prefWidth="700.0">
          <children>
-            <VBox alignment="CENTER" layoutX="311.0" layoutY="41.0" prefHeight="424.0" prefWidth="350.0" spacing="15.0">
+            <VBox alignment="CENTER" layoutX="308.0" layoutY="100.0" prefHeight="373.0" prefWidth="350.0" spacing="15.0">
                <children>
                   <Label fx:id="playingLabel" alignment="CENTER" prefHeight="21.0" prefWidth="350.0" text="Now Playing: Demo Recording (Database)" textAlignment="CENTER">
                      <font>
@@ -43,10 +45,21 @@
                      </opaqueInsets>
                   </HBox>
                   <Button fx:id="toggleButton" mnemonicParsing="false" onAction="#toggleTab" prefHeight="35.0" prefWidth="80.0" text="Toggle" />
-                  <HBox alignment="CENTER" prefHeight="35.0" prefWidth="334.0" spacing="15.0">
+                  <HBox alignment="CENTER" prefHeight="35.0" prefWidth="334.0">
                      <children>
-                        <Slider fx:id="volumeSlider" blockIncrement="0.1" max="1.0" prefHeight="26.0" prefWidth="106.0" />
-                        <Button fx:id="recordButton" mnemonicParsing="false" onAction="#recordButtonClicked" prefHeight="35.0" prefWidth="80.0" text="Record" />
+                        <ImageView fitHeight="27.0" fitWidth="28.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../../../../Downloads/768px-Speaker_Icon.svg.png" />
+                           </image>
+                        </ImageView>
+                        <Slider fx:id="volumeSlider" blockIncrement="0.1" max="1.0" prefHeight="26.0" prefWidth="106.0">
+                           <HBox.margin>
+                              <Insets left="5.0" right="15.0" />
+                           </HBox.margin></Slider>
+                        <Button fx:id="recordButton" mnemonicParsing="false" onAction="#recordButtonClicked" prefHeight="35.0" prefWidth="80.0" text="Record">
+                           <HBox.margin>
+                              <Insets right="15.0" />
+                           </HBox.margin></Button>
                         <Button fx:id="rateButton" mnemonicParsing="false" onAction="#rateButtonClicked" prefHeight="35.0" prefWidth="80.0" text="Rate" />
                      </children>
                      <VBox.margin>
@@ -55,10 +68,9 @@
                   </HBox>
                </children>
             </VBox>
-            <VBox layoutX="21.0" layoutY="15.0" prefHeight="470.0" prefWidth="250.0" spacing="15.0">
+            <VBox layoutX="34.0" layoutY="100.0" prefHeight="385.0" prefWidth="250.0" spacing="5.0">
                <children>
-                  <Button fx:id="backButton" mnemonicParsing="false" onAction="#backButtonClicked" text="Back" />
-                  <TabPane fx:id="tabPane" prefHeight="450.0" prefWidth="250.0" tabClosingPolicy="UNAVAILABLE">
+                  <TabPane fx:id="tabPane" prefHeight="362.0" prefWidth="250.0" tabClosingPolicy="UNAVAILABLE">
                     <tabs>
                       <Tab text="Demo's">
                         <content>
@@ -73,7 +85,7 @@
                         <content>
                           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                  <children>
-                                    <ListView fx:id="ownListView" prefHeight="377.0" prefWidth="250.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                    <ListView fx:id="ownListView" prefHeight="329.0" prefWidth="250.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                                  </children>
                               </AnchorPane>
                         </content>
@@ -88,6 +100,12 @@
                   </HBox>
                </children>
             </VBox>
+            <Label alignment="CENTER" layoutX="203.0" layoutY="23.0" prefHeight="60.0" prefWidth="295.0" text="WorkSpace">
+               <font>
+                  <Font size="36.0" />
+               </font>
+            </Label>
+            <Button fx:id="backButton" layoutX="34.0" layoutY="23.0" mnemonicParsing="false" onAction="#backButtonClicked" text="Back" />
          </children>
       </Pane>
    </children>
