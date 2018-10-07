@@ -40,7 +40,10 @@ public class WorkSpaceController implements Initializable {
 	//These are stubs to be replaced with the custom list passed in from the workspaceCreator
 	//sample would be replaced with the list and sampleCreations with the folder containing all
 	//user recordings.
-	
+
+	//Current index in the listView 
+	int currentIndex = 0;
+	int ownCurrentIndex = 0;
 	double volume;
 	//FXML variables
 	@FXML
@@ -78,25 +81,14 @@ public class WorkSpaceController implements Initializable {
 	@FXML
 	TabPane tabPane;
 
-	//Current index in the listView 
-		int currentIndex = 0;
-		int ownCurrentIndex = 0;
-	
-	//Keeps track of how many times the record button has been pressed to keep progress
-	//on the reward pop up.
-		
-	int recordClicked = 0;
-		
 	DatabaseList listOfRecordings;
 	WorkSpaceController selfController;
 	Boolean isOnDatabase = true;
+	int recordClicked = 0;
 
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		//Initializes the volume slider as full volume.
-		volume = 1.0;
-		volumeSlider.setValue(volume);
 		
 		//Listener to get the current name the user is clicking on.
 		dataListView.getSelectionModel().selectedItemProperty().addListener(
@@ -162,7 +154,12 @@ public class WorkSpaceController implements Initializable {
 	 * object.
 	 */
 	public void refreshPersonalRecordings(String recordingName) {
+		System.out.println(recordingName);
+		System.out.println(listOfRecordings.getRecordingNames());
 		DemoRecording currentDatabaseRecording = listOfRecordings.getRecording(recordingName);
+		if (currentDatabaseRecording == null) {
+			System.out.println("why am I null?");
+		}
 		ownList = currentDatabaseRecording.getUserAttempts();
 		ownListView.setItems(ownList);
 	}
@@ -235,7 +232,7 @@ public class WorkSpaceController implements Initializable {
 			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("workSpaceCreator.fxml"));
 			Parent createScene = fxmlLoader.load();
 			WorkSpaceCreatorController controller = fxmlLoader.getController();
-			controller.setWorkspaceRecordings(dataList);
+			controller.setWorkspaceRecordings(listOfRecordings);
 			Stage stage = (Stage) backButton.getScene().getWindow();
 			stage.setScene(new Scene(createScene, 700, 500));
 		} catch (IOException e) {
@@ -342,7 +339,6 @@ public class WorkSpaceController implements Initializable {
 		recordingNameLabel.setText(currentName);
 
 		selfController = controller;
-		refreshPersonalRecordings(dataListView.getSelectionModel().getSelectedItem());
 	}
 
 	/*
@@ -470,21 +466,15 @@ public class WorkSpaceController implements Initializable {
 		return false;
 	}
 	
-	/*
-	 * 
-	 */
 	public double getVolume() {
 		return volume;
 	}
-	
-	/*
-	 * 
-	 */
+
 	public void incrementIndicator() {
-		
-		//Increment 
+
+		//Increment
 		recordClicked++;
-		
+
 		//If the user has recorded 5 times, a reward alert is shown.
 		if (recordClicked == 5) {
 			Alert alert = new Alert(AlertType.INFORMATION);
@@ -502,7 +492,5 @@ public class WorkSpaceController implements Initializable {
 			alert.showAndWait();
 		}
 	}
-	
-	
 
 }

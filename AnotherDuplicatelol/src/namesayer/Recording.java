@@ -27,11 +27,11 @@ public class Recording {
     /*
      * Constructor for the recording class that 
      */
-    public Recording(String name) {
+    public Recording(String name, String path) {
         String subString = name.substring(name.lastIndexOf("_") + 1);
         shortName = subString.replaceAll(".wav", "");
         fileName = name;
-        path = "PersonalRecordings/";
+        this.path = path;
     }
 
     /*

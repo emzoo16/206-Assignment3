@@ -48,9 +48,10 @@ public class DatabaseList {
         recordingsMap.put(name, dataBaseRecordings.get(name));
     }
 
-   
+    public void add(DemoRecording recording){ recordingsMap.put(recording.getShortName(), recording); }
+
     public DemoRecording getRecording(String name) {
-        return dataBaseRecordings.get(name);
+        return recordingsMap.get(name);
     }
 
     public ObservableList<String> getRecordingNames() {

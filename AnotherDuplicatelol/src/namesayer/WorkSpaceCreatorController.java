@@ -23,10 +23,7 @@ import javafx.util.Callback;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class WorkSpaceCreatorController implements Initializable {
     @FXML
@@ -98,23 +95,33 @@ public class WorkSpaceCreatorController implements Initializable {
     @FXML
     private void addSearchedItem() {
         String searchedItem = searchField.getText().trim();
-        if (searchedItem.contains(" ")) {
-            List<String> names = Arrays.asList(searchedItem.split(" "));
-            boolean invalid = false;
-            for (String name : names) {
-                if (!InputExists(name)) {
-                    invalid = true;
-                    break;
+        if (!alreadyAdded(searchedItem)) {
+            if (searchedItem.contains(" ")) {
+                List<String> names = Arrays.asList(searchedItem.split(" "));
+                boolean invalid = false;
+                for (String name : names) {
+                    if (!InputExists(name)) {
+                        invalid = true;
+                        break;
+                    }
                 }
+                if (!invalid) {
+                    List<String> fileNames = new ArrayList<>();
+                    for (String recording : names) {
+                        fileNames.add(searchableList.getRecording(recording).getFileName());
+                    }
+                    DemoRecording concatenatedRecording = new ConcatenatedRecording(fileNames, searchedItem);
+                    workspaceList.add(concatenatedRecording);
+                    workspaceRecordingsView.setItems(workspaceList.getRecordingNames());
+                }
+            } else {
+                if (InputExists(searchedItem)) {
+                    workspaceList.add(searchedItem);
+                    databaseList.remove(searchedItem);
+                }
+                databaseRecordingsView.setItems(databaseList.getRecordingNames());
+                workspaceRecordingsView.setItems(workspaceList.getRecordingNames());
             }
-            createAndAddConcatenatedRecording(names, searchedItem);
-        } else {
-            if (InputExists(searchedItem)) {
-                workspaceList.add(searchedItem);
-                databaseList.remove(searchedItem);
-            }
-            databaseRecordingsView.setItems(databaseList.getRecordingNames());
-            workspaceRecordingsView.setItems(workspaceList.getRecordingNames());
         }
     }
 
@@ -131,85 +138,16 @@ public class WorkSpaceCreatorController implements Initializable {
         }
     }
 
-    private void createAndAddConcatenatedRecording(List<String> names, String fullItem) {
-        String tmpFileName = fullItem.replaceAll(" ", "");
-        List<String> fileNames;
-        for (String recording : names) {
-            fileNames.add(searchableList.getRecording(recording).getFileName());
+    private boolean alreadyAdded(String recordingName) {
+        if (workspaceList.getRecordingNames().contains(recordingName)) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Incorrect Input");
+            alert.setHeaderText("The name \"" + recordingName + "\" has already been added");
+            alert.showAndWait();
+            return true;
+        } else {
+            return false;
         }
-        //remove silence either side for all recordings and create temp files for all
-        //Temp file names are of the form name1name2name31, where 1 is the index of the temp file
-        //Checked and works
-        Task<Void> removeSilenceTask = new Task<Void>() {
-            @Override
-            protected Void call() throws Exception {
-                int index = 1;
-                for (String file : fileNames) {
-                    String tmpFileName = tmpFileName + index + ".wav";
-                    String cmd = "ffmpeg -i " + file + " -af silenceremove=1:0:-50dB " + tmpFileName;
-                    ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
-                    Process process = builder.start();
-                    process.waitFor();
-                    index++;
-                }
-                return null;
-            }
-        }
-        Thread thread = new Thread(removeSilenceTask);
-        thread.setDaemon(true);
-        thread.start();
-        thread.join();
-        //regulate volume for all, have checked it changes volume but not that it equalises volume of multiple recordings
-        Task<Void> regulateVolumeTask = new Task<Void>() {
-            @Override
-            protected Void call() throws Exception {
-                int index = 1;
-                for (String file : fileNames) {
-                    String tmpFileName = tmpFileName + index + ".wav";
-                    String cmd = "ffmpeg -i "+tmpFileName+" -filter:a \"volume=0.5\" " + tmpFileName;
-                    ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
-                    Process process = builder.start();
-                    process.waitFor();
-                    index++;
-                }
-                return null;
-            }
-        }
-        Thread thread = new Thread(regulateVolumeTask);
-        thread.setDaemon(true);
-        thread.start();
-        thread.join();
-        //concatenates the temp recordings then deletes them
-        String catInput = "";
-        number = 0;
-        for (String file : fileNames) {
-            catInput = catInput + "-i " + file;
-            number += 1;
-        }
-
-        Task<Void> concatenateTask = new Task<Void>() {
-            @Override
-            protected Void call() throws Exception {
-                //
-                //THIS LINE IS HARDCODED FOR 2 INPUTS TO THE CONCATENATION MAKE SURE THIS IS CHANGED
-                //
-                String inputStreams = "[0:0][0:1]"
-                //
-                //
-                //
-                String cmd = "ffmpeg " + catInput +
-                        "-filter_complex '"+inputStreams+"concat=n="+number+":v=0:a=1[out]' " +
-                        "-map '[out]' " + tmpFileName + ".wav";
-                ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
-                Process process = builder.start();
-                process.waitFor();
-                return null;
-            }
-        }
-        Thread thread = new Thread(concatenateTask);
-        thread.setDaemon(true);
-        thread.start();
-        thread.join();
     }
 
     /*
@@ -259,10 +197,15 @@ public class WorkSpaceCreatorController implements Initializable {
     }
 
     
-    public void setWorkspaceRecordings(ObservableList<String> keptRecordings) {
+    public void setWorkspaceRecordings(DatabaseList list) {
+        List<String> keptRecordings = list.getRecordingNames();
         for (String recordingName : keptRecordings) {
-            workspaceList.add(recordingName);
-            databaseList.remove(recordingName);
+            if (recordingName.contains(" ")){
+                workspaceList.add(list.getRecording(recordingName));
+            } else {
+                workspaceList.add(recordingName);
+                databaseList.remove(recordingName);
+            }
         }
         selectedDatabaseItems.clear();
         databaseRecordingsView.setItems(databaseList.getRecordingNames());
@@ -320,7 +263,7 @@ public class WorkSpaceCreatorController implements Initializable {
         }));
 
         selectedWorkspaceItems = FXCollections.observableSet();
-        workspaceList = searchableList;
+        workspaceList = new DatabaseList();
         workspaceRecordingsView.setItems(workspaceList.getRecordingNames());
         workspaceRecordingsView.setCellFactory(CheckBoxListCell.forListView(new Callback<String, ObservableValue<Boolean>>() {
             @Override
