@@ -26,7 +26,7 @@
                   <Font size="20.0" />
                </font>
             </Button>
-            <Button fx:id="playListButton" mnemonicParsing="false" onAction="#playlistButtonClicked" prefWidth="200.0" text="Load Playlist">
+            <Button fx:id="playListButton" mnemonicParsing="false" onAction="#playlistButtonClicked" prefWidth="200.0" text="Upload File">
                <font>
                   <Font size="20.0" />
                </font>
