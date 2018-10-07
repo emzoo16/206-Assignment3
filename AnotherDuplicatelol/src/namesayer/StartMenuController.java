@@ -21,7 +21,8 @@ public class StartMenuController {
     private Button quitButton;
 
     /**
-     * Invoked when the user presses the practice button
+     * Invoked when the user presses the practice button and takes the user to the workspace
+     * creator scene.
      */
     @FXML
     private void beginPractice() {
@@ -35,7 +36,7 @@ public class StartMenuController {
     }
     
     /*
-     * Invoked when the user presses the playlist button
+     * Invoked when the user presses the upload button and takes the user to the upload screen.
      */
     @FXML
     private void playlistButtonClicked() {
@@ -50,7 +51,8 @@ public class StartMenuController {
     		
 
     /**
-     * Invoked when the user presses the test microphone button
+     * Invoked when the user presses the test microphone button and takes the user to the test 
+     * microphone screen
      */
     @FXML
     private void testMicrophone() {
