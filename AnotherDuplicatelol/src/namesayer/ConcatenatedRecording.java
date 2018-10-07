@@ -11,20 +11,27 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- *
+ *This class is used to represent a recording which has been concatenated from database recordings 
+ *It functions similar to database recordings except the process for building the concatenated recording
+ *takes place in the class and the method of obtaining the user attempts is slightly different
  *
  */
 public class ConcatenatedRecording extends Recording implements DemoRecording {
+	
+	//A map of all the users attempts of this concatenation
     private HashMap<String, Recording> userAttempts;
+	//The file names of the parts of the concatenation
     private List<String> listOfFilesNames;
 
 
     public ConcatenatedRecording(List<String> fileNames, String fullName) {
         userAttempts = new HashMap<>();
+		//Short name is the name which is displayed
         this.shortName = fullName;
         this.fileName = fullName.replaceAll(" ", "") + ".wav";
         createConcatenatedRecording(fileNames, fullName);
 
+		//loads all the personal recordings into the map
         File folder = new File("ConcatenatedPersonalRecordings/");
         File[] ArrayOfFiles = folder.listFiles();
         if (ArrayOfFiles != null) {
@@ -39,18 +46,25 @@ public class ConcatenatedRecording extends Recording implements DemoRecording {
                 }
             }
         } else {
-            //Cant find the database/nothing in it
+            //Cant find any personal recordings
         }
         path = "ConcatenatedRecordings/";
 
     }
 
+	/**
+	*This returns all of the users attempts at this recording
+	*/
     public ObservableList<String> getUserAttempts() {
         ObservableList<String> personalRecordingsList = FXCollections.observableArrayList(userAttempts.keySet());
         Collections.sort(personalRecordingsList);
         return personalRecordingsList;
     }
 
+	/**
+	*Returns a number which hasn't yet been used to name a personal recording to allow a new personal recording to
+	*be made
+	*/
     public int getUnusedAttemptsNumber(){
         int[] usedNumbers = new int[userAttempts.size()];
         int index = 0;
@@ -68,20 +82,33 @@ public class ConcatenatedRecording extends Recording implements DemoRecording {
         return usedNumbers.length + 1;
     }
 
+	/**
+	*returns the selected recording
+	*/
     public Recording getUserRecording(String name) {
         return userAttempts.get(name);
     }
 
+	/**
+	*adds a personal recording to the user attempts
+	*/
     public void addAttempt(Recording attempt) {
         userAttempts.put(attempt.getShortName() ,attempt);
     }
 
+	/**
+	*Removes a personal recording from the user attempts
+	*/
     public void deleteAttempt(String attempt) {
         userAttempts.remove(attempt);
     }
 
+	/**
+	*Creates the concatenated recording by first removing the excess silence and normalising the volume
+	*/
     private void createConcatenatedRecording(List<String> fileNames, String fullItem) {
-
+	
+		//Get the names of all temporary files to concatenate
         List<String> tmpFiles = new ArrayList<>();
         int index = 1;
         for (String file : fileNames) {
@@ -92,11 +119,8 @@ public class ConcatenatedRecording extends Recording implements DemoRecording {
         }
 
         final List<String> finalTempFiles = new ArrayList<>(tmpFiles);
-        System.out.println(finalTempFiles);
 
-        //remove silence either side for all recordings and create temp files for all
-        //Temp file names are of the form name1name2name31, where 1 is the index of the temp file
-        //Checked and works
+        //remove silence either side for all recordings and creates the temp files for all
         Task<Void> removeSilenceTask = new Task<Void>() {
             @Override
             protected Void call() throws Exception {
@@ -121,7 +145,7 @@ public class ConcatenatedRecording extends Recording implements DemoRecording {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        //regulate volume for all, have checked it changes volume but not that it equalises volume of multiple recordings
+        //regulate volume for all
         Task<Void> regulateVolumeTask = new Task<Void>() {
             @Override
             protected Void call() throws Exception {
@@ -172,7 +196,8 @@ public class ConcatenatedRecording extends Recording implements DemoRecording {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
+		
+		//deletes the temp files
         for (String fileName : finalTempFiles) {
             File file = new File(fileName);
             file.delete();
