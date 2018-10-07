@@ -25,13 +25,11 @@ import java.util.ResourceBundle;
 
 public class RecordController implements Initializable {
 	
-	Boolean running;
+	
 	@FXML
-	Button stop;
-    @FXML
-    Label instructionLabel;
-    @FXML
-    ProgressIndicator progressIndicator;
+	Button stopButton;
+	@FXML
+	Label statusLabel;
     @FXML
     Button recordButton;
     @FXML
@@ -44,11 +42,16 @@ public class RecordController implements Initializable {
     Button returnButton;
     @FXML
     Button demoButton;
+    @FXML
+    Label instructionLabel;
 
+    //Controls the recording process. Starts/stops recording
+    Boolean running;
+    
     //Stores the current chosen volume.
     Double volume;
 
-
+    //Recording objects 
     Recording recording;
     DemoRecording databaseRecording;
 
@@ -69,7 +72,12 @@ public class RecordController implements Initializable {
      */
     @FXML
     private void record() {
-
+    	
+    	//Make the stop button visible and update text to show user they are recording.
+    	stopButton.setVisible(true);
+    	statusLabel.setText("Recording...");
+    	
+    	
         //Every time the record button is clicked, increment the recordClicked variable to
         //move the user closer to their reward.
         parentController.incrementIndicator();
@@ -129,7 +137,7 @@ public class RecordController implements Initializable {
     @FXML
     public void stopButtonClicked() {
         setComponentsForProcessingRecording();
-
+        statusLabel.setText("");
         //Stop the recording by stopping the while loop writes the audio information to the audiofile
         running = false;
     }
@@ -216,18 +224,19 @@ public class RecordController implements Initializable {
      * Sets the UI layout for recording.
      */
     private void setComponentsForRecording() {
-        instructionLabel.setText("Press to begin recording for five seconds");
+    	instructionLabel.setText("Press record to start recording");
         recordButton.setVisible(true);
         recordButton.setDisable(false);
         playButton.setVisible(false);
         redoButton.setVisible(false);
         keepButton.setVisible(false);
         demoButton.setVisible(false);
-        progressIndicator.setProgress(0);
+        stopButton.setVisible(false);
+  
     }
 
     /*
-     * Sets the UI for asking user if they want ot keep their recording.
+     * Sets the UI for asking user if they want to keep their recording.
      */
     private void setComponentsForProcessingRecording() {
         instructionLabel.setText("What do you want to do with this recording");
@@ -236,7 +245,8 @@ public class RecordController implements Initializable {
         redoButton.setVisible(true);
         keepButton.setVisible(true);
         demoButton.setVisible(true);
-    }
+        stopButton.setVisible(false);    
+        }
 
     /*
      * Passes information between recordController and WorkSpaceController

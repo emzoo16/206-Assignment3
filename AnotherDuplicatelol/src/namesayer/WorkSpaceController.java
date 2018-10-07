@@ -37,10 +37,6 @@ import javafx.stage.Stage;
 
 public class WorkSpaceController implements Initializable {
 
-	//These are stubs to be replaced with the custom list passed in from the workspaceCreator
-	//sample would be replaced with the list and sampleCreations with the folder containing all
-	//user recordings.
-
 	//Current index in the listView 
 	int currentIndex = 0;
 	int ownCurrentIndex = 0;
@@ -88,6 +84,11 @@ public class WorkSpaceController implements Initializable {
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+		
+		//Set the volume to the max to begin with.
+		volume = 1.0;
+		volumeSlider.setValue(volume);
+		
 		
 		//Listener to get the current name the user is clicking on.
 		dataListView.getSelectionModel().selectedItemProperty().addListener(
@@ -153,19 +154,17 @@ public class WorkSpaceController implements Initializable {
 	 * object.
 	 */
 	public void refreshPersonalRecordings(String recordingName) {
-		System.out.println(recordingName);
-		System.out.println(listOfRecordings.getRecordingNames());
 		DemoRecording currentDatabaseRecording = listOfRecordings.getRecording(recordingName);
-		if (currentDatabaseRecording == null) {
-			System.out.println("why am I null?");
-		}
 		ownList = currentDatabaseRecording.getUserAttempts();
 		ownListView.setItems(ownList);
 	}
 
-	//This method starts playing the current name.
+	/*
+	 * This method starts playing the current name.
+	 */
 	@FXML
 	public void playButtonClicked(ActionEvent event) {
+		
 		if (isOnDatabase) {
 			String currentRecordingName = dataListView.getSelectionModel().getSelectedItem();
 			DemoRecording currentRecording = listOfRecordings.getRecording(currentRecordingName);
@@ -179,7 +178,9 @@ public class WorkSpaceController implements Initializable {
 
 	}
 
-	//This method takes the user to the next name on the play queue.
+	/*
+	 * This method takes the user to the next name on the play queue.
+	 */
 	@FXML
 	public void nextButtonClicked(ActionEvent event) {
 		if (isOnDatabase) {
@@ -202,7 +203,9 @@ public class WorkSpaceController implements Initializable {
 		}
 	}
 
-	//This method takes the user to the previous name on the play queue.
+	/*
+	 * This method takes the user to the previous name on the play queue.
+	 */
 	@FXML
 	public void previousButtonClicked(ActionEvent event) {
 		if (isOnDatabase) {
@@ -224,7 +227,9 @@ public class WorkSpaceController implements Initializable {
 		}
 	}
 
-	//This method takes the user back to the workspace creator scene.
+	/*
+	 * This method takes the user back to the workspace creator scene.
+	 */
 	@FXML
 	public void backButtonClicked(ActionEvent event) throws Exception {
 		try {
@@ -239,7 +244,9 @@ public class WorkSpaceController implements Initializable {
 		}
 	}
 
-	//This method takes the user to the rate screen.
+	/*
+	 * This method takes the user to the rate screen.
+	 */
 	@FXML
 	public void rateButtonClicked(ActionEvent event) throws Exception {
 		String currentName = dataListView.getSelectionModel().getSelectedItem();
@@ -254,7 +261,9 @@ public class WorkSpaceController implements Initializable {
 		createStage.show();
 	}
 
-	//This method handles when the user wants to delete an own recording.
+	/*
+	 * This method handles when the user wants to delete an own recording.
+	 */
 	@FXML
 	public void creationDeleteButtonClicked(ActionEvent event) {
 		String ownCurrentName = ownListView.getSelectionModel().getSelectedItem();
@@ -286,7 +295,9 @@ public class WorkSpaceController implements Initializable {
 
 	}
 
-	//This method handles when the user wants to record their own recording.
+	/*
+	 * This method handles when the user wants to record their own recording.
+	 */
 	@FXML
 	public void recordButtonClicked(ActionEvent event) {
 		try {
@@ -304,6 +315,10 @@ public class WorkSpaceController implements Initializable {
 		}
 	}
 
+	/*
+	 * When the toggle button is pressed, the view switches to either the personal recordings or the 
+	 * database recordings.
+	 */
 	@FXML
 	private void toggleTab() {
 		if (isOnDatabase) {
@@ -327,6 +342,9 @@ public class WorkSpaceController implements Initializable {
 		}
 	}
 
+	/*
+	 * 
+	 */
 	public void setWorkspaceRecordingsAndController(DatabaseList recordings, ObservableList<String> recordingNames) {
 		dataList = recordingNames;
 		dataListView.setItems(dataList);
@@ -353,6 +371,9 @@ public class WorkSpaceController implements Initializable {
 					ratingArray[count] = Integer.parseInt(scanner.nextLine());
 					count++;
 				}
+				
+				//Calculates the average score of the recording by adding the ratings and
+				//dividing by the total number of reviews.
 				int ratingSum = ratingArray[0];
 				double averageRating = (double) ratingSum / (ratingArray[1]);
 				updateRating(averageRating, currentName);
@@ -365,15 +386,19 @@ public class WorkSpaceController implements Initializable {
 	}
 
 	/*
-	 * This method updates the rating shown on the UI.
+	 * This method updates the rating on the UI.
 	 */
 	public void updateRating(double rating, String name) {
+		
+		//If the rating is above 2.5, print the rating normally.
 		if (rating > 2.5) {
 			ratingLabel.setText(String.format("Average Rating: %.2f", rating));
 			if (isBadRecording(name)) {
 				removeFromBadFile(name);
 			}
-		} else if (rating >= 0) {
+		} 
+		//If the rating is below or equal to 2.5, add a bad quality warning to warn the user.
+		else if (rating >= 0) {
 			ratingLabel.setText(String.format("Average Rating: %.2f *Poor Quality*", rating));
 			if (!isBadRecording(name)) {
 				addToBadFile(name);
@@ -391,10 +416,10 @@ public class WorkSpaceController implements Initializable {
 	 * rating exceeds 2.5.
 	 */
 	public void removeFromBadFile(String name) {
+		
 		File tmpFile = new File("./Review/temp.txt");
 		File file = new File("./Review/BadRecordings.txt");
 		try {
-
 			BufferedReader reader = new BufferedReader(new FileReader(file));
 			BufferedWriter writer = new BufferedWriter(new FileWriter(tmpFile));
 
@@ -420,6 +445,8 @@ public class WorkSpaceController implements Initializable {
 	 */
 	public void addToBadFile(String name) {
 		File file = new File("./Review/BadRecordings.txt");
+		
+		//Append the given name to the BadRecordings file.
 		if (file.exists()) {
 			try {
 				Writer output;
@@ -442,10 +469,12 @@ public class WorkSpaceController implements Initializable {
 	}
 
 	/*
-	 * This method checks if the recording is of bad quality.
+	 * This method checks if the recording of the name passed is in the BadRecordings file.
 	 */
 	public Boolean isBadRecording(String name) {
 		File file = new File("./Review/BadRecordings.txt");
+		
+		//Scans the file line by line to check if the given name is in the file.
 		if (file.exists()) {
 			try {
 				Scanner scanner = new Scanner(file);
@@ -463,13 +492,19 @@ public class WorkSpaceController implements Initializable {
 		return false;
 	}
 	
+	/*
+	 * This method returns the current volume value to the caller.
+	 */
 	public double getVolume() {
 		return volume;
 	}
 
+	/*
+	 * This method provides the user with a congratulatory pop up window when the user completes 5 
+	 * recordings and again when the user completes 10 recordings.
+	 */
 	public void incrementIndicator() {
-
-		//Increment
+		//Increment the number stored in recordClicked.
 		recordClicked++;
 
 		//If the user has recorded 5 times, a reward alert is shown.

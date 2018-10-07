@@ -13,7 +13,7 @@
 
 <AnchorPane prefHeight="500.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="namesayer.testMicrophoneController">
    <children>
-      <VBox alignment="CENTER" layoutX="243.0" layoutY="110.0" prefHeight="500.0" prefWidth="700.0" spacing="30.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <VBox alignment="CENTER" layoutX="243.0" layoutY="110.0" prefHeight="500.0" prefWidth="700.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
             <HBox prefHeight="25.0" prefWidth="700.0">
                <children>
@@ -22,24 +22,33 @@
                <padding>
                   <Insets left="30.0" />
                </padding>
+               <VBox.margin>
+                  <Insets top="30.0" />
+               </VBox.margin>
             </HBox>
             <Label text="Test Your Microphone">
                <font>
                   <Font size="36.0" />
                </font>
+               <VBox.margin>
+                  <Insets top="30.0" />
+               </VBox.margin>
             </Label>
-            <Label prefHeight="44.0" prefWidth="548.0" text="Press Test to start the microphone test. You should see a blue bar moving as you speak." />
+            <Label prefHeight="44.0" prefWidth="548.0" text="Press Test to start the microphone test. You should see a blue bar moving as you speak.">
+               <VBox.margin>
+                  <Insets bottom="10.0" top="10.0" />
+               </VBox.margin></Label>
+            <ImageView fitHeight="155.0" fitWidth="210.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../../../../Downloads/Antu_mic-on.svg.png" />
+               </image>
+            </ImageView>
             <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="20.0">
                <children>
-                  <ImageView fitHeight="112.0" fitWidth="127.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../../../../../Downloads/voice-mic-ios-7-interface-symbol_318-33733.jpg" />
-                     </image>
-                  </ImageView>
-                  <ProgressBar fx:id="progressBar" prefHeight="64.0" prefWidth="460.0" progress="0.0" />
+                  <ProgressBar fx:id="progressBar" prefHeight="37.0" prefWidth="460.0" progress="0.0" />
                </children>
             </HBox>
-            <HBox alignment="CENTER" prefHeight="86.0" prefWidth="700.0" spacing="50.0">
+            <HBox alignment="TOP_CENTER" prefHeight="86.0" prefWidth="700.0" spacing="50.0">
                <children>
                   <Button fx:id="testStopButton" alignment="CENTER" mnemonicParsing="false" onAction="#testStopButtonClicked" text="Test">
                      <font>

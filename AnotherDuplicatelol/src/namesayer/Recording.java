@@ -57,27 +57,7 @@ public class Recording {
             clip.open(stream);
             setVolume(volume);
             clip.start();
-            
-            //Timer object responsible for updating the progress bar
-            Timer timer = new Timer("Play Timer");
-            
-            //Timer task that updates the progress bar as the recording plays.
-            TimerTask timerTask = new TimerTask() {
 
-				@Override
-				public void run() {
-					double time = (double)clip.getFramePosition()
-							/stream.getFrameLength();
-					progressBar.setProgress(time);
-					if (time >= 1.00) {
-						timer.cancel();
-					}
-				}
-				
-            };
-            
-            //Set the timer to run the timerTask to update the progress bar every 30 miliseconds.
-            timer.scheduleAtFixedRate(timerTask, 30, 30);
             
         } catch (MalformedURLException e) {
             e.printStackTrace();

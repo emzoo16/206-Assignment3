@@ -68,8 +68,13 @@
                   </HBox>
                </children>
             </VBox>
-            <VBox layoutX="34.0" layoutY="100.0" prefHeight="385.0" prefWidth="250.0" spacing="5.0">
+            <VBox layoutX="34.0" layoutY="21.0" prefHeight="464.0" prefWidth="250.0" spacing="5.0">
                <children>
+                  <Button fx:id="backButton" mnemonicParsing="false" onAction="#backButtonClicked" text="Back">
+                     <VBox.margin>
+                        <Insets bottom="20.0" />
+                     </VBox.margin>
+                  </Button>
                   <TabPane fx:id="tabPane" prefHeight="362.0" prefWidth="250.0" tabClosingPolicy="UNAVAILABLE">
                     <tabs>
                       <Tab text="Demo's">
@@ -100,12 +105,6 @@
                   </HBox>
                </children>
             </VBox>
-            <Label alignment="CENTER" layoutX="203.0" layoutY="23.0" prefHeight="60.0" prefWidth="295.0" text="WorkSpace">
-               <font>
-                  <Font size="36.0" />
-               </font>
-            </Label>
-            <Button fx:id="backButton" layoutX="34.0" layoutY="23.0" mnemonicParsing="false" onAction="#backButtonClicked" text="Back" />
          </children>
       </Pane>
    </children>
