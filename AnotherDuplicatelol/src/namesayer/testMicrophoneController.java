@@ -36,9 +36,7 @@ import javafx.scene.control.*;
 import javafx.util.Duration;
 
 public class testMicrophoneController implements Initializable{
-	
-	Boolean running = true;
-	TargetDataLine line;
+
 	
 	@FXML
 	Button stopButton;
@@ -47,7 +45,7 @@ public class testMicrophoneController implements Initializable{
 	Button backButton;
 
 	@FXML
-	Button testButton;
+	Button testStopButton;
 
 
 	@FXML
@@ -56,11 +54,24 @@ public class testMicrophoneController implements Initializable{
 	@FXML
 	ProgressBar progressBar;
 
+	//Variable that controls if the test microphone bar is running.
+	Boolean running = true;
+	
+	//Reference to the dataline the audio is being read from.
+	TargetDataLine line;
+	
+	/*
+	 * Initializes the UI to test microphone mode.
+	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		testButton.setText("Test");
+		testStopButton.setText("Test");
 	}
 
+	/*
+	 * This method is invoked when the back button is clicked. It takes the user back to
+	 * the menu screen.
+	 */
 	@FXML
 	public void backButtonClicked() {
 		try {
@@ -72,35 +83,53 @@ public class testMicrophoneController implements Initializable{
 		}
 	}
 	
+	/*
+	 * This method is invoked when the test/stop button is clicked. If the button is currently
+	 *showing test, change the text to stop and vice versa. If the text is show is text, start running
+	 *the bar for the microphone.
+	 */
 	@FXML
-	public void testButtonClicked() {
-		if(testButton.getText().equals("Test")) {
-			testButton.setText("Stop");
+	public void testStopButtonClicked() {
+		if(testStopButton.getText().equals("Test")) {
+			testStopButton.setText("Stop");
 			running = true;
 			startMicBar();
 		}else {
-			testButton.setText("Test");
+			testStopButton.setText("Test");
 			running = false;
 		}
 	}
 	
+	/*
+	 * This method is responsible for making the progress bar react to the users input into 
+	 * the microphone. The user can then gauge if their microphone is working.
+	 */
 	public void startMicBar() {
 		
  		AudioFormat format =  new AudioFormat(8000, 8, 1, true, true);
  		
         try {
+        	//Create and open a new dataline that the audio will be read from.
         	DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
 			TargetDataLine line = (TargetDataLine) AudioSystem.getLine(info);
 			line.open(format);
 			
+			//New thread to handle reading of the users audio input.
 			Task<Void> task = new Task<Void>() {
 
 				@Override
 				protected Void call() throws Exception {
+					
+					//Create an array of integers to store the audio information from the dataline and 
+					//start the line.
 					int bytesRead;
 					byte[] data = new byte[line.getBufferSize()/5];
 					line.start();
 					
+					//The data from the line is read and converted to a double.
+					//This double is then used to set the progress bar to move according
+					//to the users voice.
+
 					while(running) {
 						bytesRead = line.read(data, 0, data.length);
 						double i= (double)Math.abs(data[0])/15;
@@ -110,6 +139,8 @@ public class testMicrophoneController implements Initializable{
 				}
 		
 			};
+			
+			//Start the thread.
 			Thread thread = new Thread(task);
 			thread.setDaemon(true);
 			thread.start();
