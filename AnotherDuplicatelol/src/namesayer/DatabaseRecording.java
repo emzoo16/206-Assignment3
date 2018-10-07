@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class DatabaseRecording extends Recording implements DemoRecording{
+	//A map of all personal recording attempts
     private HashMap<String, Recording> userAttempts;
 
     /*
@@ -34,13 +35,13 @@ public class DatabaseRecording extends Recording implements DemoRecording{
                 }
             }
         } else {
-            //Cant find the database/nothing in it
+            //Cant find any personal recordings
         }
         path = "Database/";
     }
 
     /*
-     * Returns all personal recordings for the given name.
+     * Returns all personal recordings
      */
     public ObservableList<String> getUserAttempts() {
         ObservableList<String> personalRecordingsList = FXCollections.observableArrayList(userAttempts.keySet());
@@ -49,7 +50,7 @@ public class DatabaseRecording extends Recording implements DemoRecording{
     }
 
     /*
-     * Returns an unused number to be used in naming the personal recording.
+     * Returns an unused number to be used in naming a new personal recording.
      */
     public int getUnusedAttemptsNumber() {
         int[] usedNumbers = new int[userAttempts.size()];
@@ -68,14 +69,23 @@ public class DatabaseRecording extends Recording implements DemoRecording{
         return usedNumbers.length + 1;
     }
 
+	/**
+	*returns the requested user attempt
+	*/
     public Recording getUserRecording(String name) {
         return userAttempts.get(name);
     }
 
+	/**
+	*Adds a a user attempt
+	*/
     public void addAttempt(Recording attempt) {
         userAttempts.put(attempt.getShortName() ,attempt);
     }
 
+	/**
+	*removes a user attempt
+	*/
     public void deleteAttempt(String attempt) {
         userAttempts.remove(attempt);
     }
