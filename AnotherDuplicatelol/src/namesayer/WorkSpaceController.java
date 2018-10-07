@@ -40,10 +40,7 @@ public class WorkSpaceController implements Initializable {
 	//These are stubs to be replaced with the custom list passed in from the workspaceCreator
 	//sample would be replaced with the list and sampleCreations with the folder containing all
 	//user recordings.
-
-	//Current index in the listView 
-	int currentIndex = 0;
-	int ownCurrentIndex = 0;
+	
 	double volume;
 	//FXML variables
 	@FXML
@@ -81,6 +78,15 @@ public class WorkSpaceController implements Initializable {
 	@FXML
 	TabPane tabPane;
 
+	//Current index in the listView 
+		int currentIndex = 0;
+		int ownCurrentIndex = 0;
+	
+	//Keeps track of how many times the record button has been pressed to keep progress
+	//on the reward pop up.
+		
+	int recordClicked = 0;
+		
 	DatabaseList listOfRecordings;
 	WorkSpaceController selfController;
 	Boolean isOnDatabase = true;
@@ -88,6 +94,9 @@ public class WorkSpaceController implements Initializable {
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+		//Initializes the volume slider as full volume.
+		volume = 1.0;
+		volumeSlider.setValue(volume);
 		
 		//Listener to get the current name the user is clicking on.
 		dataListView.getSelectionModel().selectedItemProperty().addListener(
@@ -461,8 +470,37 @@ public class WorkSpaceController implements Initializable {
 		return false;
 	}
 	
+	/*
+	 * 
+	 */
 	public double getVolume() {
 		return volume;
+	}
+	
+	/*
+	 * 
+	 */
+	public void incrementIndicator() {
+		
+		//Increment 
+		recordClicked++;
+		
+		//If the user has recorded 5 times, a reward alert is shown.
+		if (recordClicked == 5) {
+			Alert alert = new Alert(AlertType.INFORMATION);
+			alert.setTitle("Congratulations!");
+			alert.setHeaderText(null);
+			alert.setContentText("Keep up the good work! You have recorded 5 times!");
+			alert.showAndWait();
+		}
+		//If the user has recorded 10 time, another reward alert is shown.
+		else if (recordClicked == 10) {
+			Alert alert = new Alert(AlertType.INFORMATION);
+			alert.setTitle("Congratulations!");
+			alert.setHeaderText(null);
+			alert.setContentText("Wow, amazing! You have recorded 10 times!");
+			alert.showAndWait();
+		}
 	}
 	
 	
