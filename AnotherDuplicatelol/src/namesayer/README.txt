@@ -27,5 +27,5 @@ The test microphone button leads the user to a testing screen. Here, users can t
 
 Special features:
 A special feature of this application is the volume slider in the workspace. This allows the user to adjust the volume of the recording to their liking.
-Another special feature is the progress bar…
+Another special feature is the reward system, which shows the user a congratulatory alert after 5 and 10 recordings.
 
