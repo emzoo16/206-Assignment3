@@ -62,6 +62,9 @@ public class PlaylistController implements Initializable {
 		//Listener to get the current name the user is clicking on in the playListView.
 				
 		workspaceRecordings = new DatabaseList();
+		
+		//Make the textfield uneditable.
+		fileText.setEditable(false);
 	}
 
 	/*
@@ -86,19 +89,27 @@ public class PlaylistController implements Initializable {
 	 */
 	@FXML
 	public void continueButtonClicked() {
-		try {
-			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("workspace.fxml"));
-			Parent playlistScene = fxmlLoader.load();
-			WorkSpaceController controller = fxmlLoader.getController();
-			
-			//Passing the selected recordings to the workspace so they can be shown in the listviews in the
-			//workspace.
-			controller.setWorkspaceRecordingsAndController(workspaceRecordings, workspaceRecordings.getRecordingNames());
-			
-			Stage stage = (Stage) continueButton.getScene().getWindow();
-			stage.setScene(new Scene(playlistScene, 700, 500));
-		} catch (IOException e) {
-			e.printStackTrace();
+		if(nameList.isEmpty()) {
+			Alert alert = new Alert(AlertType.WARNING);
+			alert.setTitle("Warning");
+			alert.setHeaderText(null);
+			alert.setContentText("Please load a name before continuing." );
+			alert.showAndWait();
+		}else {
+			try {
+				FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("workspace.fxml"));
+				Parent playlistScene = fxmlLoader.load();
+				WorkSpaceController controller = fxmlLoader.getController();
+				
+				//Passing the selected recordings to the workspace so they can be shown in the listviews in the
+				//workspace.
+				controller.setWorkspaceRecordingsAndController(workspaceRecordings, workspaceRecordings.getRecordingNames());
+				
+				Stage stage = (Stage) continueButton.getScene().getWindow();
+				stage.setScene(new Scene(playlistScene, 700, 500));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -129,7 +140,7 @@ public class PlaylistController implements Initializable {
 	@FXML
 	public void uploadButtonClicked() {
 		
-		//If no file is chose, show a warning alert.
+		//If no file is chosen, show a warning alert.
 		if(currentFile == null) {
 			Alert alert = new Alert(AlertType.WARNING);
 			alert.setTitle("Warning");
@@ -149,84 +160,53 @@ public class PlaylistController implements Initializable {
 	 */
 	public void scanFile() {
 		
-		//Indexers to keep track of current position in the arrays.
-		int notFoundIndex=0;
+		//An array of all full names with a name/names missing. Missing names bracketed. This will be
+		//passed into the warning controller.
+		List<String>notFoundDisplay = new ArrayList<>();
 		
 		//An array that will contain all the valid names from the file.
 		List<String> namesList = new ArrayList<>();
 
 		if (currentFile.exists()) {
-			try {
+			try{
 				Scanner scanner = new Scanner(currentFile);
 				
 				//Iterate through each line in the text file.
 				while (scanner.hasNextLine()) {
 					String line = scanner.nextLine();
+					List<String> notFound = checkName(line);
 					
-					//An array containing all the names in the current line that could not be found in the database.
-					String[] notFound = {""};
-
-					//Seperate the line by spaces or underscores to create an array of single names.
-					String[] splitLine = line.trim().split("[\\s+,_]");
-					
-					//Iterate through each single name in the line to check if the name is in the
-					//database.
-					for (int i=0; i<splitLine.length; i++ ) {
-						
-						//If the name is not in the database, add the name to the not found list.
-						if (!inDatabase(splitLine[i])) {
-							notFound[notFoundIndex] = splitLine[i];
-							
-						//If the name is in the database, add its fully qualified name to the found names
-						//array
-						}
-					}
-					
-					//If there are names in the notFound list, show a warning to the user to ask them if they want to concatenate
-					//the found names anyway or cancel.
-					if(notFound[0] != "") {
-						Alert alert = new Alert(AlertType.WARNING);
-						alert.setTitle("Warning");
-						alert.setHeaderText("The following names were not found: ");
-						
-						//Creates an error message telling reader which one of the names was not found.
-						String errorText = "";
-						for(int i=0; i<notFound.length; i++) {
-							errorText=errorText+ notFound[i];
-						}
-						
-						alert.setContentText(errorText + "\n" + "The name "+ line + " was not created." );
-						alert.showAndWait();
-					}else {
-						//If all the names are in the database, add the line (the composite name) to the namesList
-						//Array.
+					//If all the names are in the database, add the line (the composite name) to the namesList.
+					if(notFound.isEmpty()) {
 						namesList.add(line);
-					}
-				}
-
-				//A list to get the file names of all recordings to create a concatenated recording
-				DatabaseList referenceList = new DatabaseList();
-				referenceList.displayAll();
-
-				//Loops through all names in the list adding them to the workspace
-				for (String name : namesList) {
-					//If the name is a concatenated one
-					if (name.trim().contains(" ")) {
-						//Gets the list of the names
-						List<String> names = Arrays.asList(name.split(" "));
-						List<String> fileNames = new ArrayList<>();
-						//Gets the file names for all these names
-						for (String recording : names) {
-							fileNames.add(referenceList.getRecording(recording).getFileName());
+					}else {
+						//Format the string to surround the name not found in brackets. This is the format they will be
+						//displayed in the warning screen.
+						for (String s: notFound) {
+						line = line.replace(s, "(" + s + ")");
 						}
-						//Creates the concatenated recording and adds it to the workspace
-						DemoRecording concatenatedRecording = new ConcatenatedRecording(fileNames, name);
-						workspaceRecordings.add(concatenatedRecording);
-					} else {
-						//If the name is a single name, it simply gets added
-						workspaceRecordings.add(name);
+						notFoundDisplay.add(line);
 					}
 				}
+				if (!notFoundDisplay.isEmpty()) {
+					try {
+						FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("uploadWarning.fxml"));
+						Parent createSceneParent = fxmlLoader.load();
+						Scene createScene = new Scene(createSceneParent);
+						
+						//Getting the instance of the warning controller and passing the 
+						uploadWarningController controller = fxmlLoader.getController();
+						controller.setNotFoundList(notFoundDisplay);
+						
+						Stage createStage = new Stage();
+						createStage.setScene(createScene);
+						createStage.show();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+				
+				addNames(namesList);
 				nameList = FXCollections.observableArrayList(namesList);
 				nameListView.setItems(nameList);
 			} catch (FileNotFoundException e) {
@@ -251,19 +231,68 @@ public class PlaylistController implements Initializable {
 			
 			//Parsing the actual name from the long file name.
 			String name = databaseFiles[i].getName();
-			String shortName = name.substring(name.lastIndexOf("_") + 1).replaceAll(".wav", "");
+			String shortName = name.substring(name.lastIndexOf("_") + 1).replaceAll(".wav", "").toLowerCase();
 			
 			//Checks if the given file name and the current file in the database directory
 			//match. If they are, return true.
-			if (shortName.equals(fileName)) {
+			if (shortName.equals(fileName.toLowerCase())) {
 				return true;
 			}
 		}		
-		return false;
-		
+		return false;	
 	}
 	
+	/**
+	 * Given a string (a name), this method parses the string and checks if each name in the sting
+	 * is in the database.
+	 */
+	public List<String> checkName(String line) {
 	
-	
+		//An array containing all the names in the current line that could not be found in the database.
+		List<String> notFound = new ArrayList<>();
 
+		//Seperate the line by spaces, underscores or hyphens to create an array of single names.
+		String[] splitLine = line.trim().split("[\\s+,_,-]");
+		
+		//Iterate through each single name in the line to check if the name is in the
+		//database.
+		for (int i=0; i<splitLine.length; i++ ) {
+			
+			//If the name is not in the database, add the name to the not found list.
+			if (!inDatabase(splitLine[i])) {
+				notFound.add(splitLine[i]);
+			}
+	}
+		return notFound;
+	}	
+
+	/*
+	 * This method will add all the names in the list of found names to the workspace.
+	 */
+	public void addNames(List<String> namesList) {
+		
+		//A list to get the file names of all recordings to create a concatenated recording
+		DatabaseList referenceList = new DatabaseList();
+		referenceList.displayAll();
+
+		//Loops through all names in the list adding them to the workspace
+		for (String name : namesList) {
+			//If the name is a concatenated one
+			if (name.trim().contains(" ")) {
+				//Gets the list of the names
+				List<String> names = Arrays.asList(name.split(" "));
+				List<String> fileNames = new ArrayList<>();
+				//Gets the file names for all these names
+				for (String recording : names) {
+					fileNames.add(referenceList.getRecording(recording).getFileName());
+				}
+				//Creates the concatenated recording and adds it to the workspace
+				DemoRecording concatenatedRecording = new ConcatenatedRecording(fileNames, name);
+				workspaceRecordings.add(concatenatedRecording);
+			} else {
+				//If the name is a single name, it simply gets added
+				workspaceRecordings.add(name);
+			}
+		}
+	}
 }
