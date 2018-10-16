@@ -16,10 +16,7 @@ import java.util.List;
  *takes place in the class and the method of obtaining the user attempts is slightly different
  *
  */
-public class ConcatenatedRecording extends Recording implements DemoRecording {
-	
-	//A map of all the users attempts of this concatenation
-    private HashMap<String, Recording> userAttempts;
+public class ConcatenatedRecording extends DemoRecording {
 	//The file names of the parts of the concatenation
     private List<String> listOfFilesNames;
 
@@ -42,7 +39,7 @@ public class ConcatenatedRecording extends Recording implements DemoRecording {
                     Character digit = recordingFileName.charAt(recordingFileName.lastIndexOf("-") + 1);
                     String recordingNumber = digit.toString();
                     String recordingName = (this.shortName + "-" + recordingNumber);
-                    userAttempts.put(recordingName, new Recording(recordingFileName, "ConcatenatedPersonalRecordings/"));
+                    userAttempts.put(recordingName, new PersonalRecording(recordingFileName, "ConcatenatedPersonalRecordings/"));
                 }
             }
         } else {
@@ -50,57 +47,6 @@ public class ConcatenatedRecording extends Recording implements DemoRecording {
         }
         path = "ConcatenatedRecordings/";
 
-    }
-
-	/**
-	*This returns all of the users attempts at this recording
-	*/
-    public ObservableList<String> getUserAttempts() {
-        ObservableList<String> personalRecordingsList = FXCollections.observableArrayList(userAttempts.keySet());
-        Collections.sort(personalRecordingsList);
-        return personalRecordingsList;
-    }
-
-	/**
-	*Returns a number which hasn't yet been used to name a personal recording to allow a new personal recording to
-	*be made
-	*/
-    public int getUnusedAttemptsNumber(){
-        int[] usedNumbers = new int[userAttempts.size()];
-        int index = 0;
-        for (String attempt : userAttempts.keySet()) {
-            Recording recording = userAttempts.get(attempt);
-            usedNumbers[index] = recording.getNumber();
-            index++;
-        }
-        java.util.Arrays.sort(usedNumbers);
-        for (int i = 0; i < usedNumbers.length; i++) {
-            if (usedNumbers[i] != i + 1) {
-                return i + 1;
-            }
-        }
-        return usedNumbers.length + 1;
-    }
-
-	/**
-	*returns the selected recording
-	*/
-    public Recording getUserRecording(String name) {
-        return userAttempts.get(name);
-    }
-
-	/**
-	*adds a personal recording to the user attempts
-	*/
-    public void addAttempt(Recording attempt) {
-        userAttempts.put(attempt.getShortName() ,attempt);
-    }
-
-	/**
-	*Removes a personal recording from the user attempts
-	*/
-    public void deleteAttempt(String attempt) {
-        userAttempts.remove(attempt);
     }
 
 	/**

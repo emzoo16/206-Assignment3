@@ -192,13 +192,13 @@ public class RecordController implements Initializable {
             version = shortName.substring(shortName.indexOf("("), shortName.lastIndexOf(")") + 1);
         }
         if (shortName.contains(" ")) {
-            recording = new Recording(recordingFileName + version + "-" + (recordingNumber) + ".wav", "ConcatenatedPersonalRecordings/");
+            recording = new PersonalRecording(recordingFileName + version + "-" + (recordingNumber) + ".wav", "ConcatenatedPersonalRecordings/");
             databaseRecording.addAttempt(recording);
             File originalFile = new File("audio.wav");
             File newFile = new File("ConcatenatedPersonalRecordings/" + recording.getFileName());
             originalFile.renameTo(newFile);
         } else {
-            recording = new Recording(recordingFileName + version + "-" + (recordingNumber) + ".wav", "PersonalRecordings/");
+            recording = new PersonalRecording(recordingFileName + version + "-" + (recordingNumber) + ".wav", "PersonalRecordings/");
             databaseRecording.addAttempt(recording);
             File originalFile = new File("audio.wav");
             File newFile = new File("PersonalRecordings/" + recording.getFileName());

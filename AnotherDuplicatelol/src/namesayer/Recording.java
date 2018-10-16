@@ -14,7 +14,7 @@ import java.nio.file.Paths;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class Recording {
+public abstract class Recording {
 
 	//Variable storing the full name of the file and the trimmed name (only the actual name)
 	//respectively.
@@ -28,17 +28,6 @@ public class Recording {
     Clip clip;
 
     public Recording() {}
-
-    /*
-     * Constructor for the recording class. Takes in the full name of the file and the path
-     * to the file.
-     */
-    public Recording(String name, String path) {
-        String subString = name.substring(name.lastIndexOf("_") + 1);
-        shortName = subString.replaceAll(".wav", "");
-        fileName = name;
-        this.path = path;
-    }
 
     /*
      * Plays the wav file corresponding to the recording object. A volume value is passed in to 

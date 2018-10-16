@@ -1,26 +1,64 @@
 package namesayer;
 
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ProgressBar;
 
-public interface DemoRecording {
+import java.util.Collections;
+import java.util.HashMap;
 
-    public ObservableList<String> getUserAttempts();
+public abstract class DemoRecording extends Recording{
 
-    public int getUnusedAttemptsNumber();
+    //A map of all personal recording attempts
+    protected HashMap<String, Recording> userAttempts;
 
-    public Recording getUserRecording(String attempt);
+    /*
+     * Returns all personal recordings
+     */
+    public ObservableList<String> getUserAttempts() {
+        ObservableList<String> personalRecordingsList = FXCollections.observableArrayList(userAttempts.keySet());
+        Collections.sort(personalRecordingsList);
+        return personalRecordingsList;
+    }
 
-    public void addAttempt(Recording attempt);
+    /*
+     * Returns an unused number to be used in naming a new personal recording.
+     */
+    public int getUnusedAttemptsNumber() {
+        int[] usedNumbers = new int[userAttempts.size()];
+        int index = 0;
+        for (String attempt : userAttempts.keySet()) {
+            Recording recording = userAttempts.get(attempt);
+            usedNumbers[index] = recording.getNumber();
+            index++;
+        }
+        java.util.Arrays.sort(usedNumbers);
+        for (int i = 0; i < usedNumbers.length; i++) {
+            if (usedNumbers[i] != i + 1) {
+                return i + 1;
+            }
+        }
+        return usedNumbers.length + 1;
+    }
 
-    public void deleteAttempt(String attempt);
+    /**
+     *returns the requested user attempt
+     */
+    public Recording getUserRecording(String name) {
+        return userAttempts.get(name);
+    }
 
-    public String getFileName();
+    /**
+     *Adds a a user attempt
+     */
+    public void addAttempt(Recording attempt) {
+        userAttempts.put(attempt.getShortName() ,attempt);
+    }
 
-    public void play(double volume, ProgressBar bar);
-
-    public void setVolume(double volume);
-
-    public String getShortName();
-
+    /**
+     *removes a user attempt
+     */
+    public void deleteAttempt(String attempt) {
+        userAttempts.remove(attempt);
+    }
 }
