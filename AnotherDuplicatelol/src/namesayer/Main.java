@@ -37,6 +37,7 @@ public class Main extends Application {
         Parent root = FXMLLoader.load(getClass().getResource("startMenu.fxml"));
         primaryStage.setTitle("Name Sayer");
         primaryStage.setScene(new Scene(root, 700, 500));
+        primaryStage.setResizable(false);
         primaryStage.show();
     }
 

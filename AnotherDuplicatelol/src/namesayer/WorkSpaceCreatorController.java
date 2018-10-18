@@ -186,10 +186,10 @@ public class WorkSpaceCreatorController implements Initializable {
      * Invoked when the return button is pushed
      */
     @FXML
-    private void returnToMenu() {
+    private void returnButtonClicked() {
         try {
             Stage stage = (Stage) returnButton.getScene().getWindow();
-            Parent createScene = FXMLLoader.load(getClass().getResource("startMenu.fxml"));
+            Parent createScene = FXMLLoader.load(getClass().getResource("playlistScreen.fxml"));
             stage.setScene(new Scene(createScene, 700, 500));
         } catch (IOException e) {
             e.printStackTrace();

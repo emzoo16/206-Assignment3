@@ -5,67 +5,83 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
 <AnchorPane prefHeight="500.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="namesayer.PlaylistController">
    <children>
-      <Button fx:id="practiceButton" layoutX="442.0" layoutY="62.0" mnemonicParsing="false" onAction="#practiceButtonClicked" prefHeight="46.0" prefWidth="90.0" text="Practice">
+      <Button fx:id="practiceButton" layoutX="398.0" layoutY="62.0" mnemonicParsing="false" onAction="#practiceButtonClicked" prefHeight="46.0" prefWidth="114.0" text="New practice">
          <font>
             <Font size="14.0" />
          </font>
       </Button>
-      <Button fx:id="uploadButton" layoutX="540.0" layoutY="62.0" mnemonicParsing="false" onAction="#uploadButtonClicked" prefHeight="46.0" prefWidth="90.0" text="Upload">
+      <Button fx:id="uploadButton" layoutX="528.0" layoutY="62.0" mnemonicParsing="false" onAction="#uploadButtonClicked" prefHeight="46.0" prefWidth="106.0" text="Upload File">
          <font>
             <Font size="14.0" />
          </font>
       </Button>
-      <Label layoutX="48.0" layoutY="62.0" prefHeight="81.0" prefWidth="264.0" text="Playlist">
-         <font>
-            <Font size="36.0" />
-         </font>
-      </Label>
-      <HBox layoutX="48.0" layoutY="188.0" prefHeight="279.0" prefWidth="594.0">
+      <HBox layoutX="48.0" layoutY="158.0" prefHeight="279.0" prefWidth="594.0">
          <children>
             <VBox prefHeight="251.0" prefWidth="185.0">
                <children>
-                  <Button fx:id="playlist1" mnemonicParsing="false" prefHeight="125.0" prefWidth="185.0">
-                     <VBox.margin>
-                        <Insets bottom="15.0" />
-                     </VBox.margin>
-                  </Button>
-                  <Button fx:id="playlist4" mnemonicParsing="false" prefHeight="125.0" prefWidth="185.0" />
+                  <StackPane prefHeight="150.0" prefWidth="200.0">
+                     <children>
+                        <Button fx:id="playlist1" mnemonicParsing="false" onAction="#playlistClicked" prefHeight="125.0" prefWidth="185.0">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Button>
+                     </children>
+                  </StackPane>
+                  <StackPane prefHeight="150.0" prefWidth="200.0">
+                     <children>
+                        <Button fx:id="playlist4" mnemonicParsing="false" onAction="#playlistClicked" prefHeight="125.0" prefWidth="185.0" />
+                     </children>
+                  </StackPane>
                </children>
                <HBox.margin>
                   <Insets right="20.0" />
                </HBox.margin>
             </VBox>
-            <VBox prefHeight="227.0" prefWidth="185.0">
+            <VBox prefHeight="251.0" prefWidth="185.0">
                <children>
-                  <Button fx:id="playlist2" mnemonicParsing="false" prefHeight="125.0" prefWidth="185.0">
-                     <VBox.margin>
-                        <Insets bottom="15.0" />
-                     </VBox.margin>
-                  </Button>
-                  <Button fx:id="playlist5" mnemonicParsing="false" prefHeight="125.0" prefWidth="185.0" />
+                  <StackPane prefHeight="150.0" prefWidth="200.0">
+                     <children>
+                        <Button fx:id="playlist2" mnemonicParsing="false" onAction="#playlistClicked" prefHeight="125.0" prefWidth="185.0">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Button>
+                     </children>
+                  </StackPane>
+                  <StackPane prefHeight="150.0" prefWidth="200.0">
+                     <children>
+                        <Button fx:id="playlist5" mnemonicParsing="false" onAction="#playlistClicked" prefHeight="125.0" prefWidth="185.0" />
+                     </children>
+                  </StackPane>
                </children>
                <HBox.margin>
-                  <Insets right="20.0" />
+                  <Insets right="15.0" />
                </HBox.margin>
             </VBox>
-            <VBox prefHeight="227.0" prefWidth="185.0">
+            <VBox prefHeight="251.0" prefWidth="185.0">
                <children>
-                  <Button fx:id="playlist3" mnemonicParsing="false" prefHeight="125.0" prefWidth="185.0">
-                     <VBox.margin>
-                        <Insets bottom="15.0" />
-                     </VBox.margin>
-                  </Button>
-                  <Button fx:id="playlist6" mnemonicParsing="false" prefHeight="125.0" prefWidth="185.0" />
+                  <StackPane prefHeight="150.0" prefWidth="200.0">
+                     <children>
+                        <Button fx:id="playlist3" mnemonicParsing="false" onAction="#playlistClicked" prefHeight="125.0" prefWidth="185.0" />
+                     </children>
+                  </StackPane>
+                  <StackPane prefHeight="150.0" prefWidth="200.0">
+                     <children>
+                        <Button fx:id="playlist6" mnemonicParsing="false" onAction="#playlistClicked" prefHeight="125.0" prefWidth="185.0" />
+                     </children>
+                  </StackPane>
                </children>
             </VBox>
          </children>
       </HBox>
-      <Label layoutX="48.0" layoutY="140.0" prefHeight="28.0" prefWidth="314.0" text="Here are your current playlists:">
+      <Label layoutX="48.0" layoutY="108.0" prefHeight="28.0" prefWidth="314.0" text="Current playlists">
          <font>
             <Font size="18.0" />
          </font>
