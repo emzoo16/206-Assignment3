@@ -13,6 +13,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -22,6 +23,7 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class UploadController implements Initializable {
@@ -189,19 +191,25 @@ public class UploadController implements Initializable {
 						notFoundDisplay.add(line);
 					}
 				}
-				if (!notFoundDisplay.isEmpty()) {
+				if (notFoundDisplay.isEmpty() == false) {
 					try {
 						FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("uploadWarning.fxml"));
-						Parent createSceneParent = fxmlLoader.load();
-						Scene createScene = new Scene(createSceneParent);
+						Parent warningSceneParent = fxmlLoader.load();
+						Scene warningScene = new Scene(warningSceneParent);
 						
 						//Getting the instance of the warning controller and passing the 
 						UploadWarningController controller = fxmlLoader.getController();
 						controller.setNotFoundList(notFoundDisplay);
 						
-						Stage createStage = new Stage();
-						createStage.setScene(createScene);
-						createStage.show();
+						Stage warningStage = new Stage();
+						warningStage.setScene(warningScene);
+						
+						//Disable the background window when the warning stage is displayed.
+						warningStage.initModality(Modality.WINDOW_MODAL);
+					    warningStage.initOwner(uploadButton.getScene().getWindow() );
+						
+					    warningStage.show();
+					    
 					} catch (IOException e) {
 						e.printStackTrace();
 					}

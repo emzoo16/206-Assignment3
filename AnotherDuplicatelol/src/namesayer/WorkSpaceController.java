@@ -32,7 +32,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
-
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class WorkSpaceController implements Initializable {
@@ -251,14 +251,18 @@ public class WorkSpaceController implements Initializable {
 	public void rateButtonClicked(ActionEvent event) throws Exception {
 		String currentName = dataListView.getSelectionModel().getSelectedItem();
 		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("rateScreen.fxml"));
-		Parent createSceneParent = fxmlLoader.load();
+		Parent rateSceneParent = fxmlLoader.load();
 		RateScreenController controller = fxmlLoader.getController();
 		controller.setCurrentName(currentName);
 		controller.setWorkSpaceController(this);
-		Scene createScene = new Scene(createSceneParent);
-		Stage createStage = new Stage();
-		createStage.setScene(createScene);
-		createStage.show();
+		Scene rateScene = new Scene(rateSceneParent);
+		Stage rateStage = new Stage();
+		rateStage.setScene(rateScene);
+		
+		//Disable the background window when the rate stage is displayed.
+		rateStage.initModality(Modality.WINDOW_MODAL);
+	    rateStage.initOwner(((Node)event.getSource()).getScene().getWindow() );
+		rateStage.show();
 	}
 
 	/*
@@ -302,14 +306,20 @@ public class WorkSpaceController implements Initializable {
 	public void recordButtonClicked(ActionEvent event) {
 		try {
 			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("record.fxml"));
-			Parent createSceneParent = fxmlLoader.load();
+			Parent recordSceneParent = fxmlLoader.load();
 			RecordController controller = fxmlLoader.getController();
 			DemoRecording currentDatabaseRecording = listOfRecordings.getRecording(dataListView.getSelectionModel().getSelectedItem());
 			controller.passInformation(currentDatabaseRecording, this);
-			Scene createScene = new Scene(createSceneParent);
-			Stage createStage = new Stage();
-			createStage.setScene(createScene);
-			createStage.show();
+			Scene recordScene = new Scene(recordSceneParent);
+			Stage recordStage = new Stage();
+			recordStage.setScene(recordScene);
+			
+			//Disable the background window when the record stage is displayed.
+			recordStage.initModality(Modality.WINDOW_MODAL);
+		    recordStage.initOwner(((Node)event.getSource()).getScene().getWindow() );
+		    
+		    recordStage.show();
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -433,7 +443,6 @@ public class WorkSpaceController implements Initializable {
 			}
 			writer.close();
 			reader.close();
-			boolean successful = tmpFile.renameTo(file);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -498,31 +507,4 @@ public class WorkSpaceController implements Initializable {
 	public double getVolume() {
 		return volume;
 	}
-
-	/*
-	 * This method provides the user with a congratulatory pop up window when the user completes 5 
-	 * recordings and again when the user completes 10 recordings.
-	 */
-	public void incrementIndicator() {
-		//Increment the number stored in recordClicked.
-		recordClicked++;
-
-		//If the user has recorded 5 times, a reward alert is shown.
-		if (recordClicked == 5) {
-			Alert alert = new Alert(AlertType.INFORMATION);
-			alert.setTitle("Congratulations!");
-			alert.setHeaderText(null);
-			alert.setContentText("Keep up the good work! You have recorded 5 times!");
-			alert.showAndWait();
-		}
-		//If the user has recorded 10 time, another reward alert is shown.
-		else if (recordClicked == 10) {
-			Alert alert = new Alert(AlertType.INFORMATION);
-			alert.setTitle("Congratulations!");
-			alert.setHeaderText(null);
-			alert.setContentText("Wow, amazing! You have recorded 10 times!");
-			alert.showAndWait();
-		}
-	}
-
 }

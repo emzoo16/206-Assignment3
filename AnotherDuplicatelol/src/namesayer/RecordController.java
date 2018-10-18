@@ -76,11 +76,6 @@ public class RecordController implements Initializable {
     	//Make the stop button visible and update text to show user they are recording.
     	stopButton.setVisible(true);
     	statusLabel.setText("Recording...");
-    	
-    	
-        //Every time the record button is clicked, increment the recordClicked variable to
-        //move the user closer to their reward.
-        parentController.incrementIndicator();
 
         //Disable the record button once the user starts the recording.
         recordButton.setDisable(true);

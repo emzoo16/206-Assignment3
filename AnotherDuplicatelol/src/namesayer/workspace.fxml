@@ -70,7 +70,7 @@
             </VBox>
             <VBox layoutX="34.0" layoutY="21.0" prefHeight="464.0" prefWidth="250.0" spacing="5.0">
                <children>
-                  <Button fx:id="backButton" mnemonicParsing="false" onAction="#backButtonClicked" text="Back">
+                  <Button fx:id="backButton" mnemonicParsing="false" onAction="#backButtonClicked" text=" Edit play queue">
                      <VBox.margin>
                         <Insets bottom="20.0" />
                      </VBox.margin>
