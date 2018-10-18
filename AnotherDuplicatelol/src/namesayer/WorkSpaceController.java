@@ -170,10 +170,12 @@ public class WorkSpaceController implements Initializable {
 			DemoRecording currentRecording = listOfRecordings.getRecording(currentRecordingName);
 			currentRecording.play(volume, progressBar);
 		} else {
+			if (ownListView.getSelectionModel().getSelectedItem() != null) {
 			String currentName = ownListView.getSelectionModel().getSelectedItem();
 			String databaseName = dataListView.getSelectionModel().getSelectedItem();
 			DemoRecording databaseRecording = listOfRecordings.getRecording(databaseName);
 			databaseRecording.getUserRecording(currentName).play(volume, progressBar);
+			}
 		}
 
 	}
@@ -271,9 +273,10 @@ public class WorkSpaceController implements Initializable {
 	@FXML
 	public void creationDeleteButtonClicked(ActionEvent event) {
 		String ownCurrentName = ownListView.getSelectionModel().getSelectedItem();
-		String currentName = dataListView.getSelectionModel().getSelectedItem();
-		String ownCurrentFileName = listOfRecordings.getRecording(currentName).getUserRecording(ownCurrentName).getFileName();
+		
 		if (ownCurrentName != null) {
+			String currentName = dataListView.getSelectionModel().getSelectedItem();
+			String ownCurrentFileName = listOfRecordings.getRecording(currentName).getUserRecording(ownCurrentName).getFileName();
 			Alert alert = new Alert(AlertType.CONFIRMATION);
 			alert.setTitle("Delete Confirmation");
 			alert.setHeaderText(null);
