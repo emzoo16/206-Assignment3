@@ -57,6 +57,9 @@ public class RecordController implements Initializable {
 
     //Reference to the workspace controller
     WorkSpaceController parentController;
+    
+    TargetDataLine line;
+   
 
     /*
      * This method is invoked when the user chooses not to keep their recording and retry.
@@ -88,8 +91,10 @@ public class RecordController implements Initializable {
         try {
             //Initializing and opening the dataline.
             DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
-            TargetDataLine line = (TargetDataLine) AudioSystem.getLine(info);
+            line = (TargetDataLine) AudioSystem.getLine(info);
             line.open(format);
+            //Starting the recording.
+            line.start();
 
             //New thread to write the input to a file.
             Task<Void> task = new Task<Void>() {
@@ -102,9 +107,6 @@ public class RecordController implements Initializable {
 
                     //New file audio will be saved in.
                     File audioFile = new File("./audio.wav");
-
-                    //Starting the recording.
-                    line.start();
 
                     //Write the input from the microphone to a file named 'audioFile'.
                     while(running) {
@@ -119,8 +121,7 @@ public class RecordController implements Initializable {
             Thread thread = new Thread(task);
             thread.setDaemon(true);
             thread.start();
-
-
+    
         } catch (LineUnavailableException e) {
             e.printStackTrace();
         }
@@ -131,10 +132,11 @@ public class RecordController implements Initializable {
      */
     @FXML
     public void stopButtonClicked() {
+    	running = false;
+        line.stop();
+        line.close();
         setComponentsForProcessingRecording();
         statusLabel.setText("");
-        //Stop the recording by stopping the while loop writes the audio information to the audiofile
-        running = false;
     }
 
     /*
