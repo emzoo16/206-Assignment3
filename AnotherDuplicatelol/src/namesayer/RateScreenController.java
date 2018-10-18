@@ -108,6 +108,7 @@ public class RateScreenController implements Initializable  {
 	@FXML 
 	public void check1Clicked() {
 		rating = 1;
+		check1.setSelected(true);
 		check2.setSelected(false);
 		check3.setSelected(false);
 		check4.setSelected(false);
@@ -118,6 +119,7 @@ public class RateScreenController implements Initializable  {
 	public void check2Clicked() {
 		rating = 2;
 		check1.setSelected(true);
+		check2.setSelected(true);
 		check3.setSelected(false);
 		check4.setSelected(false);
 		check5.setSelected(false);
@@ -127,6 +129,7 @@ public class RateScreenController implements Initializable  {
 		rating = 3;
 		check1.setSelected(true);
 		check2.setSelected(true);
+		check3.setSelected(true);
 		check4.setSelected(false);
 		check5.setSelected(false);
 	}
@@ -136,6 +139,7 @@ public class RateScreenController implements Initializable  {
 		check1.setSelected(true);
 		check2.setSelected(true);
 		check3.setSelected(true);
+		check4.setSelected(true);
 		check5.setSelected(false);
 	}
 	@FXML 
@@ -145,6 +149,7 @@ public class RateScreenController implements Initializable  {
 		check2.setSelected(true);
 		check3.setSelected(true);
 		check4.setSelected(true);
+		check5.setSelected(true);
 	}
 	
 	/*

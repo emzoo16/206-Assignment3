@@ -8,8 +8,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-
-<AnchorPane prefHeight="250.0" prefWidth="350.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/10.0.1" fx:controller="namesayer.RateScreenController">
+<AnchorPane prefHeight="250.0" prefWidth="350.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="namesayer.RateScreenController">
    <children>
       <VBox alignment="CENTER" layoutX="24.0" layoutY="-29.0" prefHeight="250.0" prefWidth="350.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -18,6 +17,7 @@
                   <Font size="18.0" />
                </font>
             </Label>
+            <Label text="What would you rate the quality of this recording?" />
             <HBox alignment="CENTER" prefHeight="55.0" prefWidth="350.0" spacing="10.0">
                <children>
                   <CheckBox fx:id="check1" mnemonicParsing="false" onAction="#check1Clicked" />
