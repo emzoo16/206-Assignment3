@@ -66,6 +66,28 @@ public class PlaylistController implements Initializable{
 		setButtons();
 	}
 	
+	/*
+	 * This method would iterate through the file containing the list of playlists and
+	 * count how many playlists there are. Or perhaps returns the names of all the playlists??.
+	 */
+	public void getPlaylists(){
+		
+	}
+	
+	/*
+	 * This method is invoked whenever a user clicks any playlist button. Loads the recordings of the playlist
+	 * that was clicked in the workspace.
+	 */
+	@FXML
+	public void playlistClicked() {
+		//Get the text of the clicked button (ie the playlist name) and 
+		//Search through for the list of recordings in the playlist. Use a playlist object to handle?
+	}
+	
+	/*
+	 * This button takes the user to the upload file scene where they can upload a text file of names
+	 * to practice.
+	 */
 	@FXML
 	public void uploadButtonClicked() {
 		try {
@@ -79,6 +101,9 @@ public class PlaylistController implements Initializable{
 		
 	}
 	
+	/*
+	 * This button takes the user to the workspace creator where they can select which names they want to practice.
+	 */
 	@FXML
 	public void practiceButtonClicked() {
 		try {
@@ -92,6 +117,10 @@ public class PlaylistController implements Initializable{
 		
 	}
 	
+	/*
+	 * This button takes the user back to the menu scene.
+	 */
+	
 	@FXML
 	public void backButtonClicked() {
 		try {
@@ -103,11 +132,7 @@ public class PlaylistController implements Initializable{
 		}
 	}
 	
-	@FXML
-	public void playlistClicked() {
-		//Search through for the list of recordings in the playlist. Use a playlist button?
-	}
-	
+
 	/*
 	 * Set all playlist related buttons invisible.
 	 */
@@ -122,4 +147,5 @@ public class PlaylistController implements Initializable{
 			playlistButton.get(i).setText(playlistNames.get(i));
 		}
 	}
+
 }
