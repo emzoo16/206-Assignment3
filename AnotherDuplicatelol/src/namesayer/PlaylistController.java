@@ -68,7 +68,7 @@ public class PlaylistController implements Initializable{
 	
 	
 	//Number of playlists.
-	int playlistNum;
+	int playlistNum = 0;
 	
 	//Reference to the current clicked playlistFile
 	File currentPlaylistFile;
@@ -85,7 +85,6 @@ public class PlaylistController implements Initializable{
 		
 		//Count the number of playlists.
 		File folder = new File("Playlists/");
-		playlistNum = folder.listFiles().length;
 		
 		//Add the playlist buttons to a list for ease of handling.
 		playlistButtons.add(playlist1);
@@ -126,12 +125,18 @@ public class PlaylistController implements Initializable{
 		if (listOfFiles.length == 0) {
 			//have a label saying there are no current playlists
 		}else {
-			for(int i = 0; i < listOfFiles.length; i++) {
-				String formattedName = listOfFiles[i].getName().replaceAll(".txt","");
-				playlistNames.add(formattedName);
-				playlistButtons.get(i).setVisible(true);
-				playlistButtons.get(i).setText(formattedName);
-				deleteButtons.get(i).setVisible(true);
+			for(File file : listOfFiles) {
+				
+				//Get all the playlist files by finding all the text files. Set the buttons 
+				//accordingly.
+				if (file.isFile() && file.getName().endsWith(".txt")) {
+					String formattedName = file.getName().replaceAll(".txt","");
+					playlistNames.add(formattedName);
+					playlistButtons.get(playlistNum).setVisible(true);
+					playlistButtons.get(playlistNum).setText(formattedName);
+					deleteButtons.get(playlistNum).setVisible(true);
+					playlistNum ++;
+				}
 				
 			}
 		}
@@ -164,7 +169,6 @@ public class PlaylistController implements Initializable{
 						fileEntry.delete();
 						currentPlaylist.setVisible(false);
 						clickedDeleteButton.setVisible(false);
-						
 					}
 				}
 			}

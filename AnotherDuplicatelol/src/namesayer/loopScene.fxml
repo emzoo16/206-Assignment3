@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+
+<AnchorPane prefHeight="350.0" prefWidth="450.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/10.0.1">
+   <children>
+      <Label alignment="CENTER" layoutX="193.0" layoutY="53.0" prefHeight="26.0" prefWidth="244.0" text="Loop Practice For:">
+         <font>
+            <Font name="System Bold" size="20.0" />
+         </font>
+      </Label>
+      <Label alignment="CENTER" contentDisplay="CENTER" layoutX="193.0" layoutY="214.0" prefHeight="29.0" prefWidth="244.0" text="Database">
+         <font>
+            <Font size="24.0" />
+         </font>
+      </Label>
+      <Label alignment="CENTER" layoutX="193.0" layoutY="79.0" prefHeight="23.0" prefWidth="244.0" text="Name goes here">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Label>
+      <ListView layoutX="30.0" layoutY="66.0" prefHeight="156.0" prefWidth="174.0" />
+      <ComboBox layoutX="30.0" layoutY="251.0" prefHeight="27.0" prefWidth="174.0" />
+      <Label contentDisplay="CENTER" layoutX="30.0" layoutY="222.0" prefHeight="29.0" prefWidth="174.0" text="How many loops?">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <Label layoutX="30.0" layoutY="35.0" prefHeight="17.0" prefWidth="190.0" text="Personal recordings:">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <Button layoutX="93.0" layoutY="291.0" mnemonicParsing="false" text="Start" />
+      <Label alignment="CENTER" layoutX="193.0" layoutY="169.0" prefHeight="29.0" prefWidth="244.0" text="1">
+         <font>
+            <Font size="24.0" />
+         </font>
+      </Label>
+      <Label alignment="CENTER" layoutX="193.0" layoutY="135.0" prefHeight="18.0" prefWidth="244.0" text="Loop number:">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <Button layoutX="365.0" layoutY="291.0" mnemonicParsing="false" text="Help" />
+   </children>
+</AnchorPane>
