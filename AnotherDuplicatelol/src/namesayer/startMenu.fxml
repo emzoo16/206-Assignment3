@@ -34,7 +34,6 @@
                   <Font size="20.0" />
                </font>
             </Button>
-            <Button fx:id="testSceneButton" mnemonicParsing="false" onAction="#test" text="testing scene" />
          </children>
       </VBox>
    </center>

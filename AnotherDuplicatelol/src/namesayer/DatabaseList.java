@@ -44,7 +44,7 @@ public class DatabaseList {
                     count = 1;
                     String processedRecordingName = updatedFileString.substring(0,1).toUpperCase()
                             + updatedFileString.substring(1).toLowerCase();
-                    DatabaseRecording recording = new DatabaseRecording(fileString, updatedFileString);
+                    DatabaseRecording recording = new DatabaseRecording(fileString, processedRecordingName);
                     dataBaseRecordings.put(processedRecordingName, recording);
                 }
             }

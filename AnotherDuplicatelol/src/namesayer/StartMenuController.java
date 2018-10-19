@@ -17,8 +17,6 @@ public class StartMenuController {
     private Button testButton;
     @FXML
     private Button quitButton;
-    @FXML
-    private Button testSceneButton;
 
     /**
      * Invoked when the user presses the practice button and takes the user to the workspace
@@ -57,16 +55,5 @@ public class StartMenuController {
     private void quit() {
         Platform.exit();
         System.exit(0);
-    }
-
-    @FXML
-    private void test() {
-        try {
-            Stage stage = (Stage) testButton.getScene().getWindow();
-            Parent createScene = FXMLLoader.load(getClass().getResource("playlistCreator.fxml"));
-            stage.setScene(new Scene(createScene, 700, 500));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 }

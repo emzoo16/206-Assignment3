@@ -19,14 +19,16 @@ import java.util.List;
 public class ConcatenatedRecording extends DemoRecording {
 	//The file names of the parts of the concatenation
     private List<String> listOfFilesNames;
+    private ConcatenatedRecordingLoader controller;
 
 
-    public ConcatenatedRecording(List<String> fileNames, String fullName) {
+    public ConcatenatedRecording(List<String> fileNames, String fullName, ConcatenatedRecordingLoader controller) {
+        this.controller = controller;
         userAttempts = new HashMap<>();
 		//Short name is the name which is displayed
         this.shortName = fullName;
         this.fileName = fullName.replaceAll(" ", "") + ".wav";
-        createConcatenatedRecording(fileNames, fullName);
+        removeRecordingSilence(fileNames, fullName);
 
 		//loads all the personal recordings into the map
         File folder = new File("ConcatenatedPersonalRecordings/");
@@ -49,10 +51,11 @@ public class ConcatenatedRecording extends DemoRecording {
 
     }
 
+
 	/**
 	*Creates the concatenated recording by first removing the excess silence and normalising the volume
 	*/
-    private void createConcatenatedRecording(List<String> fileNames, String fullItem) {
+    private void removeRecordingSilence(List<String> fileNames, String fullItem) {
 	
 		//Get the names of all temporary files to concatenate
         List<String> tmpFiles = new ArrayList<>();
@@ -82,20 +85,22 @@ public class ConcatenatedRecording extends DemoRecording {
                 }
                 return null;
             }
+            @Override
+            protected void succeeded() {
+                regulateRecordingVolume(tmpFiles, fullItem);
+            }
         };
         Thread silenceThread = new Thread(removeSilenceTask);
         silenceThread.setDaemon(true);
         silenceThread.start();
-        try {
-            silenceThread.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+    }
+
+    private void regulateRecordingVolume(List<String> tmpFiles, String fullItem) {
         //regulate volume for all
         Task<Void> regulateVolumeTask = new Task<Void>() {
             @Override
             protected Void call() throws Exception {
-                for (String file : finalTempFiles) {
+                for (String file : tmpFiles) {
                     String cmd = "ffmpeg -y -i "+file+" -filter:a \"volume=0.5\" " + file;
                     ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
                     Process process = builder.start();
@@ -103,15 +108,17 @@ public class ConcatenatedRecording extends DemoRecording {
                 }
                 return null;
             }
+            @Override
+            protected void succeeded() {
+                concatenateRecordings(tmpFiles, fullItem);
+            }
         };
         Thread volumeThread = new Thread(regulateVolumeTask);
         volumeThread.setDaemon(true);
         volumeThread.start();
-        try {
-            volumeThread.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+    }
+
+    private void concatenateRecordings(List<String> tmpFiles, String fullItem) {
         //concatenates the temp recordings then deletes them
         Task<Void> concatenateTask = new Task<Void>() {
             @Override
@@ -119,7 +126,7 @@ public class ConcatenatedRecording extends DemoRecording {
                 String catInput = "";
                 int number = 0;
                 String inputStreams = "";
-                for (String file : finalTempFiles) {
+                for (String file : tmpFiles) {
                     catInput = catInput + "-i " + file + " ";
                     inputStreams = inputStreams + "[" + number + ":0]";
                     number += 1;
@@ -133,20 +140,31 @@ public class ConcatenatedRecording extends DemoRecording {
                 process.waitFor();
                 return null;
             }
+            @Override
+            protected void succeeded() {
+                //This list allows us to reuse the setPlaylistRecordings method.
+                DatabaseList helperList = new DatabaseList();
+                helperList.add(getThisRecording());
+                System.out.println("do we even get here?");
+                controller.setPlaylistRecordings(helperList);
+                deletetmpFiles(tmpFiles);
+            }
         };
         Thread catThread = new Thread(concatenateTask);
         catThread.setDaemon(true);
         catThread.start();
-        try {
-            catThread.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-		
-		//deletes the temp files
-        for (String fileName : finalTempFiles) {
+
+    }
+
+    private void deletetmpFiles(List<String> tmpFiles) {
+        //deletes the temp files
+        for (String fileName : tmpFiles) {
             File file = new File(fileName);
             file.delete();
         }
+    }
+
+    private ConcatenatedRecording getThisRecording() {
+        return this;
     }
 }

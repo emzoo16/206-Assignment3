@@ -7,7 +7,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="namesayer.databaseViewController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="namesayer.DatabaseViewController">
    <children>
       <Label layoutX="17.0" layoutY="14.0" text="Names Database">
          <font>
@@ -15,8 +15,8 @@
          </font>
       </Label>
       <ListView fx:id="listView" layoutX="15.0" layoutY="116.0" prefHeight="433.0" prefWidth="270.0" />
-      <Button fx:id="addButton" layoutX="165.0" layoutY="561.0" mnemonicParsing="false" text="Add Recordings" />
-      <Button fx:id="backButton" layoutX="14.0" layoutY="561.0" mnemonicParsing="false" text="Back" />
+      <Button fx:id="addButton" layoutX="165.0" layoutY="561.0" mnemonicParsing="false" onAction="#add" text="Add Recordings" />
+      <Button fx:id="backButton" layoutX="14.0" layoutY="561.0" mnemonicParsing="false" onAction="#back" text="Back" />
       <TextField fx:id="searchField" layoutX="15.0" layoutY="85.0" prefHeight="10.0" prefWidth="270.0" />
       <Label layoutX="79.0" layoutY="56.0" text="Search for names">
          <font>

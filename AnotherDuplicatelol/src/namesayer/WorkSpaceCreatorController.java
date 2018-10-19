@@ -110,9 +110,9 @@ public class WorkSpaceCreatorController implements Initializable {
                     for (String recording : names) {
                         fileNames.add(searchableList.getRecording(recording).getFileName());
                     }
-                    DemoRecording concatenatedRecording = new ConcatenatedRecording(fileNames, searchedItem);
-                    workspaceList.add(concatenatedRecording);
-                    workspaceRecordingsView.setItems(workspaceList.getRecordingNames());
+                    //DemoRecording concatenatedRecording = new ConcatenatedRecording(fileNames, searchedItem, this);
+                    //workspaceList.add(concatenatedRecording);
+                    //workspaceRecordingsView.setItems(workspaceList.getRecordingNames());
                 }
             } else {
                 if (InputExists(searchedItem)) {

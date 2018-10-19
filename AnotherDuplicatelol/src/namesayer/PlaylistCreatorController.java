@@ -3,9 +3,9 @@ package namesayer;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
-import javafx.beans.binding.Bindings;
 import javafx.collections.*;
 import javafx.collections.transformation.FilteredList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -14,6 +14,9 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.CheckBoxListCell;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Callback;
@@ -23,7 +26,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 
-public class PlaylistCreatorController implements Initializable {
+public class PlaylistCreatorController implements Initializable, ConcatenatedRecordingLoader {
     @FXML
     private Button returnButton;
     @FXML
@@ -33,13 +36,7 @@ public class PlaylistCreatorController implements Initializable {
     @FXML
     private ListView searchView;
     @FXML
-    private Button addButton;
-    @FXML
-    private Button databaseButton;
-    @FXML
     private CheckBox randomiseBox;
-    @FXML
-    private Button removeButton;
     @FXML
     private Button continueButton;
 
@@ -76,38 +73,37 @@ public class PlaylistCreatorController implements Initializable {
         List<String> names = Arrays.asList(searchedItem.split(" "));
         List<String> updatedNames = new ArrayList<>();
         String updatedSearch = "";
-        for (String name : names) {
-            String updatedName = name.substring(0,1).toUpperCase() + name.substring(1).toLowerCase();
-            updatedNames.add(updatedName);
-            updatedSearch = updatedSearch + updatedName + " ";
-        }
-        updatedSearch = updatedSearch.trim();
-        System.out.println(updatedNames);
-        if (!alreadyAdded(searchedItem)) {
-            if (searchedItem.contains(" ")) {
-                boolean invalid = false;
-                for (String name : updatedNames) {
-                    if (!InputExists(name)) {
-                        invalid = true;
-                        break;
+        if (!searchedItem.isEmpty()) {
+            for (String name : names) {
+                String updatedName = name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
+                updatedNames.add(updatedName);
+                updatedSearch = updatedSearch + updatedName + " ";
+            }
+            updatedSearch = updatedSearch.trim();
+            if (!alreadyAdded(searchedItem)) {
+                if (searchedItem.contains(" ")) {
+                    boolean invalid = false;
+                    for (String name : updatedNames) {
+                        if (!InputExists(name)) {
+                            invalid = true;
+                            break;
+                        }
                     }
-                }
-                if (!invalid) {
-                    List<String> fileNames = new ArrayList<>();
-                    for (String recording : updatedNames) {
-                        fileNames.add(searchList.getRecording(recording).getFileName());
+                    if (!invalid) {
+                        List<String> fileNames = new ArrayList<>();
+                        for (String recording : updatedNames) {
+                            fileNames.add(searchList.getRecording(recording).getFileName());
+                        }
+                        DemoRecording concatenatedRecording = new ConcatenatedRecording(fileNames, updatedSearch, this);
+                        inputField.clear();
                     }
-                    DemoRecording concatenatedRecording = new ConcatenatedRecording(fileNames, updatedSearch);
-                    playlist.add(concatenatedRecording);
+                } else {
+                    if (InputExists(updatedSearch)) {
+                        playlist.add(updatedSearch);
+                        inputField.clear();
+                    }
                     listView.setItems(playlist.getRecordingNames());
-                    inputField.clear();
                 }
-            } else {
-                if (InputExists(updatedSearch)) {
-                    playlist.add(updatedSearch);
-                    inputField.clear();
-                }
-                listView.setItems(playlist.getRecordingNames());
             }
         }
     }
@@ -143,10 +139,13 @@ public class PlaylistCreatorController implements Initializable {
     @FXML
     private void viewDatabase(ActionEvent event) {
         try {
-            Parent viewDatabaseParent = FXMLLoader.load(getClass().getResource("databaseView.fxml"));
-            Scene viewDatabaseScene = new Scene(viewDatabaseParent);
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("databaseView.fxml"));
+            Parent databaseParent = fxmlLoader.load();
+            DatabaseViewController controller = fxmlLoader.getController();
+            controller.setPlaylistCreatorController(this);
             Stage databaseStage = new Stage();
-            databaseStage.setScene(viewDatabaseScene);
+            Scene databaseViewScene = new Scene(databaseParent);
+            databaseStage.setScene(databaseViewScene);
 
             //Disable the background window when the rate stage is displayed.
             databaseStage.initModality(Modality.WINDOW_MODAL);
@@ -201,6 +200,15 @@ public class PlaylistCreatorController implements Initializable {
         }
     }
 
+    public void setPlaylistRecordings(DatabaseList list) {
+        List<String> keptRecordings = list.getRecordingNames();
+        for (String recordingName : keptRecordings) {
+            playlist.add(list.getRecording(recordingName));
+        }
+        selectedItems.clear();
+        listView.setItems(playlist.getRecordingNames());
+    }
+
     /**
      * Sets up the ComboBox to act as a textfield and search for results on input.
      * @param location
@@ -229,6 +237,8 @@ public class PlaylistCreatorController implements Initializable {
                 }
             }
         });
+
+        setupShortcuts();
 
         selectedItems = FXCollections.observableSet();
         playlist = new DatabaseList();
@@ -281,5 +291,62 @@ public class PlaylistCreatorController implements Initializable {
                 return currentValue.toLowerCase().contains(lowerCaseSearch);
             });
         }));
+    }
+
+    private void setupShortcuts() {
+        //Makes the searchview work with double clicks on the search list
+        searchView.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                if (event.getClickCount() == 2) {
+                    appendSelectedName();
+                }
+            }
+        });
+        //Makes the input field add the name if you press enter and go into the search list if you press down
+        inputField.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+                if (event.getCode().equals(KeyCode.ENTER)) {
+                    addToPlaylist();
+                } else if (event.getCode().equals(KeyCode.DOWN)) {
+                    searchView.requestFocus();
+                    searchView.getSelectionModel().select(0);
+                }
+            }
+        });
+        //Makes the search list navigate up and down with the arrow keys and return to the inputfield when you move up
+        //at the top index.
+        searchView.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+                if (event.getCode().equals(KeyCode.ENTER)) {
+                    appendSelectedName();
+                } else if (event.getCode().equals(KeyCode.DOWN)) {
+                    searchView.getSelectionModel().select(searchView.getSelectionModel().getSelectedIndex());
+                } else if (event.getCode().equals(KeyCode.UP)) {
+                    if (searchView.getSelectionModel().getSelectedIndex() == 0) {
+                        inputField.requestFocus();
+                        inputField.end();
+                    } else {
+                        searchView.getSelectionModel().select(searchView.getSelectionModel().getSelectedIndex());
+                    }
+                }
+            }
+        });
+    }
+
+    private void appendSelectedName() {
+        String updatedSearch;
+        String selectedSearch = searchView.getSelectionModel().getSelectedItem() + " ";
+        String currentSearch = inputField.getText();
+        if (currentSearch.contains(" ")) {
+            updatedSearch = currentSearch.substring(0, currentSearch.lastIndexOf(" ") + 1) + selectedSearch;
+        } else {
+            updatedSearch = selectedSearch;
+        }
+        inputField.setText(updatedSearch);
+        inputField.requestFocus();
+        inputField.end();
     }
 }

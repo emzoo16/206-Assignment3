@@ -26,7 +26,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-public class UploadController implements Initializable {
+public class UploadController implements Initializable, ConcatenatedRecordingLoader {
 	
 	/*
 	 * FXML variables 
@@ -76,7 +76,7 @@ public class UploadController implements Initializable {
 	@FXML
 	public void backButtonClicked() {
 		try {
-			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("startMenu.fxml"));
+			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("playlistScreen.fxml"));
 			Parent playlistScene = fxmlLoader.load();
 			Stage stage = (Stage) backButton.getScene().getWindow();
 			stage.setScene(new Scene(playlistScene, 700, 500));
@@ -182,15 +182,19 @@ public class UploadController implements Initializable {
 			if (name.trim().contains(" ")) {
 				//Gets the list of the names
 				List<String> names = Arrays.asList(name.split(" "));
-
+				List<String> updatedNames = new ArrayList<>();
+				for(String splitName : names) {
+					splitName = splitName.substring(0,1).toUpperCase() + splitName.substring(1).toLowerCase();
+					updatedNames.add(splitName);
+				}
 				List<String> fileNames = new ArrayList<>();
 				//Gets the file names for all these names
-				for (String recording : names) {
+				for (String recording : updatedNames) {
 					Recording obj = referenceList.getRecording(recording);
 					fileNames.add(obj.getFileName());
 				}
 				//Creates the concatenated recording and adds it to the workspace
-				DemoRecording concatenatedRecording = new ConcatenatedRecording(fileNames, name);
+				DemoRecording concatenatedRecording = new ConcatenatedRecording(fileNames, name, this);
 				workspaceRecordings.add(concatenatedRecording);
 			} else {
 				name = name.substring(0,1).toUpperCase() + name.substring(1).toLowerCase();
@@ -198,5 +202,13 @@ public class UploadController implements Initializable {
 				workspaceRecordings.add(name);
 			}
 		}
+	}
+
+	public void setPlaylistRecordings(DatabaseList list) {
+		List<String> concatenatedRecording = list.getRecordingNames();
+		for (String recordingName : concatenatedRecording) {
+			workspaceRecordings.add(list.getRecording(recordingName));
+		}
+		nameListView.setItems(workspaceRecordings.getRecordingNames());
 	}
 }

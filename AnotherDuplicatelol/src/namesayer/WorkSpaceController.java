@@ -233,10 +233,10 @@ public class WorkSpaceController implements Initializable {
 	@FXML
 	public void backButtonClicked(ActionEvent event) throws Exception {
 		try {
-			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("workSpaceCreator.fxml"));
+			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("playlistCreator.fxml"));
 			Parent createScene = fxmlLoader.load();
-			WorkSpaceCreatorController controller = fxmlLoader.getController();
-			controller.setWorkspaceRecordings(listOfRecordings);
+			PlaylistCreatorController controller = fxmlLoader.getController();
+			controller.setPlaylistRecordings(listOfRecordings);
 			Stage stage = (Stage) backButton.getScene().getWindow();
 			stage.setScene(new Scene(createScene, 700, 500));
 		} catch (IOException e) {
