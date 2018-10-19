@@ -33,6 +33,11 @@ public class Main extends Application {
         if (!file3.exists()) {
             file3.mkdirs();
         }
+        //Making a folder to hold personal recordings for concatenated recordings
+        File file4 = new File("Playlists/");
+        if (!file4.exists()) {
+            file4.mkdirs();
+        }
 
         Parent root = FXMLLoader.load(getClass().getResource("startMenu.fxml"));
         primaryStage.setTitle("Name Sayer");

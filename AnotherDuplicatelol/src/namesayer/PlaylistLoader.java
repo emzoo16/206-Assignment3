@@ -44,12 +44,17 @@ public class PlaylistLoader {
                     String line = scanner.nextLine();
 
                     //List containing any names that were not found in the database.
-                    List<String> notFound = checkName(line);
+                    List<List<String>> returnedList = checkName(line);
+                    
+                    //Lists containing names that were not found and successfully created names respectively.
+                    List<String> notFound = returnedList.get(0);
+                    List<String> formattedName = returnedList.get(1);
 
-                    //If all the names are in the database, add the line (the composite name) to the namesList.
-                    if(notFound.isEmpty()) {
-                        namesList.add(line);
-                    }else {
+                    //If all the names are in the database and the name has, not already been added to the playlist,
+                    //add the line (the composite name) to the namesList.
+                    if(notFound.isEmpty() && !namesList.contains(formattedName.get(0))) {
+                        namesList.add(formattedName.get(0));
+                    }else{
                         //Format the string to surround the name not found in brackets. This is the format they will be
                         //displayed in the warning screen.
                         for (String s: notFound) {
@@ -91,13 +96,24 @@ public class PlaylistLoader {
     }
 
     /**
-     * Given a string (a name), this method parses the string and checks if each name in the sting
+     * Given a string (a line containing a name), this method parses the string and checks if each name in the sting
      * is in the database.
      */
-    public List<String> checkName(String line) {
+    public List<List<String>> checkName(String line) {
 
-        //An array containing all the names in the current line that could not be found in the database.
+    	//Initilaises a 2d list.
+    	
+    	List<List<String>> returnList = new ArrayList<List<String>>();
+    	
+        //A list containing all the names in the current line that could not be found in the database.
         List<String> notFound = new ArrayList<>();
+        
+        //A list containing the proper formatted name.
+        List <String> formattedNames = new ArrayList<>();
+        
+        //Add both lists to the return list.
+        returnList.add(notFound);
+        returnList.add(formattedNames);
 
         //String of the line that has the proper formatting for names in the database.
         String formattedLine;
@@ -113,12 +129,14 @@ public class PlaylistLoader {
             if (inDatabase(splitLine[i])=="") {
                 notFound.add(splitLine[i]);
             }
-            //Logic getting proper names of found names.
+            //Logic getting formatted names of found names.(First letter upper case and all hyphens replaced with spaces.
             else {
-                formattedLine = line.replace(splitLine[i], inDatabase(splitLine[i]));
-            }
+            	formattedLine = line.replace(splitLine[i], inDatabase(splitLine[i]));
+            	formattedLine = formattedLine.replaceAll("[-,_]", " ");  
+            	formattedNames.add(formattedLine);
+            }           
         }
-        return notFound;
+        return returnList;
     }
 
     /*
@@ -138,4 +156,5 @@ public class PlaylistLoader {
         }
         return "";
     }
+    
 }

@@ -182,14 +182,10 @@ public class UploadController implements Initializable {
 			if (name.trim().contains(" ")) {
 				//Gets the list of the names
 				List<String> names = Arrays.asList(name.split(" "));
-				List<String> updatedNames = new ArrayList<>();
-				for(String splitName : names) {
-					splitName = splitName.substring(0,1).toUpperCase() + splitName.substring(1).toLowerCase();
-					updatedNames.add(splitName);
-				}
+
 				List<String> fileNames = new ArrayList<>();
 				//Gets the file names for all these names
-				for (String recording : updatedNames) {
+				for (String recording : names) {
 					Recording obj = referenceList.getRecording(recording);
 					fileNames.add(obj.getFileName());
 				}
