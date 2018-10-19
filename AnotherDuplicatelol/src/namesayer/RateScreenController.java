@@ -14,6 +14,8 @@ import java.nio.Buffer;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -23,6 +25,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.Slider;
 import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
 
@@ -36,6 +39,9 @@ public class RateScreenController implements Initializable  {
 	Button confirmButton;
 	@FXML
 	CheckBox check1,check2,check3,check4,check5;
+	
+	@FXML
+	Slider rateSlider;
 	
 	//The folder containing all the reviews.
 	String currentName;
@@ -52,8 +58,35 @@ public class RateScreenController implements Initializable  {
 	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+
 		File file = new File("Review");
 		file.mkdirs();
+		
+		rateSlider.valueProperty().addListener(new InvalidationListener() {
+
+			@Override
+			public void invalidated(Observable observable) {
+				rating = (int)rateSlider.getValue();
+
+				if (rating == 1) {
+					rateText.setText(rating + ". Very Poor");
+					
+				}else if (rating == 2) {
+					rateText.setText(rating + ". Poor");
+					
+				}else if (rating == 3) {
+					rateText.setText(rating + ". Average");
+					
+				}else if (rating == 4) {
+					rateText.setText(rating + ". Good");
+					
+				}else if (rating == 5) {
+					rateText.setText(rating + ". Very Good");
+					
+				}
+			}
+			
+		});
 
 	}
 	
@@ -99,57 +132,6 @@ public class RateScreenController implements Initializable  {
 		}
 		Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
 		currentStage.close();
-	}
-	
-	/*
-	 * The following methods updates all checkboxes when the user clicks on one to give
-	 * a rating.
-	 */
-	@FXML 
-	public void check1Clicked() {
-		rating = 1;
-		check1.setSelected(true);
-		check2.setSelected(false);
-		check3.setSelected(false);
-		check4.setSelected(false);
-		check5.setSelected(false);
-		
-	}
-	@FXML 
-	public void check2Clicked() {
-		rating = 2;
-		check1.setSelected(true);
-		check2.setSelected(true);
-		check3.setSelected(false);
-		check4.setSelected(false);
-		check5.setSelected(false);
-	}
-	@FXML 
-	public void check3Clicked() {
-		rating = 3;
-		check1.setSelected(true);
-		check2.setSelected(true);
-		check3.setSelected(true);
-		check4.setSelected(false);
-		check5.setSelected(false);
-	}
-	@FXML 
-	public void check4Clicked() {
-		rating = 4;
-		check1.setSelected(true);
-		check2.setSelected(true);
-		check3.setSelected(true);
-		check4.setSelected(true);
-		check5.setSelected(false);
-	}
-	@FXML 
-	public void check5Clicked() {
-		rating = 5;
-		check1.setSelected(true);
-		check2.setSelected(true);
-		check3.setSelected(true);
-		check4.setSelected(true);
-		check5.setSelected(true);
 	}
 	
 	/*
