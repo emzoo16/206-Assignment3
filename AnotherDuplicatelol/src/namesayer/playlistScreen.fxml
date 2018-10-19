@@ -32,11 +32,21 @@
                               <Font size="16.0" />
                            </font>
                         </Button>
+                        <Button fx:id="delete1" mnemonicParsing="false" onAction="#deleteButtonClicked" prefHeight="20.0" prefWidth="20.0" text="X" StackPane.alignment="TOP_LEFT">
+                           <StackPane.margin>
+                              <Insets top="8.0" />
+                           </StackPane.margin>
+                        </Button>
                      </children>
                   </StackPane>
                   <StackPane prefHeight="150.0" prefWidth="200.0">
                      <children>
                         <Button fx:id="playlist4" mnemonicParsing="false" onAction="#playlistClicked" prefHeight="125.0" prefWidth="185.0" />
+                        <Button fx:id="delete4" mnemonicParsing="false" prefHeight="20.0" prefWidth="20.0" text="X" StackPane.alignment="TOP_LEFT">
+                           <StackPane.margin>
+                              <Insets top="8.0" />
+                           </StackPane.margin>
+                        </Button>
                      </children>
                   </StackPane>
                </children>
@@ -53,11 +63,21 @@
                               <Font size="16.0" />
                            </font>
                         </Button>
+                        <Button fx:id="delete2" mnemonicParsing="false" prefHeight="20.0" prefWidth="20.0" text="X" StackPane.alignment="TOP_LEFT">
+                           <StackPane.margin>
+                              <Insets top="8.0" />
+                           </StackPane.margin>
+                        </Button>
                      </children>
                   </StackPane>
                   <StackPane prefHeight="150.0" prefWidth="200.0">
                      <children>
                         <Button fx:id="playlist5" mnemonicParsing="false" onAction="#playlistClicked" prefHeight="125.0" prefWidth="185.0" />
+                        <Button fx:id="delete5" mnemonicParsing="false" prefHeight="20.0" prefWidth="20.0" text="X" StackPane.alignment="TOP_LEFT">
+                           <StackPane.margin>
+                              <Insets top="8.0" />
+                           </StackPane.margin>
+                        </Button>
                      </children>
                   </StackPane>
                </children>
@@ -70,11 +90,21 @@
                   <StackPane prefHeight="150.0" prefWidth="200.0">
                      <children>
                         <Button fx:id="playlist3" mnemonicParsing="false" onAction="#playlistClicked" prefHeight="125.0" prefWidth="185.0" />
+                        <Button fx:id="delete3" mnemonicParsing="false" prefHeight="20.0" prefWidth="20.0" text="X" StackPane.alignment="TOP_LEFT">
+                           <StackPane.margin>
+                              <Insets top="8.0" />
+                           </StackPane.margin>
+                        </Button>
                      </children>
                   </StackPane>
                   <StackPane prefHeight="150.0" prefWidth="200.0">
                      <children>
                         <Button fx:id="playlist6" mnemonicParsing="false" onAction="#playlistClicked" prefHeight="125.0" prefWidth="185.0" />
+                        <Button fx:id="delete6" mnemonicParsing="false" prefHeight="20.0" prefWidth="20.0" text="X" StackPane.alignment="TOP_LEFT">
+                           <StackPane.margin>
+                              <Insets top="8.0" />
+                           </StackPane.margin>
+                        </Button>
                      </children>
                   </StackPane>
                </children>

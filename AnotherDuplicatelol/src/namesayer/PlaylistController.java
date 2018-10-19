@@ -7,6 +7,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 import javafx.event.ActionEvent;
@@ -15,7 +16,10 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
 
 public class PlaylistController implements Initializable{
@@ -32,6 +36,19 @@ public class PlaylistController implements Initializable{
 	Button playlist5;
 	@FXML
 	Button playlist6;
+	
+	@FXML
+	Button delete1;
+	@FXML
+	Button delete2;
+	@FXML
+	Button delete3;
+	@FXML
+	Button delete4;
+	@FXML
+	Button delete5;
+	@FXML
+	Button delete6;
 
 	@FXML
 	Button uploadButton;
@@ -41,8 +58,10 @@ public class PlaylistController implements Initializable{
 	Button practiceButton;
 	
 	//Place the buttons in a list for easier handling.
-	List<Button> playlistButton = new ArrayList<>();
-
+	List<Button> playlistButtons = new ArrayList<>();
+	
+	//Place the delete buttons in a list for easier handling.
+	List<Button> deleteButtons = new ArrayList<>();
 	
 	//List of all the current playlist names.
 	List<String> playlistNames = new ArrayList<>();
@@ -62,7 +81,6 @@ public class PlaylistController implements Initializable{
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		
-		
 		workspaceRecordings = new DatabaseList();
 		
 		//Count the number of playlists.
@@ -70,30 +88,39 @@ public class PlaylistController implements Initializable{
 		playlistNum = folder.listFiles().length;
 		
 		//Add the playlist buttons to a list for ease of handling.
-		playlistButton.add(playlist1);
-		playlistButton.add(playlist2);
-		playlistButton.add(playlist3);
-		playlistButton.add(playlist4);
-		playlistButton.add(playlist5);
-		playlistButton.add(playlist6);
+		playlistButtons.add(playlist1);
+		playlistButtons.add(playlist2);
+		playlistButtons.add(playlist3);
+		playlistButtons.add(playlist4);
+		playlistButtons.add(playlist5);
+		playlistButtons.add(playlist6);
+		
+		//Add the delete buttons to a list for ease of handling.
+		deleteButtons.add(delete1);
+		deleteButtons.add(delete2);
+		deleteButtons.add(delete3);
+		deleteButtons.add(delete4);
+		deleteButtons.add(delete5);
+		deleteButtons.add(delete6);
 		
 		//Handles which buttons are visible/invisible depending on how many playlists there
 		//currently are.
-		setPlaylistButtons();
+		setplaylistButtonss();
 	}
 	
 	/*
 	 * This method would iterate through the file containing the list of playlists and
 	 * count how many playlists there are. Or perhaps returns the names of all the playlists??.
 	 */
-	public void setPlaylistButtons(){
+	public void setplaylistButtonss(){
 		
 		File folder = new File("Playlists/");
 		File[] listOfFiles = folder.listFiles();
 		
 		//Start off with a clean slate by making all buttons invisible.
 		for (int i=0; i<6; i++){
-			playlistButton.get(i).setVisible(false);
+			playlistButtons.get(i).setVisible(false);
+			deleteButtons.get(i).setVisible(false);
 		}
 		
 		if (listOfFiles.length == 0) {
@@ -102,14 +129,47 @@ public class PlaylistController implements Initializable{
 			for(int i = 0; i < listOfFiles.length; i++) {
 				String formattedName = listOfFiles[i].getName().replaceAll(".txt","");
 				playlistNames.add(formattedName);
-				playlistButton.get(i).setVisible(true);
-				playlistButton.get(i).setText(formattedName);
+				playlistButtons.get(i).setVisible(true);
+				playlistButtons.get(i).setText(formattedName);
+				deleteButtons.get(i).setVisible(true);
 				
 			}
 		}
 	
 	}
 	
+	@FXML
+	public void deleteButtonClicked(ActionEvent event) {
+		
+		//Get a reference to the current selected file and find the playlist text file that corresponds to it.
+		Button clickedDeleteButton = (Button) event.getSource();
+		int index = deleteButtons.indexOf(clickedDeleteButton);
+		
+		Button currentPlaylist = playlistButtons.get(index);
+		
+		String playlist = currentPlaylist.getText() + ".txt";
+	
+			Alert alert = new Alert(AlertType.CONFIRMATION);
+			alert.setTitle("Delete Confirmation");
+			alert.setHeaderText(null);
+			alert.setContentText("Are you sure you want to delete?");
+			Optional<ButtonType> action = alert.showAndWait();
+
+			if (action.get() == ButtonType.OK) {
+				File playlistFiles = new File("Playlists/");
+
+				for (final File fileEntry : playlistFiles.listFiles()) {
+					String currentFile = fileEntry.getName();
+					if (currentFile.equals(playlist)) {
+						fileEntry.delete();
+						currentPlaylist.setVisible(false);
+						clickedDeleteButton.setVisible(false);
+						
+					}
+				}
+			}
+		
+	}
 	/*
 	 * This method is invoked whenever a user clicks any playlist button. Loads the recordings of the playlist
 	 * that was clicked in the workspace.
@@ -141,9 +201,6 @@ public class PlaylistController implements Initializable{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-		//Get the text of the clicked button (ie the playlist name) and 
-		//Search through for the list of recordings in the playlist. Use a playlist object to handle?
 	}
 	
 	/*
@@ -182,7 +239,6 @@ public class PlaylistController implements Initializable{
 	/*
 	 * This button takes the user back to the menu scene.
 	 */
-	
 	@FXML
 	public void backButtonClicked() {
 		try {
@@ -193,7 +249,6 @@ public class PlaylistController implements Initializable{
 			e.printStackTrace();
 		}
 	}
-	
 
 	/*
 	 * Set all playlist related buttons invisible.
@@ -202,12 +257,14 @@ public class PlaylistController implements Initializable{
 
 		//Start off with a clean slate by making all buttons invisible.
 		for (int i=0; i<6; i++){
-			playlistButton.get(i).setVisible(false);
+			playlistButtons.get(i).setVisible(false);
+			deleteButtons.get(i).setVisible(false);
 		}
 		//Make the buttons visible and set the text to the corresponding name.
 		for (int i=0; i<playlistNum; i++){
-			playlistButton.get(i).setVisible(true);
-			playlistButton.get(i).setText(playlistNames.get(i));
+			playlistButtons.get(i).setVisible(true);
+			playlistButtons.get(i).setText(playlistNames.get(i));
+			deleteButtons.get(i).setVisible(true);
 		}
 	}
 	
