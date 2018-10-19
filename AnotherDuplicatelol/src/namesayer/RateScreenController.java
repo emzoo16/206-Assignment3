@@ -34,21 +34,21 @@ public class RateScreenController implements Initializable  {
 	//FXML variables
 	@FXML
 	Label rateText;
-	
+
 	@FXML
 	Button confirmButton;
 	@FXML
 	CheckBox check1,check2,check3,check4,check5;
-	
+
 	@FXML
 	Slider rateSlider;
-	
+
 	//The folder containing all the reviews.
 	String currentName;
-	
+
 	//Reference to the workspace.
 	WorkSpaceController controller;
-	
+
 	//Stores the rating the user gives.
 	int rating = 0;
 
@@ -58,14 +58,14 @@ public class RateScreenController implements Initializable  {
 	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		
+
 		rating=3;
 		rateSlider.setValue(3.00);
 		rateText.setText(rating + ". Average");
 
 		File file = new File("Review");
 		file.mkdirs();
-		
+
 		rateSlider.valueProperty().addListener(new InvalidationListener() {
 
 			@Override
@@ -74,32 +74,32 @@ public class RateScreenController implements Initializable  {
 
 				if (rating == 1) {
 					rateText.setText(rating + ". Very Poor");
-					
+
 				}else if (rating == 2) {
 					rateText.setText(rating + ". Poor");
-					
+
 				}else if (rating == 3) {
 					rateText.setText(rating + ". Average");
-					
+
 				}else if (rating == 4) {
 					rateText.setText(rating + ". Good");
-					
+
 				}else if (rating == 5) {
 					rateText.setText(rating + ". Very Good");
-					
+
 				}
 			}
-			
+
 		});
 
 	}
-	
+
 	/*
 	 * This method writes the users review to the file with the corresponding name.
 	 */
 	@FXML
 	public void confirmButtonClicked(ActionEvent event){
-		
+
 		//Creating the new file if it doesn't already exist
 		File file = new File("./Review/" + currentName + ".txt");
 
@@ -137,7 +137,7 @@ public class RateScreenController implements Initializable  {
 		Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
 		currentStage.close();
 	}
-	
+
 	/*
 	 * Used to pass the current recording name from the workspace controller to
 	 * the recordController. This method is called from the workspace controller.

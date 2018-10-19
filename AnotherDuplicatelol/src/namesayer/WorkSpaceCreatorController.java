@@ -226,6 +226,7 @@ public class WorkSpaceCreatorController implements Initializable {
             }
 
             filteredList.setPredicate(currentValue -> {
+
                 //If nothing new has been entered
                 if (currentPartialSearch == null || currentPartialSearch.isEmpty()){
                     return true;

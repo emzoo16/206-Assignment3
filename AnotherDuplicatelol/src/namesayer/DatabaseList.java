@@ -6,6 +6,8 @@ import javafx.collections.ObservableList;
 import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
 
 public class DatabaseList {
 	
@@ -13,6 +15,8 @@ public class DatabaseList {
     private HashMap<String, DemoRecording> dataBaseRecordings;
 	//A map of all recordings which are being used from the database
     private HashMap<String, DemoRecording> recordingsMap;
+    //A list of all names of recordings which are being used from the database, with the first letter captialized.
+    private List<String> recordingNames;
 
     /*
      * This class represents the list of database recordings.
@@ -20,6 +24,7 @@ public class DatabaseList {
     public DatabaseList() {
         dataBaseRecordings = new HashMap<>();
         recordingsMap = new HashMap<>();
+        recordingNames = new ArrayList<>();
         //Gets the files in an array
         File folder = new File("Database/");
         File[] ArrayOfFiles = folder.listFiles();
@@ -37,8 +42,10 @@ public class DatabaseList {
                         count += 1;
                     }
                     count = 1;
+                    String processedRecordingName = updatedFileString.substring(0,1).toUpperCase()
+                            + updatedFileString.substring(1).toLowerCase();
                     DatabaseRecording recording = new DatabaseRecording(fileString, updatedFileString);
-                    dataBaseRecordings.put(updatedFileString, recording);
+                    dataBaseRecordings.put(processedRecordingName, recording);
                 }
             }
         } else {
@@ -59,7 +66,7 @@ public class DatabaseList {
         return recordingsMap.get(name);
     }
 
-	//Gets a list of all recordings currently being used
+    //Gets a list of all recordings currently being used
     public ObservableList<String> getRecordingNames() {
         ObservableList<String> recordingsList = FXCollections.observableArrayList(recordingsMap.keySet());
         Collections.sort(recordingsList);
@@ -70,6 +77,10 @@ public class DatabaseList {
     public void remove(String name) {
         if (recordingsMap.keySet().contains(name)) {
             recordingsMap.remove(name);
+        }
+        String updatedName = name.substring(0,1).toUpperCase() + name.substring(1);
+        if (recordingNames.contains(updatedName)) {
+            recordingNames.remove(updatedName);
         }
     }
 	

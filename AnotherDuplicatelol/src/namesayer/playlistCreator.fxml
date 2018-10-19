@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="namesayer.PlaylistCreatorController">
+   <children>
+      <Label layoutX="198.0" layoutY="17.0" text="Select Names">
+         <font>
+            <Font name="System Bold" size="36.0" />
+         </font>
+      </Label>
+      <Button fx:id="returnButton" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#returnToPlaylist" text="Return" />
+      <Button fx:id="addButton" layoutX="430.0" layoutY="169.0" mnemonicParsing="false" onAction="#addToPlaylist" prefHeight="30.0" text="Add" />
+      <ListView fx:id="listView" layoutX="486.0" layoutY="81.0" prefHeight="370.0" prefWidth="200.0" />
+      <Label layoutX="511.0" layoutY="52.0" text="Currently Selected">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Label>
+      <Button fx:id="databaseButton" layoutX="14.0" layoutY="461.0" mnemonicParsing="false" onAction="#viewDatabase" text="View Database" />
+      <Button fx:id="removeButton" layoutX="486.0" layoutY="461.0" mnemonicParsing="false" onAction="#removeFromPlaylist" text="Remove" />
+      <Button fx:id="continueButton" layoutX="609.0" layoutY="461.0" mnemonicParsing="false" onAction="#continueToWorkspace" text="Continue" />
+      <CheckBox fx:id="randomiseBox" layoutX="336.0" layoutY="465.0" mnemonicParsing="false" text="Randomise Order" />
+      <Label layoutX="159.0" layoutY="128.0" text="Search For Names">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Label>
+      <TextField fx:id="inputField" layoutX="45.0" layoutY="169.0" prefHeight="30.0" prefWidth="375.0" />
+      <ListView fx:id="searchView" layoutX="45.0" layoutY="199.0" maxHeight="216.0" prefWidth="375.0" />
+   </children>
+</Pane>
