@@ -58,6 +58,10 @@ public class RateScreenController implements Initializable  {
 	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+		
+		rating=3;
+		rateSlider.setValue(3.00);
+		rateText.setText(rating + ". Average");
 
 		File file = new File("Review");
 		file.mkdirs();
