@@ -1,5 +1,6 @@
 package namesayer;
 
+import java.io.File;
 import java.io.IOException;
 
 import java.net.URL;
@@ -8,6 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -42,16 +44,30 @@ public class PlaylistController implements Initializable{
 	List<Button> playlistButton = new ArrayList<>();
 
 	
-	//List of all the current playlist names. Hard coded for now to test functionality.
-	List<String> playlistNames = Arrays.asList("Class1", "Class2");
+	//List of all the current playlist names.
+	List<String> playlistNames = new ArrayList<>();
 	
 	
-	//Hardcoded at the moment, will contain the number of playlists that has been created.
-	int playlistNum=2;
+	//Number of playlists.
+	int playlistNum;
+	
+	//Reference to the current clicked playlistFile
+	File currentPlaylistFile;
+	
+	//List of recording objects to be passed to the workspaceController.
+	DatabaseList workspaceRecordings;
+
 	
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+		
+		
+		workspaceRecordings = new DatabaseList();
+		
+		//Count the number of playlists.
+		File folder = new File("Playlists/");
+		playlistNum = folder.listFiles().length;
 		
 		//Add the playlist buttons to a list for ease of handling.
 		playlistButton.add(playlist1);
@@ -63,15 +79,35 @@ public class PlaylistController implements Initializable{
 		
 		//Handles which buttons are visible/invisible depending on how many playlists there
 		//currently are.
-		setButtons();
+		setPlaylistButtons();
 	}
 	
 	/*
 	 * This method would iterate through the file containing the list of playlists and
 	 * count how many playlists there are. Or perhaps returns the names of all the playlists??.
 	 */
-	public void getPlaylists(){
+	public void setPlaylistButtons(){
 		
+		File folder = new File("Playlists/");
+		File[] listOfFiles = folder.listFiles();
+		
+		//Start off with a clean slate by making all buttons invisible.
+		for (int i=0; i<6; i++){
+			playlistButton.get(i).setVisible(false);
+		}
+		
+		if (listOfFiles.length == 0) {
+			//have a label saying there are no current playlists
+		}else {
+			for(int i = 0; i < listOfFiles.length; i++) {
+				String formattedName = listOfFiles[i].getName().replaceAll(".txt","");
+				playlistNames.add(formattedName);
+				playlistButton.get(i).setVisible(true);
+				playlistButton.get(i).setText(formattedName);
+				
+			}
+		}
+	
 	}
 	
 	/*
@@ -79,7 +115,33 @@ public class PlaylistController implements Initializable{
 	 * that was clicked in the workspace.
 	 */
 	@FXML
-	public void playlistClicked() {
+	public void playlistClicked(ActionEvent event) {
+		
+		//Get a reference to the current selected file and find the playlist text file that corresponds to it.
+		Button clickedPlaylist = (Button) event.getSource();
+		String playlist = clickedPlaylist.getText() + ".txt";
+		currentPlaylistFile = new File("Playlists/"+playlist);
+		
+		//Create a playlist loader to scan and upload the names in the playlist.
+		PlaylistLoader loader = new PlaylistLoader((Stage) uploadButton.getScene().getWindow());
+		List<String> names = loader.loadPlaylist(currentPlaylistFile);
+		addNames(names);
+		
+		try {
+			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("workspace.fxml"));
+			Parent playlistScene = fxmlLoader.load();
+			WorkSpaceController controller = fxmlLoader.getController();
+			
+			//Passing the selected recordings to the workspace so they can be shown in the listviews in the
+			//workspace.
+			controller.setWorkspaceRecordingsAndController(workspaceRecordings, workspaceRecordings.getRecordingNames());
+			
+			Stage stage = (Stage) playlist1.getScene().getWindow();
+			stage.setScene(new Scene(playlistScene, 700, 500));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 		//Get the text of the clicked button (ie the playlist name) and 
 		//Search through for the list of recordings in the playlist. Use a playlist object to handle?
 	}
@@ -137,6 +199,7 @@ public class PlaylistController implements Initializable{
 	 * Set all playlist related buttons invisible.
 	 */
 	public void setButtons() {
+
 		//Start off with a clean slate by making all buttons invisible.
 		for (int i=0; i<6; i++){
 			playlistButton.get(i).setVisible(false);
@@ -145,6 +208,38 @@ public class PlaylistController implements Initializable{
 		for (int i=0; i<playlistNum; i++){
 			playlistButton.get(i).setVisible(true);
 			playlistButton.get(i).setText(playlistNames.get(i));
+		}
+	}
+	
+	/*
+	 * This method will add all the names in the list of found names to the workspace.
+	 */
+	public void addNames(List<String> namesList) {
+		
+		//A list to get the file names of all recordings to create a concatenated recording
+		DatabaseList referenceList = new DatabaseList();
+		referenceList.displayAll();
+
+		//Loops through all names in the list adding them to the workspace
+		for (String name : namesList) {
+			//If the name is a concatenated one
+			if (name.trim().contains(" ")) {
+				//Gets the list of the names
+				List<String> names = Arrays.asList(name.split(" "));
+
+				List<String> fileNames = new ArrayList<>();
+				//Gets the file names for all these names
+				for (String recording : names) {
+					fileNames.add(referenceList.getRecording(recording).getFileName());
+				}
+				//Creates the concatenated recording and adds it to the workspace
+				DemoRecording concatenatedRecording = new ConcatenatedRecording(fileNames, name);
+				workspaceRecordings.add(concatenatedRecording);
+			} else {
+				name = name.substring(0,1).toUpperCase() + name.substring(1).toLowerCase();
+				//If the name is a single name, it simply gets added
+				workspaceRecordings.add(name);
+			}
 		}
 	}
 
