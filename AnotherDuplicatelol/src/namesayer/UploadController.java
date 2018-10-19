@@ -160,126 +160,12 @@ public class UploadController implements Initializable {
 	 * added to the list to be played.
 	 */
 	public void scanFile() {
-		
-		//An array of all full names with a name/names missing. Missing names bracketed. This will be
-		//passed into the warning controller.
-		List<String>notFoundDisplay = new ArrayList<>();
-		
-		//An array that will contain all the valid names from the file.
-		List<String> namesList = new ArrayList<>();
-
-		if (currentFile.exists()) {
-			try{
-				Scanner scanner = new Scanner(currentFile);
-				
-				//Iterate through each line in the text file.
-				while (scanner.hasNextLine()) {
-					String line = scanner.nextLine();
-					
-					//List containing any names that were not found in the database.
-					List<String> notFound = checkName(line);
-					
-					//If all the names are in the database, add the line (the composite name) to the namesList.
-					if(notFound.isEmpty()) {
-						namesList.add(line);
-					}else {
-						//Format the string to surround the name not found in brackets. This is the format they will be
-						//displayed in the warning screen.
-						for (String s: notFound) {
-						line = line.replace(s, "(" + s + ")");
-						}
-						notFoundDisplay.add(line);
-					}
-				}
-				if (notFoundDisplay.isEmpty() == false) {
-					try {
-						FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("uploadWarning.fxml"));
-						Parent warningSceneParent = fxmlLoader.load();
-						Scene warningScene = new Scene(warningSceneParent);
-						
-						//Getting the instance of the warning controller and passing the 
-						UploadWarningController controller = fxmlLoader.getController();
-						controller.setNotFoundList(notFoundDisplay);
-						
-						Stage warningStage = new Stage();
-						warningStage.setScene(warningScene);
-						
-						//Disable the background window when the warning stage is displayed.
-						warningStage.initModality(Modality.WINDOW_MODAL);
-					    warningStage.initOwner(uploadButton.getScene().getWindow() );
-						
-					    warningStage.show();
-					    
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
-	
-				addNames(namesList);
-				nameList = FXCollections.observableArrayList(namesList);
-				nameListView.setItems(nameList);
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			}
-		} 
+		PlaylistLoader loader = new PlaylistLoader((Stage) uploadButton.getScene().getWindow());
+		List<String> names = loader.loadPlaylist(currentFile);
+		addNames(names);
+		nameList = FXCollections.observableArrayList(names);
+		nameListView.setItems(nameList);
 	}
-	
-	/*
-	 * This method checks if the provided filename is a name in the database directory.
-	 */
-	public String inDatabase(String fileName) {
-		
-		//List all the files in the database.
-		File database = new File("Database/");
-		File[] databaseFiles = database.listFiles();
-		
-		//Iterate through the database to check if the current filename matches a name in the
-		//database.
-		for (int i=0; i< databaseFiles.length; i++) {
-			
-			//Parsing the actual name from the long file name.
-			String name = databaseFiles[i].getName();
-			String shortName = name.substring(name.lastIndexOf("_") + 1).replaceAll(".wav", "");
-			
-			//Checks if the given file name and the current file in the database directory
-			//match. If they are, return true.
-			if (shortName.toLowerCase().equals(fileName.toLowerCase())) {
-				return shortName;
-		}		
-		}
-		return "";	
-	}
-	
-	/**
-	 * Given a string (a name), this method parses the string and checks if each name in the sting
-	 * is in the database.
-	 */
-	public List<String> checkName(String line) {
-	
-		//An array containing all the names in the current line that could not be found in the database.
-		List<String> notFound = new ArrayList<>();
-		
-		//String of the line that has the proper formatting for names in the database.
-		String formattedLine;
-
-		//Seperate the line by spaces, underscores or hyphens to create an array of single names.
-		String[] splitLine = line.trim().split("[\\s+,_,-]");
-		
-		//Iterate through each single name in the line to check if the name is in the
-		//database.
-		for (int i=0; i<splitLine.length; i++ ) {
-			
-			//If the name is not in the database, add the name to the not found list.
-			if (inDatabase(splitLine[i])=="") {
-				notFound.add(splitLine[i]);
-			}
-			//Logic getting proper names of found names.
-			else {
-				formattedLine = line.replace(splitLine[i], inDatabase(splitLine[i]));
-			}
-	}
-		return notFound;
-	}	
 
 	/*
 	 * This method will add all the names in the list of found names to the workspace.
@@ -296,15 +182,22 @@ public class UploadController implements Initializable {
 			if (name.trim().contains(" ")) {
 				//Gets the list of the names
 				List<String> names = Arrays.asList(name.split(" "));
+				List<String> updatedNames = new ArrayList<>();
+				for(String splitName : names) {
+					splitName = splitName.substring(0,1).toUpperCase() + splitName.substring(1).toLowerCase();
+					updatedNames.add(splitName);
+				}
 				List<String> fileNames = new ArrayList<>();
 				//Gets the file names for all these names
-				for (String recording : names) {
-					fileNames.add(referenceList.getRecording(recording).getFileName());
+				for (String recording : updatedNames) {
+					Recording obj = referenceList.getRecording(recording);
+					fileNames.add(obj.getFileName());
 				}
 				//Creates the concatenated recording and adds it to the workspace
 				DemoRecording concatenatedRecording = new ConcatenatedRecording(fileNames, name);
 				workspaceRecordings.add(concatenatedRecording);
 			} else {
+				name = name.substring(0,1).toUpperCase() + name.substring(1).toLowerCase();
 				//If the name is a single name, it simply gets added
 				workspaceRecordings.add(name);
 			}
