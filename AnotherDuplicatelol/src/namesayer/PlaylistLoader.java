@@ -134,7 +134,9 @@ public class PlaylistLoader {
         referenceList.displayAll();
 
         List<String> database = referenceList.getRecordingNames();
-        inputName = inputName.substring(0,1).toUpperCase() + inputName.substring(1).toLowerCase();
+        if (inputName.length() != 0 && inputName.length() != 1) {
+            inputName = inputName.substring(0,1).toUpperCase() + inputName.substring(1).toLowerCase();
+        }
         if (database.contains(inputName)) {
             return inputName;
         }

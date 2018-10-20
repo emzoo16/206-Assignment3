@@ -26,7 +26,12 @@ public class ConcatenatedRecording extends DemoRecording {
         this.controller = controller;
         userAttempts = new HashMap<>();
 		//Short name is the name which is displayed
-        this.shortName = fullName;
+        this.shortName = "";
+        String[] splitName = fullName.split(" ");
+        for (String namePart : splitName) {
+            this.shortName = this.shortName + namePart.substring(0,1).toUpperCase() + namePart.substring(1).toLowerCase() + " ";
+        }
+        this.shortName = this.shortName.trim();
         this.fileName = fullName.replaceAll(" ", "") + ".wav";
         removeRecordingSilence(fileNames, fullName);
 

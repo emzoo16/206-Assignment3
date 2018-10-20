@@ -69,42 +69,51 @@ public class PlaylistCreatorController implements Initializable, ConcatenatedRec
      */
     @FXML
     private void addToPlaylist() {
-        String searchedItem = inputField.getText().trim();
-        List<String> names = Arrays.asList(searchedItem.split(" "));
-        List<String> updatedNames = new ArrayList<>();
-        String updatedSearch = "";
-        if (!searchedItem.isEmpty()) {
-            for (String name : names) {
-                String updatedName = name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
-                updatedNames.add(updatedName);
-                updatedSearch = updatedSearch + updatedName + " ";
-            }
-            updatedSearch = updatedSearch.trim();
-            if (!alreadyAdded(searchedItem)) {
-                if (searchedItem.contains(" ")) {
-                    boolean invalid = false;
-                    for (String name : updatedNames) {
-                        if (!InputExists(name)) {
-                            invalid = true;
-                            break;
+        String searchedItem = inputField.getText().trim().replaceAll("-", " ");
+        System.out.println(searchedItem.length());
+        if (searchedItem.length() <= 50) {
+            List<String> names = Arrays.asList(searchedItem.split(" "));
+            List<String> updatedNames = new ArrayList<>();
+            String updatedSearch = "";
+            if (!searchedItem.isEmpty()) {
+                for (String name : names) {
+                    String updatedName = name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
+                    updatedNames.add(updatedName);
+                    updatedSearch = updatedSearch + updatedName + " ";
+                }
+                updatedSearch = updatedSearch.trim();
+                if (!alreadyAdded(searchedItem)) {
+                    if (searchedItem.contains(" ")) {
+                        boolean invalid = false;
+                        for (String name : updatedNames) {
+                            if (!InputExists(name)) {
+                                invalid = true;
+                                break;
+                            }
                         }
-                    }
-                    if (!invalid) {
-                        List<String> fileNames = new ArrayList<>();
-                        for (String recording : updatedNames) {
-                            fileNames.add(searchList.getRecording(recording).getFileName());
+                        if (!invalid) {
+                            List<String> fileNames = new ArrayList<>();
+                            for (String recording : updatedNames) {
+                                fileNames.add(searchList.getRecording(recording).getFileName());
+                            }
+                            DemoRecording concatenatedRecording = new ConcatenatedRecording(fileNames, updatedSearch, this);
+                            inputField.clear();
                         }
-                        DemoRecording concatenatedRecording = new ConcatenatedRecording(fileNames, updatedSearch, this);
-                        inputField.clear();
+                    } else {
+                        if (InputExists(updatedSearch)) {
+                            playlist.add(updatedSearch);
+                            inputField.clear();
+                        }
+                        listView.setItems(playlist.getRecordingNames());
                     }
-                } else {
-                    if (InputExists(updatedSearch)) {
-                        playlist.add(updatedSearch);
-                        inputField.clear();
-                    }
-                    listView.setItems(playlist.getRecordingNames());
                 }
             }
+        } else {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Invalid Input");
+            alert.setHeaderText("The input is too long.");
+            alert.setContentText("The maximum number of characters allowed is 50");
+            alert.showAndWait();
         }
     }
 
@@ -113,7 +122,7 @@ public class PlaylistCreatorController implements Initializable, ConcatenatedRec
             return true;
         } else {
             Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Incorrect Input");
+            alert.setTitle("Invalid Input");
             alert.setHeaderText("The name \"" + input + "\" does not appear in the database");
             alert.setContentText("If this is empty you may want to check for double spaces");
             alert.showAndWait();

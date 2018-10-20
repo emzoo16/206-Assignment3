@@ -33,15 +33,13 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-public class WorkSpaceController implements Initializable {
+public class WorkSpaceController implements Initializable, PlayController {
 
 	//Current index in the listView 
 	int currentIndex = 0;
 	int ownCurrentIndex = 0;
 	double volume;
 	//FXML variables
-	@FXML
-	ProgressBar progressBar;
 	@FXML
 	Slider volumeSlider;
 	@FXML
@@ -69,6 +67,8 @@ public class WorkSpaceController implements Initializable {
 	@FXML
 	Button saveButton;
 	@FXML
+	Button playButton;
+	@FXML
 	ListView<String> dataListView;
 	ObservableList<String> dataList = FXCollections.observableArrayList();
 	@FXML
@@ -85,13 +85,12 @@ public class WorkSpaceController implements Initializable {
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		
+		playlistCount();
+
 		//Set the volume to the max to begin with.
 		volume = 1.0;
 		volumeSlider.setValue(volume);
 		
-		playlistCount();	
-		System.out.println(playlistNum);
 		
 		//Listener to get the current name the user is clicking on.
 		dataListView.getSelectionModel().selectedItemProperty().addListener(
@@ -101,8 +100,7 @@ public class WorkSpaceController implements Initializable {
 										String newValue) {
 						//Sets the recording label to the current selected recording.
 						recordingNameLabel.setText(newValue);
-						//Resets the progressBar.
-						progressBar.setProgress(0.0);
+
 						currentIndex = dataListView.getSelectionModel().getSelectedIndex();
 						setRating(newValue);
 						refreshPersonalRecordings(newValue);
@@ -162,79 +160,46 @@ public class WorkSpaceController implements Initializable {
 		ownListView.setItems(ownList);
 	}
 
-	
-	@FXML
-	/*
-	 * This method is invoked when the user wants to save a playlist.
-	 */
-	
-	public void saveButtonClicked(ActionEvent event) {
-		
-		if(playlistNum < 6) {
-			try {
-				FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("saveScreen.fxml"));
-				Parent rateSceneParent = fxmlLoader.load();
-				SaveScreenController controller = fxmlLoader.getController();
-				controller.setRecordingList(listOfRecordings);
-				controller.setButton(saveButton);
-				Scene rateScene = new Scene(rateSceneParent);
-				Stage rateStage = new Stage();
-				rateStage.setScene(rateScene);
-				
-				//Disable the background window when the rate stage is displayed.
-				rateStage.initModality(Modality.WINDOW_MODAL);
-			    rateStage.initOwner(((Node)event.getSource()).getScene().getWindow() );
-				rateStage.show();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}else {
-			try {
-				FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("deletePlaylist.fxml"));
-				Parent deleteSceneParent = fxmlLoader.load();
-				DeletePlaylistController controller = fxmlLoader.getController();
-				controller.setRecordingList(listOfRecordings);
-				controller.setButton(saveButton);
-				Scene deleteScene = new Scene(deleteSceneParent);
-				Stage deleteStage = new Stage();
-				deleteStage.setScene(deleteScene);
-				
-				//Disable the background window when the rate stage is displayed.
-				deleteStage.initModality(Modality.WINDOW_MODAL);
-				deleteStage.initOwner(((Node)event.getSource()).getScene().getWindow() );
-				deleteStage.show();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		
-	}
 	/*
 	 * This method starts playing the current name.
 	 */
 	@FXML
-	public void playButtonClicked(ActionEvent event) {
-		
+	private void playButtonClicked(ActionEvent event) {
+
 		if (isOnDatabase) {
 			String currentRecordingName = dataListView.getSelectionModel().getSelectedItem();
 			DemoRecording currentRecording = listOfRecordings.getRecording(currentRecordingName);
-			currentRecording.play(volume, progressBar);
+			setUpForPlaying(currentRecording, volume);
 		} else {
 			if (ownListView.getSelectionModel().getSelectedItem() != null) {
 			String currentName = ownListView.getSelectionModel().getSelectedItem();
 			String databaseName = dataListView.getSelectionModel().getSelectedItem();
 			DemoRecording databaseRecording = listOfRecordings.getRecording(databaseName);
-			databaseRecording.getUserRecording(currentName).play(volume, progressBar);
+			setUpForPlaying(databaseRecording.getUserRecording(currentName), volume);
 			}
 		}
 
+	}
+
+	private void setUpForPlaying(Recording recording, double volume) {
+		recording.setController(this);
+		if (recording.isPlaying()) {
+			recording.stopPlaying();
+		} else {
+			recording.play(volume);
+			playButton.setText("Stop");
+		}
+	}
+
+	public void playingFinished() {
+		playButton.setText("Play");
 	}
 
 	/*
 	 * This method takes the user to the next name on the play queue.
 	 */
 	@FXML
-	public void nextButtonClicked(ActionEvent event) {
+	private void nextButtonClicked(ActionEvent event) {
 		if (isOnDatabase) {
 			if (currentIndex < dataList.size() - 1) {
 
@@ -379,6 +344,76 @@ public class WorkSpaceController implements Initializable {
 	}
 
 	/*
+	 * This method is invoked when the user wants to save a playlist.
+	 */
+	@FXML
+	public void saveButtonClicked(ActionEvent event) {
+
+		if(playlistNum < 6) {
+			try {
+				FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("saveScreen.fxml"));
+				Parent rateSceneParent = fxmlLoader.load();
+				SaveScreenController controller = fxmlLoader.getController();
+				controller.setRecordingList(listOfRecordings);
+				controller.setButton(saveButton);
+				Scene rateScene = new Scene(rateSceneParent);
+				Stage rateStage = new Stage();
+				rateStage.setScene(rateScene);
+
+				//Disable the background window when the rate stage is displayed.
+				rateStage.initModality(Modality.WINDOW_MODAL);
+				rateStage.initOwner(((Node)event.getSource()).getScene().getWindow() );
+				rateStage.show();
+				playlistNum = 0;
+				playlistCount();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}else {
+			try {
+				FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("deletePlaylist.fxml"));
+				Parent deleteSceneParent = fxmlLoader.load();
+				DeletePlaylistController controller = fxmlLoader.getController();
+				controller.setRecordingList(listOfRecordings);
+				controller.setButton(saveButton);
+				Scene deleteScene = new Scene(deleteSceneParent);
+				Stage deleteStage = new Stage();
+				deleteStage.setScene(deleteScene);
+
+				//Disable the background window when the rate stage is displayed.
+				deleteStage.initModality(Modality.WINDOW_MODAL);
+				deleteStage.initOwner(((Node)event.getSource()).getScene().getWindow() );
+				deleteStage.show();
+				playlistNum = 0;
+				playlistCount();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
+	}
+
+	@FXML
+	private void playLoop(ActionEvent event) {
+		try {
+			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("loopScene.fxml"));
+			Parent loopParent = fxmlLoader.load();
+			LoopSceneController controller = fxmlLoader.getController();
+			controller.passRecording(listOfRecordings.getRecording(dataListView.getSelectionModel().getSelectedItem()), volume);
+			Scene loopScene = new Scene(loopParent);
+			Stage loopStage = new Stage();
+			loopStage.setScene(loopScene);
+
+			//Disable the background window when the rate stage is displayed.
+			loopStage.initModality(Modality.WINDOW_MODAL);
+			loopStage.initOwner(((Node) event.getSource()).getScene().getWindow());
+			loopStage.show();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/*
 	 * When the toggle button is pressed, the view switches to either the personal recordings or the 
 	 * database recordings.
 	 */
@@ -417,6 +452,16 @@ public class WorkSpaceController implements Initializable {
 		dataListView.getSelectionModel().select(currentIndex);
 		String currentName = dataListView.getSelectionModel().getSelectedItem();
 		recordingNameLabel.setText(currentName);
+	}
+
+	public void playlistCount() {
+		File folder = new File("Playlists/");
+		File[] listOfFiles = folder.listFiles();
+		for(File file : listOfFiles) {
+			if (file.isFile() && file.getName().endsWith(".txt")) {
+				playlistNum ++;
+			}
+		}
 	}
 
 	/*
@@ -552,22 +597,5 @@ public class WorkSpaceController implements Initializable {
 			return false;
 		}
 		return false;
-	}
-	
-	/*
-	 * This method returns the current volume value to the caller.
-	 */
-	public double getVolume() {
-		return volume;
-	}
-	
-	public void playlistCount() {
-		File folder = new File("Playlists/");
-		File[] listOfFiles = folder.listFiles();
-		for(File file : listOfFiles) {
-			if (file.isFile() && file.getName().endsWith(".txt")) {
-				playlistNum ++;
-			}
-		}
 	}
 }

@@ -4,12 +4,9 @@ import java.io.File;
 import java.io.IOException;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.ResourceBundle;
+import java.util.*;
 
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -20,6 +17,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.CheckBox;
 import javafx.stage.Stage;
 
 public class PlaylistController implements Initializable, ConcatenatedRecordingLoader{
@@ -56,6 +54,9 @@ public class PlaylistController implements Initializable, ConcatenatedRecordingL
 	Button backButton;
 	@FXML
 	Button practiceButton;
+
+	@FXML
+	CheckBox randomiseBox;
 
 	//Place the buttons in a list for easier handling.
 	List<Button> playlistButtons = new ArrayList<>();
@@ -210,7 +211,13 @@ public class PlaylistController implements Initializable, ConcatenatedRecordingL
 
 			//Passing the selected recordings to the workspace so they can be shown in the listviews in the
 			//workspace.
-			controller.setWorkspaceRecordingsAndController(workspaceRecordings, workspaceRecordings.getRecordingNames());
+			if (randomiseBox.isSelected()) {
+				ObservableList<String> randomisedList = workspaceRecordings.getRecordingNames();
+				Collections.shuffle(randomisedList);
+				controller.setWorkspaceRecordingsAndController(workspaceRecordings, randomisedList);
+			} else {
+				controller.setWorkspaceRecordingsAndController(workspaceRecordings, workspaceRecordings.getRecordingNames());
+			}
 
 			Stage stage = (Stage) playlist1.getScene().getWindow();
 			stage.setScene(new Scene(playlistScene));
@@ -306,7 +313,6 @@ public class PlaylistController implements Initializable, ConcatenatedRecordingL
 				List<String> fileNames = new ArrayList<>();
 				//Gets the file names for all these names
 				for (String recording : updatedNames) {
-					System.out.println(recording);
 					fileNames.add(referenceList.getRecording(recording).getFileName());
 				}
 				//Creates the concatenated recording and adds it to the workspace

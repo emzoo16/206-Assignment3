@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
@@ -16,7 +22,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="namesayer.WorkSpaceController">
+<AnchorPane prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="namesayer.WorkSpaceController">
    <children>
       <Pane layoutX="-6.0" prefHeight="600.0" prefWidth="900.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -32,7 +38,6 @@
                         <Font name="System Bold" size="30.0" />
                      </font>
                   </Label>
-                  <ProgressBar fx:id="progressBar" prefHeight="20.0" prefWidth="295.0" progress="0.0" />
                   <Label fx:id="ratingLabel" />
                   <HBox alignment="CENTER" prefHeight="35.0" prefWidth="350.0" spacing="10.0">
                      <children>
@@ -56,7 +61,10 @@
                   <Button fx:id="toggleButton" mnemonicParsing="false" onAction="#toggleTab" prefHeight="35.0" prefWidth="80.0" text="Toggle">
                      <font>
                         <Font size="16.0" />
-                     </font></Button>
+                     </font>
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin></Button>
                   <HBox alignment="CENTER" prefHeight="35.0" prefWidth="334.0">
                      <children>
                         <ImageView fitHeight="27.0" fitWidth="28.0" pickOnBounds="true" preserveRatio="true">
@@ -99,7 +107,7 @@
                            <content>
                               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                  <children>
-                                    <ListView fx:id="dataListView" layoutY="5.0" prefHeight="413.0" prefWidth="344.0" AnchorPane.bottomAnchor="-3.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="5.0" />
+                                    <ListView fx:id="dataListView" layoutY="5.0" prefHeight="180.0" prefWidth="200.0" AnchorPane.bottomAnchor="-3.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="5.0" />
                                  </children>
                               </AnchorPane>
                            </content>
@@ -136,7 +144,7 @@
                   </HBox>
                </children>
             </VBox>
-            <Button fx:id="loopButton" layoutX="722.0" layoutY="43.0" mnemonicParsing="false" text="Loop Practice">
+            <Button fx:id="loopButton" layoutX="722.0" layoutY="43.0" mnemonicParsing="false" onAction="#playLoop" text="Loop Practice">
                <font>
                   <Font size="16.0" />
                </font>

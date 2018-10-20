@@ -26,14 +26,23 @@ public abstract class Recording {
     
     private PlayController controller;
 
-    public Recording() {}
+    private Thread playThread;
+
+    public Recording() {
+        playThread = new Thread();
+    }
+
+    private boolean playingInterrupted;
+
+    private SourceDataLine audioLine;
 
     /*
      * Plays the wav file corresponding to the recording object. A volume value is passed in to 
      *set the volume accordingly. A reference to the progessBar is also given so the recording object
      *can update the progress bar as it plays.
      **/
-    public void play(double volume, ProgressBar progressBar) {
+    public void play(double volume) {
+        playingInterrupted = false;
         AudioPlayer player = new AudioPlayer(volume);
         Task<Void> playTask = new Task<Void>() {
             @Override
@@ -41,10 +50,14 @@ public abstract class Recording {
                 player.play(path + fileName);
                 return null;
             }
+            @Override
+            protected void succeeded() {
+                playingCompleted();
+            }
         };
-        Thread thread = new Thread(playTask);
-        thread.setDaemon(true);
-        thread.start();
+        playThread = new Thread(playTask);
+        playThread.setDaemon(true);
+        playThread.start();
     }
 
     /*
@@ -81,13 +94,13 @@ public abstract class Recording {
             this.volume = volume;
         }
 
-        void play(String audioPath) {
+        void play(String audioPath)  {
             File file = new File(audioPath);
             try {
                 AudioInputStream audioStream = AudioSystem.getAudioInputStream(file);
                 AudioFormat format = audioStream.getFormat();
                 DataLine.Info info = new DataLine.Info(SourceDataLine.class, format);
-                SourceDataLine audioLine = (SourceDataLine) AudioSystem.getLine(info);
+                audioLine = (SourceDataLine) AudioSystem.getLine(info);
                 audioLine.open(format);
                 setVolume(volume, audioLine);
                 audioLine.start();
@@ -95,14 +108,12 @@ public abstract class Recording {
                 byte[] bytesBuffer = new byte[BUFFER_SIZE];
                 int bytesRead = -1;
 
-                while ((bytesRead = audioStream.read(bytesBuffer)) != -1) {
+                while ((bytesRead = audioStream.read(bytesBuffer)) != -1 && !playingInterrupted) {
                     audioLine.write(bytesBuffer, 0, bytesRead);
                 }
-
                 audioLine.drain();
                 audioLine.close();
                 audioStream.close();
-                playingCompleted();
 
             } catch (UnsupportedAudioFileException e) {
                 e.printStackTrace();
@@ -125,7 +136,25 @@ public abstract class Recording {
         }
     }
 
+    public void setController(PlayController controller) {
+        this.controller = controller;
+    }
+
     private void playingCompleted() {
         controller.playingFinished();
+    }
+
+    public void stopPlaying() {
+        if (playThread.isAlive()) {
+            playingInterrupted = true;
+        }
+    }
+
+    public boolean isPlaying() {
+        if (playThread != null) {
+            return playThread.isAlive();
+        } else {
+            return false;
+        }
     }
 }

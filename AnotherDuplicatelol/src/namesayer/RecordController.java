@@ -52,7 +52,7 @@ public class RecordController implements Initializable {
     Double volume;
 
     //Recording objects 
-    Recording recording;
+    PersonalRecording recording;
     DemoRecording databaseRecording;
 
     //Reference to the workspace controller

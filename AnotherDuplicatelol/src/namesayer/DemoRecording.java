@@ -10,7 +10,7 @@ import java.util.HashMap;
 public abstract class DemoRecording extends Recording{
 
     //A map of all personal recording attempts
-    protected HashMap<String, Recording> userAttempts;
+    protected HashMap<String, PersonalRecording> userAttempts;
 
     /*
      * Returns all personal recordings
@@ -44,14 +44,14 @@ public abstract class DemoRecording extends Recording{
     /**
      *returns the requested user attempt
      */
-    public Recording getUserRecording(String name) {
+    public PersonalRecording getUserRecording(String name) {
         return userAttempts.get(name);
     }
 
     /**
      *Adds a a user attempt
      */
-    public void addAttempt(Recording attempt) {
+    public void addAttempt(PersonalRecording attempt) {
         userAttempts.put(attempt.getShortName() ,attempt);
     }
 

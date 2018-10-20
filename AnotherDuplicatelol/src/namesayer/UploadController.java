@@ -17,11 +17,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ListView;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
@@ -41,12 +37,11 @@ public class UploadController implements Initializable, ConcatenatedRecordingLoa
 	@FXML
 	Button backButton;
 	@FXML
-	ProgressBar progressbar;	
+	CheckBox randomiseBox;
 	@FXML
 	Button continueButton;
 	@FXML 
 	ListView<String> nameListView;
-	ObservableList<String> nameList = FXCollections.observableArrayList();
 	
 	
 	 //Keeping track of the number in the listViews the user has currently selected
@@ -73,18 +68,6 @@ public class UploadController implements Initializable, ConcatenatedRecordingLoa
 		
 		//Make the textfield uneditable.
 		fileText.setEditable(false);
-
-		nameListView.getItems().addListener(new ListChangeListener<String>() {
-			@Override
-			public void onChanged(Change<? extends String> c) {
-				System.out.println("ntl" + namesToLoad);
-				System.out.println("view" + nameListView.getItems().size());
-				if (nameListView.getItems().size() == namesToLoad) {
-					continueButton.setDisable(false);
-					uploadButton.setDisable(false);
-				}
-			}
-		});
 	}
 
 	/*
@@ -109,7 +92,7 @@ public class UploadController implements Initializable, ConcatenatedRecordingLoa
 	 */
 	@FXML
 	public void continueButtonClicked() {
-		if(nameList.isEmpty()) {
+		if(nameListView.getItems().isEmpty()) {
 			Alert alert = new Alert(AlertType.WARNING);
 			alert.setTitle("Warning");
 			alert.setHeaderText(null);
@@ -120,10 +103,15 @@ public class UploadController implements Initializable, ConcatenatedRecordingLoa
 				FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("workspace.fxml"));
 				Parent playlistScene = fxmlLoader.load();
 				WorkSpaceController controller = fxmlLoader.getController();
-				
 				//Passing the selected recordings to the workspace so they can be shown in the listviews in the
 				//workspace.
-				controller.setWorkspaceRecordingsAndController(workspaceRecordings, workspaceRecordings.getRecordingNames());
+				if (randomiseBox.isSelected()) {
+					ObservableList<String> randomisedList = workspaceRecordings.getRecordingNames();
+					Collections.shuffle(randomisedList);
+					controller.setWorkspaceRecordingsAndController(workspaceRecordings, randomisedList);
+				} else {
+					controller.setWorkspaceRecordingsAndController(workspaceRecordings, workspaceRecordings.getRecordingNames());
+				}
 				
 				Stage stage = (Stage) continueButton.getScene().getWindow();
 				stage.setScene(new Scene(playlistScene));
@@ -182,7 +170,14 @@ public class UploadController implements Initializable, ConcatenatedRecordingLoa
 	public void scanFile() {
 		PlaylistLoader loader = new PlaylistLoader((Stage) uploadButton.getScene().getWindow());
 		List<String> names = loader.loadPlaylist(currentFile);
+		System.out.println(names);
 		addNames(names);
+		if (workspaceRecordings.getRecordingNames().size() == namesToLoad) {
+			namesToLoad = 0;
+			nameListView.setItems(workspaceRecordings.getRecordingNames());
+			continueButton.setDisable(false);
+			uploadButton.setDisable(false);
+		}
 	}
 
 	/*
@@ -212,6 +207,7 @@ public class UploadController implements Initializable, ConcatenatedRecordingLoa
 					fileNames.add(obj.getFileName());
 				}
 				//Creates the concatenated recording and adds it to the workspace
+				System.out.println("got here");
 				DemoRecording concatenatedRecording = new ConcatenatedRecording(fileNames, name, this);
 				namesToLoad++;
 			} else {
