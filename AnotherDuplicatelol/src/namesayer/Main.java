@@ -13,7 +13,8 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        //Making a personal recordings folder if it doesn't exist to hold user recordings
+       
+    	//Making a personal recordings folder if it doesn't exist to hold user recordings
         File file1 = new File("PersonalRecordings/");
         if (!file1.exists()) {
             file1.mkdirs();
@@ -39,9 +40,10 @@ public class Main extends Application {
             file4.mkdirs();
         }
 
+        //Loading the start menu upon launching the application.
         Parent root = FXMLLoader.load(getClass().getResource("startMenu.fxml"));
         primaryStage.setTitle("Name Sayer");
-        primaryStage.setScene(new Scene(root, 700, 500));
+        primaryStage.setScene(new Scene(root));
         primaryStage.setResizable(false);
         primaryStage.show();
     }

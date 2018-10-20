@@ -39,26 +39,26 @@ public class TestMicrophoneController implements Initializable{
 
 	
 	@FXML
-	Button stopButton;
+	private Button stopButton;
 
 	@FXML
-	Button backButton;
+	private Button backButton;
 
 	@FXML
-	Button testStopButton;
+	private Button testStopButton;
 
 
 	@FXML
-	Label testLabel;
+	private Label testLabel;
 
 	@FXML
-	ProgressBar progressBar;
+	private ProgressBar progressBar;
 
 	//Variable that controls if the test microphone bar is running.
-	Boolean running = true;
+	private Boolean running = true;
 	
 	//Reference to the dataline the audio is being read from.
-	TargetDataLine line;
+	private TargetDataLine line;
 	
 	/*
 	 * Initializes the UI to test microphone mode.
@@ -96,6 +96,8 @@ public class TestMicrophoneController implements Initializable{
 			startMicBar();
 		}else {
 			testStopButton.setText("Test");
+			
+			//Stop reading and close the line 
 			running = false;
 			line.stop();
 			line.close();
