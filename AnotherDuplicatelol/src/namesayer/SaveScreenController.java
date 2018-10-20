@@ -50,11 +50,13 @@ public class SaveScreenController implements Initializable {
             alert.setContentText("Please enter a name before continuing." );
             alert.showAndWait();
         }else{
-            createPlaylist(nameText.getText());
+        	
+           if(createPlaylist(nameText.getText())) {;
             System.out.println(saveButton.getText());
             workspaceSaveButton.setDisable(true);
             Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             currentStage.close();
+           }
         }
     }
 
@@ -71,7 +73,7 @@ public class SaveScreenController implements Initializable {
         this.workspaceSaveButton = button;
     }
 
-    public void createPlaylist(String name) {
+    public boolean createPlaylist(String name) {
         File file = new File("./Playlists/" + name + ".txt");
         if(!file.exists()) {
             try {
@@ -83,12 +85,14 @@ public class SaveScreenController implements Initializable {
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
+            return true;
         }else{
             Alert alert = new Alert(AlertType.WARNING);
             alert.setTitle("Warning");
             alert.setHeaderText(null);
-            alert.setContentText("This name already exists" );
+            alert.setContentText("This name already exists. Please choose another" );
             alert.showAndWait();
+            return false;
         }
     }
 

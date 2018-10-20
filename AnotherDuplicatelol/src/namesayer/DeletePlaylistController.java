@@ -52,13 +52,8 @@ public class DeletePlaylistController implements Initializable{
             controller.setRecordingList(listOfRecordings);
             controller.setButton(workspaceButton);
             Scene rateScene = new Scene(rateSceneParent);
-            Stage rateStage = new Stage();
+            Stage rateStage = (Stage) replaceButton.getScene().getWindow();;
             rateStage.setScene(rateScene);
-
-            //Disable the background window when the rate stage is displayed.
-            rateStage.initModality(Modality.WINDOW_MODAL);
-            rateStage.initOwner(((Node)event.getSource()).getScene().getWindow() );
-            rateStage.show();
         } catch (IOException e) {
             e.printStackTrace();
         }
