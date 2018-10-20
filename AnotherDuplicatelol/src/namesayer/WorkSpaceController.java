@@ -85,6 +85,8 @@ public class WorkSpaceController implements Initializable, PlayController {
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+		
+		//Count the number of playlists.
 		playlistCount();
 
 		//Set the volume to the max to begin with.

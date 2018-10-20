@@ -18,6 +18,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
 import javafx.stage.Stage;
 
 public class PlaylistController implements Initializable, ConcatenatedRecordingLoader{
@@ -57,6 +59,9 @@ public class PlaylistController implements Initializable, ConcatenatedRecordingL
 
 	@FXML
 	CheckBox randomiseBox;
+	
+	@FXML
+	Label noPlaylistText;
 
 	//Place the buttons in a list for easier handling.
 	List<Button> playlistButtons = new ArrayList<>();
@@ -88,11 +93,17 @@ public class PlaylistController implements Initializable, ConcatenatedRecordingL
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+		
+		//Set tooptips for buttons.
+		uploadButton.setTooltip(new Tooltip("Upload a text file of names\nfrom your device"));
+		practiceButton.setTooltip(new Tooltip("Practice a new playlist"));
+		randomiseBox.setTooltip(new Tooltip("Randomise the plyaing order of \nnames in the selected playlist"));
+		
+		
 		namesToLoad = 0;
 		workspaceRecordings = new DatabaseList();
 		hasConcatenated = false;
-		//Count the number of playlists.
-		File folder = new File("Playlists/");
+	
 
 		//Add the playlist buttons to a list for ease of handling.
 		playlistButtons.add(playlist1);
@@ -113,6 +124,12 @@ public class PlaylistController implements Initializable, ConcatenatedRecordingL
 		//Handles which buttons are visible/invisible depending on how many playlists there
 		//currently are.
 		setplaylistButtons();
+		
+		if(playlistNum == 0) {
+			noPlaylistText.setVisible(true);
+		}else {
+			noPlaylistText.setVisible(false);
+		}
 	}
 
 	/*
@@ -177,6 +194,10 @@ public class PlaylistController implements Initializable, ConcatenatedRecordingL
 					fileEntry.delete();
 					currentPlaylist.setVisible(false);
 					clickedDeleteButton.setVisible(false);
+					playlistNum--;
+					if(playlistNum == 0) {
+						noPlaylistText.setVisible(true);
+					}
 				}
 			}
 		}
