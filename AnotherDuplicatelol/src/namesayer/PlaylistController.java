@@ -306,7 +306,6 @@ public class PlaylistController implements Initializable, ConcatenatedRecordingL
 				List<String> fileNames = new ArrayList<>();
 				//Gets the file names for all these names
 				for (String recording : updatedNames) {
-					System.out.println(recording);
 					fileNames.add(referenceList.getRecording(recording).getFileName());
 				}
 				//Creates the concatenated recording and adds it to the workspace

@@ -87,35 +87,12 @@ public class ConcatenatedRecording extends DemoRecording {
             }
             @Override
             protected void succeeded() {
-                regulateRecordingVolume(tmpFiles, fullItem);
+                concatenateRecordings(tmpFiles, fullItem);
             }
         };
         Thread silenceThread = new Thread(removeSilenceTask);
         silenceThread.setDaemon(true);
         silenceThread.start();
-    }
-
-    private void regulateRecordingVolume(List<String> tmpFiles, String fullItem) {
-        //regulate volume for all
-        Task<Void> regulateVolumeTask = new Task<Void>() {
-            @Override
-            protected Void call() throws Exception {
-                for (String file : tmpFiles) {
-                    String cmd = "ffmpeg -y -i "+file+" -filter:a \"volume=0.5\" " + file;
-                    ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
-                    Process process = builder.start();
-                    process.waitFor();
-                }
-                return null;
-            }
-            @Override
-            protected void succeeded() {
-                concatenateRecordings(tmpFiles, fullItem);
-            }
-        };
-        Thread volumeThread = new Thread(regulateVolumeTask);
-        volumeThread.setDaemon(true);
-        volumeThread.start();
     }
 
     private void concatenateRecordings(List<String> tmpFiles, String fullItem) {
@@ -142,6 +119,30 @@ public class ConcatenatedRecording extends DemoRecording {
             }
             @Override
             protected void succeeded() {
+                regulateRecordingVolume(tmpFiles, fullItem);
+            }
+        };
+        Thread catThread = new Thread(concatenateTask);
+        catThread.setDaemon(true);
+        catThread.start();
+
+    }
+
+    private void regulateRecordingVolume(List<String> tmpFiles, String fullItem) {
+        //regulate volume for all
+        Task<Void> regulateVolumeTask = new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                for (String file : tmpFiles) {
+                    String cmd = "ffmpeg -y -i "+file+" -filter:a \"volume=0.5\" " + file;
+                    ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
+                    Process process = builder.start();
+                    process.waitFor();
+                }
+                return null;
+            }
+            @Override
+            protected void succeeded() {
                 //This list allows us to reuse the addPlaylistRecordings method.
                 DatabaseList helperList = new DatabaseList();
                 helperList.add(getThisRecording());
@@ -149,10 +150,9 @@ public class ConcatenatedRecording extends DemoRecording {
                 deletetmpFiles(tmpFiles);
             }
         };
-        Thread catThread = new Thread(concatenateTask);
-        catThread.setDaemon(true);
-        catThread.start();
-
+        Thread volumeThread = new Thread(regulateVolumeTask);
+        volumeThread.setDaemon(true);
+        volumeThread.start();
     }
 
     private void deletetmpFiles(List<String> tmpFiles) {

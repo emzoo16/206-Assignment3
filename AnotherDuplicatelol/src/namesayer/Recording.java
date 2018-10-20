@@ -24,8 +24,7 @@ public abstract class Recording {
     //Path to the audio file of the name.
     protected String path;
     
-    //Clip object to play recordings.
-    Clip clip;
+    private PlayController controller;
 
     public Recording() {}
 
@@ -35,41 +34,17 @@ public abstract class Recording {
      *can update the progress bar as it plays.
      **/
     public void play(double volume, ProgressBar progressBar) {
-    
-        try {
-        	File file = new File(path + fileName);
-            
-        	//Sets up the dataline and clip to start playback of the audio.
-            AudioInputStream stream = AudioSystem.getAudioInputStream(file);
-            DataLine.Info info = new DataLine.Info(Clip.class, stream.getFormat());
-            clip = (Clip) AudioSystem.getLine(info);
-            clip.open(stream);
-            setVolume(volume);
-            clip.start();
-
-            
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (LineUnavailableException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (UnsupportedAudioFileException e) {
-            e.printStackTrace();
-        }
-    }
-    
-    /*
-     * Sets the volume of the audio clip given a double value. The double is converted to decibels.
-     */
-    public void setVolume(double volume) {
-    	
-  
-    	FloatControl gain = (FloatControl)clip.getControl(FloatControl.Type.MASTER_GAIN);
-        
-    	//Converts the current volume to decibels and adjusts the gain in volume accordingly.
-    	float decibel = 20f*(float)Math.log10(volume/0.65);
-    	gain.setValue(decibel);
+        AudioPlayer player = new AudioPlayer(volume);
+        Task<Void> playTask = new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                player.play(path + fileName);
+                return null;
+            }
+        };
+        Thread thread = new Thread(playTask);
+        thread.setDaemon(true);
+        thread.start();
     }
 
     /*
@@ -90,5 +65,67 @@ public abstract class Recording {
     public int getNumber() {
         Character digitString = fileName.charAt(fileName.lastIndexOf("-") + 1);
         return Integer.parseInt(digitString.toString());
+    }
+
+    /**
+     * To get the reference
+     */
+    private class AudioPlayer {
+
+        // size of the buffer
+        private static final int BUFFER_SIZE = 4096;
+        //Volume of the playback
+        private double volume;
+
+        private AudioPlayer(double volume) {
+            this.volume = volume;
+        }
+
+        void play(String audioPath) {
+            File file = new File(audioPath);
+            try {
+                AudioInputStream audioStream = AudioSystem.getAudioInputStream(file);
+                AudioFormat format = audioStream.getFormat();
+                DataLine.Info info = new DataLine.Info(SourceDataLine.class, format);
+                SourceDataLine audioLine = (SourceDataLine) AudioSystem.getLine(info);
+                audioLine.open(format);
+                setVolume(volume, audioLine);
+                audioLine.start();
+
+                byte[] bytesBuffer = new byte[BUFFER_SIZE];
+                int bytesRead = -1;
+
+                while ((bytesRead = audioStream.read(bytesBuffer)) != -1) {
+                    audioLine.write(bytesBuffer, 0, bytesRead);
+                }
+
+                audioLine.drain();
+                audioLine.close();
+                audioStream.close();
+                playingCompleted();
+
+            } catch (UnsupportedAudioFileException e) {
+                e.printStackTrace();
+            } catch (LineUnavailableException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        /*
+         * Sets the volume of the audio clip given a double value. The double is converted to decibels.
+         */
+        void setVolume(double volume, SourceDataLine audioLine) {
+            FloatControl gain = (FloatControl)audioLine.getControl(FloatControl.Type.MASTER_GAIN);
+
+            //Converts the current volume to decibels and adjusts the gain in volume accordingly.
+            float decibel = 20f*(float)Math.log10(volume/0.65);
+            gain.setValue(decibel);
+        }
+    }
+
+    private void playingCompleted() {
+        controller.playingFinished();
     }
 }
