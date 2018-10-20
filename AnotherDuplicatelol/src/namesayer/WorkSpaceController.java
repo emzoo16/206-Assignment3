@@ -67,6 +67,8 @@ public class WorkSpaceController implements Initializable {
 	@FXML
 	Button deleteButton;
 	@FXML
+	Button saveButton;
+	@FXML
 	ListView<String> dataListView;
 	ObservableList<String> dataList = FXCollections.observableArrayList();
 	@FXML
@@ -78,6 +80,7 @@ public class WorkSpaceController implements Initializable {
 	DatabaseList listOfRecordings;
 	Boolean isOnDatabase = true;
 	int recordClicked = 0;
+	int playlistNum;
 
 
 	@Override
@@ -87,6 +90,8 @@ public class WorkSpaceController implements Initializable {
 		volume = 1.0;
 		volumeSlider.setValue(volume);
 		
+		playlistCount();	
+		System.out.println(playlistNum);
 		
 		//Listener to get the current name the user is clicking on.
 		dataListView.getSelectionModel().selectedItemProperty().addListener(
@@ -157,6 +162,53 @@ public class WorkSpaceController implements Initializable {
 		ownListView.setItems(ownList);
 	}
 
+	
+	@FXML
+	/*
+	 * This method is invoked when the user wants to save a playlist.
+	 */
+	
+	public void saveButtonClicked(ActionEvent event) {
+		
+		if(playlistNum < 6) {
+			try {
+				FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("saveScreen.fxml"));
+				Parent rateSceneParent = fxmlLoader.load();
+				SaveScreenController controller = fxmlLoader.getController();
+				controller.setRecordingList(listOfRecordings);
+				controller.setButton(saveButton);
+				Scene rateScene = new Scene(rateSceneParent);
+				Stage rateStage = new Stage();
+				rateStage.setScene(rateScene);
+				
+				//Disable the background window when the rate stage is displayed.
+				rateStage.initModality(Modality.WINDOW_MODAL);
+			    rateStage.initOwner(((Node)event.getSource()).getScene().getWindow() );
+				rateStage.show();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}else {
+			try {
+				FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("deletePlaylist.fxml"));
+				Parent deleteSceneParent = fxmlLoader.load();
+				DeletePlaylistController controller = fxmlLoader.getController();
+				controller.setRecordingList(listOfRecordings);
+				controller.setButton(saveButton);
+				Scene deleteScene = new Scene(deleteSceneParent);
+				Stage deleteStage = new Stage();
+				deleteStage.setScene(deleteScene);
+				
+				//Disable the background window when the rate stage is displayed.
+				deleteStage.initModality(Modality.WINDOW_MODAL);
+				deleteStage.initOwner(((Node)event.getSource()).getScene().getWindow() );
+				deleteStage.show();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+	}
 	/*
 	 * This method starts playing the current name.
 	 */
@@ -507,5 +559,15 @@ public class WorkSpaceController implements Initializable {
 	 */
 	public double getVolume() {
 		return volume;
+	}
+	
+	public void playlistCount() {
+		File folder = new File("Playlists/");
+		File[] listOfFiles = folder.listFiles();
+		for(File file : listOfFiles) {
+			if (file.isFile() && file.getName().endsWith(".txt")) {
+				playlistNum ++;
+			}
+		}
 	}
 }

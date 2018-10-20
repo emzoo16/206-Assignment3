@@ -127,7 +127,7 @@
                               <Font size="16.0" />
                            </font>
                         </Button>
-                        <Button fx:id="saveButton" mnemonicParsing="false" prefHeight="32.0" prefWidth="60.0" text="Save">
+                        <Button fx:id="saveButton" mnemonicParsing="false" onAction="#saveButtonClicked" prefHeight="32.0" prefWidth="60.0" text="Save">
                            <font>
                               <Font size="16.0" />
                            </font>
