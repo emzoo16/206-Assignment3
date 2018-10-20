@@ -58,7 +58,7 @@ public class PlaylistCreatorController implements Initializable, ConcatenatedRec
         try {
             Stage stage = (Stage) returnButton.getScene().getWindow();
             Parent createScene = FXMLLoader.load(getClass().getResource("playlistScreen.fxml"));
-            stage.setScene(new Scene(createScene, 700, 500));
+            stage.setScene(new Scene(createScene));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -186,7 +186,7 @@ public class PlaylistCreatorController implements Initializable, ConcatenatedRec
                     controller.setWorkspaceRecordingsAndController(playlist, playlist.getRecordingNames());
                 }
                 Stage stage = (Stage) continueButton.getScene().getWindow();
-                stage.setScene(new Scene(createScene, 700, 500));
+                stage.setScene(new Scene(createScene));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -200,7 +200,7 @@ public class PlaylistCreatorController implements Initializable, ConcatenatedRec
         }
     }
 
-    public void setPlaylistRecordings(DatabaseList list) {
+    public void addPlaylistRecordings(DatabaseList list) {
         List<String> keptRecordings = list.getRecordingNames();
         for (String recordingName : keptRecordings) {
             playlist.add(list.getRecording(recordingName));

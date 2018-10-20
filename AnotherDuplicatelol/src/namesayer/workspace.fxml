@@ -94,26 +94,26 @@
                      </VBox.margin>
                   </HBox>
                   <TabPane fx:id="tabPane" prefHeight="429.0" prefWidth="344.0" tabClosingPolicy="UNAVAILABLE">
-                    <tabs>
-                      <Tab text="Demo's">
-                        <content>
-                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <tabs>
+                        <Tab text="Demo's">
+                           <content>
+                              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                  <children>
                                     <ListView fx:id="dataListView" layoutY="5.0" prefHeight="413.0" prefWidth="344.0" AnchorPane.bottomAnchor="-3.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="5.0" />
                                  </children>
                               </AnchorPane>
-                        </content>
-                      </Tab>
-                      <Tab text="Personal Recordings">
-                        <content>
-                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                           </content>
+                        </Tab>
+                        <Tab text="Personal Recordings">
+                           <content>
+                              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                  <children>
                                     <ListView fx:id="ownListView" prefHeight="329.0" prefWidth="250.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                                  </children>
                               </AnchorPane>
-                        </content>
-                      </Tab>
-                    </tabs>
+                           </content>
+                        </Tab>
+                     </tabs>
                   </TabPane>
                   <HBox prefHeight="25.0" prefWidth="200.0" spacing="10.0">
                      <children>

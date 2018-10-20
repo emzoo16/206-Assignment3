@@ -236,9 +236,9 @@ public class WorkSpaceController implements Initializable {
 			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("playlistCreator.fxml"));
 			Parent createScene = fxmlLoader.load();
 			PlaylistCreatorController controller = fxmlLoader.getController();
-			controller.setPlaylistRecordings(listOfRecordings);
+			controller.addPlaylistRecordings(listOfRecordings);
 			Stage stage = (Stage) backButton.getScene().getWindow();
-			stage.setScene(new Scene(createScene, 700, 500));
+			stage.setScene(new Scene(createScene));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -347,7 +347,7 @@ public class WorkSpaceController implements Initializable {
 		try {
 			Stage stage = (Stage) returnButton.getScene().getWindow();
 			Parent createScene = FXMLLoader.load(getClass().getResource("startMenu.fxml"));
-			stage.setScene(new Scene(createScene, 700, 500));
+			stage.setScene(new Scene(createScene));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

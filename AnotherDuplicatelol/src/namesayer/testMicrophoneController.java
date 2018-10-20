@@ -77,7 +77,7 @@ public class testMicrophoneController implements Initializable{
 		try {
 			Stage stage = (Stage) backButton.getScene().getWindow();
 			Parent createScene = FXMLLoader.load(getClass().getResource("startMenu.fxml"));
-			stage.setScene(new Scene(createScene, 700, 500));
+			stage.setScene(new Scene(createScene));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

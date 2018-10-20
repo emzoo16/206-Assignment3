@@ -168,7 +168,7 @@ public class WorkSpaceCreatorController implements Initializable {
                     controller.setWorkspaceRecordingsAndController(workspaceList, workspaceList.getRecordingNames());
                 }
                 Stage stage = (Stage) continueButton.getScene().getWindow();
-                stage.setScene(new Scene(createScene, 700, 500));
+                stage.setScene(new Scene(createScene));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -190,7 +190,7 @@ public class WorkSpaceCreatorController implements Initializable {
         try {
             Stage stage = (Stage) returnButton.getScene().getWindow();
             Parent createScene = FXMLLoader.load(getClass().getResource("playlistScreen.fxml"));
-            stage.setScene(new Scene(createScene, 700, 500));
+            stage.setScene(new Scene(createScene));
         } catch (IOException e) {
             e.printStackTrace();
         }

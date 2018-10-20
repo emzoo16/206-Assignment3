@@ -48,7 +48,7 @@ public class DatabaseViewController implements Initializable {
         for (String recordingName : selectedItems) {
             returnedRecordings.add(recordingName);
         }
-        controller.setPlaylistRecordings(returnedRecordings);
+        controller.addPlaylistRecordings(returnedRecordings);
         Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         currentStage.close();
     }

@@ -12,27 +12,27 @@ import javafx.scene.control.TextField;
 
 public class LoopSceneController implements Initializable {
 
-	@FXML
-	ListView personalList;
-	@FXML
-	ComboBox loopCombo;
-	@FXML
-	Button startButton;
-	@FXML
-	TextField loopNumText;
-	@FXML
-	TextField recordingText;
-	
-	
-	
-	
-	@Override
-	public void initialize(URL location, ResourceBundle resources) {
-		
-		
-	}
-	
-	
-	
+    @FXML
+    ListView personalList;
+    @FXML
+    ComboBox loopCombo;
+    @FXML
+    Button startButton;
+    @FXML
+    TextField loopNumText;
+    @FXML
+    TextField recordingText;
+
+
+
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+
+
+    }
+
+
+
 
 }

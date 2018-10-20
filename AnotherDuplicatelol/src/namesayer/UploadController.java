@@ -9,6 +9,7 @@ import java.util.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -58,15 +59,32 @@ public class UploadController implements Initializable, ConcatenatedRecordingLoa
 
 	//List of recording objects to be passed to the workspaceController.
 	DatabaseList workspaceRecordings;
+
+	//Concatenated recordings are created using multithreading which can cause issues if the user quickly moves to the
+	//next scene. In order to alleviate this we keep this number of names to load and once the number of names in the
+	//list matches this number the continue/upload button is re-enabled.
+	private int namesToLoad;
 	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		//Listener to get the current name the user is clicking on in the playListView.
+		namesToLoad = 0;
 				
 		workspaceRecordings = new DatabaseList();
 		
 		//Make the textfield uneditable.
 		fileText.setEditable(false);
+
+		nameListView.getItems().addListener(new ListChangeListener<String>() {
+			@Override
+			public void onChanged(Change<? extends String> c) {
+				System.out.println("ntl" + namesToLoad);
+				System.out.println("view" + nameListView.getItems().size());
+				if (nameListView.getItems().size() == namesToLoad) {
+					continueButton.setDisable(false);
+					uploadButton.setDisable(false);
+				}
+			}
+		});
 	}
 
 	/*
@@ -79,7 +97,7 @@ public class UploadController implements Initializable, ConcatenatedRecordingLoa
 			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("playlistScreen.fxml"));
 			Parent playlistScene = fxmlLoader.load();
 			Stage stage = (Stage) backButton.getScene().getWindow();
-			stage.setScene(new Scene(playlistScene, 700, 500));
+			stage.setScene(new Scene(playlistScene));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -108,7 +126,7 @@ public class UploadController implements Initializable, ConcatenatedRecordingLoa
 				controller.setWorkspaceRecordingsAndController(workspaceRecordings, workspaceRecordings.getRecordingNames());
 				
 				Stage stage = (Stage) continueButton.getScene().getWindow();
-				stage.setScene(new Scene(playlistScene, 700, 500));
+				stage.setScene(new Scene(playlistScene));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -150,6 +168,8 @@ public class UploadController implements Initializable, ConcatenatedRecordingLoa
 			alert.showAndWait();
 			
 		}else {
+			uploadButton.setDisable(true);
+			continueButton.setDisable(true);
 			scanFile();
 		}
 	}
@@ -163,8 +183,6 @@ public class UploadController implements Initializable, ConcatenatedRecordingLoa
 		PlaylistLoader loader = new PlaylistLoader((Stage) uploadButton.getScene().getWindow());
 		List<String> names = loader.loadPlaylist(currentFile);
 		addNames(names);
-		nameList = FXCollections.observableArrayList(names);
-		nameListView.setItems(nameList);
 	}
 
 	/*
@@ -195,20 +213,26 @@ public class UploadController implements Initializable, ConcatenatedRecordingLoa
 				}
 				//Creates the concatenated recording and adds it to the workspace
 				DemoRecording concatenatedRecording = new ConcatenatedRecording(fileNames, name, this);
-				workspaceRecordings.add(concatenatedRecording);
+				namesToLoad++;
 			} else {
 				name = name.substring(0,1).toUpperCase() + name.substring(1).toLowerCase();
 				//If the name is a single name, it simply gets added
 				workspaceRecordings.add(name);
+				namesToLoad++;
 			}
 		}
 	}
 
-	public void setPlaylistRecordings(DatabaseList list) {
+	public void addPlaylistRecordings(DatabaseList list) {
 		List<String> concatenatedRecording = list.getRecordingNames();
 		for (String recordingName : concatenatedRecording) {
 			workspaceRecordings.add(list.getRecording(recordingName));
 		}
-		nameListView.setItems(workspaceRecordings.getRecordingNames());
+		if (workspaceRecordings.getRecordingNames().size() == namesToLoad) {
+			nameListView.setItems(workspaceRecordings.getRecordingNames());
+			continueButton.setDisable(false);
+			uploadButton.setDisable(false);
+		}
+
 	}
 }

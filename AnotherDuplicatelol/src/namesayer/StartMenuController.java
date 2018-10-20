@@ -42,7 +42,7 @@ public class StartMenuController {
     	try {
             Stage stage = (Stage) testButton.getScene().getWindow();
             Parent createScene = FXMLLoader.load(getClass().getResource("testMicrophone.fxml"));
-            stage.setScene(new Scene(createScene, 700, 500));
+            stage.setScene(new Scene(createScene));
         } catch (IOException e) {
             e.printStackTrace();
         }

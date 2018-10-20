@@ -142,11 +142,10 @@ public class ConcatenatedRecording extends DemoRecording {
             }
             @Override
             protected void succeeded() {
-                //This list allows us to reuse the setPlaylistRecordings method.
+                //This list allows us to reuse the addPlaylistRecordings method.
                 DatabaseList helperList = new DatabaseList();
                 helperList.add(getThisRecording());
-                System.out.println("do we even get here?");
-                controller.setPlaylistRecordings(helperList);
+                controller.addPlaylistRecordings(helperList);
                 deletetmpFiles(tmpFiles);
             }
         };

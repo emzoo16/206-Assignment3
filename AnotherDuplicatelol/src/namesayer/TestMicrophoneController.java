@@ -39,26 +39,26 @@ public class TestMicrophoneController implements Initializable{
 
 	
 	@FXML
-	private Button stopButton;
+	Button stopButton;
 
 	@FXML
-	private Button backButton;
+	Button backButton;
 
 	@FXML
-	private Button testStopButton;
+	Button testStopButton;
 
 
 	@FXML
-	private Label testLabel;
+	Label testLabel;
 
 	@FXML
-	private ProgressBar progressBar;
+	ProgressBar progressBar;
 
 	//Variable that controls if the test microphone bar is running.
-	private Boolean running = true;
+	Boolean running = true;
 	
 	//Reference to the dataline the audio is being read from.
-	private TargetDataLine line;
+	TargetDataLine line;
 	
 	/*
 	 * Initializes the UI to test microphone mode.
@@ -77,7 +77,7 @@ public class TestMicrophoneController implements Initializable{
 		try {
 			Stage stage = (Stage) backButton.getScene().getWindow();
 			Parent createScene = FXMLLoader.load(getClass().getResource("startMenu.fxml"));
-			stage.setScene(new Scene(createScene, 700, 500));
+			stage.setScene(new Scene(createScene));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -96,12 +96,7 @@ public class TestMicrophoneController implements Initializable{
 			startMicBar();
 		}else {
 			testStopButton.setText("Test");
-			
-			//Stop reading and close the line 
 			running = false;
-			line.stop();
-			line.close();
-			progressBar.setProgress(0.0);
 		}
 	}
 	
@@ -116,9 +111,9 @@ public class TestMicrophoneController implements Initializable{
         try {
         	//Create and open a new dataline that the audio will be read from.
         	DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
-			line = (TargetDataLine) AudioSystem.getLine(info);
+			TargetDataLine line = (TargetDataLine) AudioSystem.getLine(info);
 			line.open(format);
-			line.start();
+			
 			//New thread to handle reading of the users audio input.
 			Task<Void> task = new Task<Void>() {
 
@@ -129,6 +124,7 @@ public class TestMicrophoneController implements Initializable{
 					//start the line.
 					int bytesRead;
 					byte[] data = new byte[line.getBufferSize()/5];
+					line.start();
 					
 					//The data from the line is read and converted to a double.
 					//This double is then used to set the progress bar to move according
