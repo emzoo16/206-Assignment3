@@ -97,6 +97,9 @@ public class TestMicrophoneController implements Initializable{
 		}else {
 			testStopButton.setText("Test");
 			running = false;
+			line.stop();
+			line.close();
+			progressBar.setProgress(0.0);
 		}
 	}
 	
@@ -111,9 +114,9 @@ public class TestMicrophoneController implements Initializable{
         try {
         	//Create and open a new dataline that the audio will be read from.
         	DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
-			TargetDataLine line = (TargetDataLine) AudioSystem.getLine(info);
+			line = (TargetDataLine) AudioSystem.getLine(info);
 			line.open(format);
-			
+			line.start();
 			//New thread to handle reading of the users audio input.
 			Task<Void> task = new Task<Void>() {
 
@@ -124,7 +127,6 @@ public class TestMicrophoneController implements Initializable{
 					//start the line.
 					int bytesRead;
 					byte[] data = new byte[line.getBufferSize()/5];
-					line.start();
 					
 					//The data from the line is read and converted to a double.
 					//This double is then used to set the progress bar to move according
