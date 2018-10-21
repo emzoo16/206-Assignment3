@@ -21,6 +21,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import namesayer.helperClasses.DatabaseList;
@@ -71,6 +73,8 @@ public class WorkspaceController implements Initializable, PlayController {
 	ObservableList<String> ownList = FXCollections.observableArrayList();
 	@FXML
 	TabPane tabPane;
+	@FXML
+	ImageView playStopImage;
 
 	DatabaseList listOfRecordings;
 	Boolean isOnDatabase = true;
@@ -122,8 +126,10 @@ public class WorkspaceController implements Initializable, PlayController {
 					isOnDatabase = false;
 					deleteButton.setDisable(false);
 					ownListView.getSelectionModel().select(ownCurrentIndex);
+					ratingLabel.setVisible(false);
 					playingLabel.setText("Now Playing: Personal Recording");
 				} else {
+					ratingLabel.setVisible(true);
 					isOnDatabase = true;
 					deleteButton.setDisable(true);
 					playingLabel.setText("Now Playing: Demo Recording");
@@ -183,12 +189,12 @@ public class WorkspaceController implements Initializable, PlayController {
 			recording.stopPlaying();
 		} else {
 			recording.play(volume);
-			playButton.setText("Stop");
+			playStopImage.setImage(new Image("namesayer/imageResources/icons8-stop-filled-100.png"));
 		}
 	}
 
 	public void playingFinished() {
-		playButton.setText("Play");
+		playStopImage.setImage(new Image("namesayer/imageResources/icons8-play-filled-100.png"));
 	}
 
 	/*
@@ -366,7 +372,7 @@ public class WorkspaceController implements Initializable, PlayController {
 			}
 		}else {
 			try {
-				FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("fxmlFiles/DeletePlaylist.fxml"));
+				FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("fxmlFiles/ReplacePlaylist.fxml"));
 				Parent deleteSceneParent = fxmlLoader.load();
 				DeletePlaylistController controller = fxmlLoader.getController();
 				controller.setRecordingList(listOfRecordings);

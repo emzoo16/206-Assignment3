@@ -18,14 +18,14 @@
 
 <AnchorPane prefHeight="600.0" prefWidth="900.0" stylesheets="@../../css/default.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="namesayer.fxmlControllers.UploadController">
    <children>
-      <VBox alignment="CENTER" layoutX="508.0" layoutY="43.0" prefHeight="555.0" prefWidth="353.0" spacing="10.0">
+      <VBox alignment="CENTER" layoutX="508.0" layoutY="118.0" prefHeight="480.0" prefWidth="353.0" spacing="10.0">
          <children>
-            <Label prefHeight="23.0" prefWidth="321.0" text="Names in File:">
+            <Label alignment="CENTER" prefHeight="24.0" prefWidth="332.0" styleClass="internal-header" text="Names in File:">
                <font>
-                  <Font name="System Bold" size="18.0" />
+                  <Font size="20.0" />
                </font>
             </Label>
-            <ListView fx:id="nameListView" prefHeight="444.0" prefWidth="333.0">
+            <ListView fx:id="nameListView" prefHeight="367.0" prefWidth="333.0">
                <VBox.margin>
                   <Insets left="10.0" right="10.0" />
                </VBox.margin>
@@ -37,7 +37,7 @@
                         <Font size="16.0" />
                      </font>
                   </Button>
-                  <CheckBox fx:id="randomiseBox" mnemonicParsing="false" prefHeight="22.0" prefWidth="177.0" text="Randomise Order">
+                  <CheckBox fx:id="randomiseBox" mnemonicParsing="false" prefHeight="22.0" prefWidth="177.0" styleClass="internal-header" text="Randomise Order">
                      <font>
                         <Font size="16.0" />
                      </font>
@@ -49,21 +49,8 @@
             </VBox>
          </children>
       </VBox>
-      <Button fx:id="backButton" layoutX="52.0" layoutY="38.0" mnemonicParsing="false" onAction="#backButtonClicked" text="Back">
-         <font>
-            <Font size="16.0" />
-         </font>
-      </Button>
-      <VBox alignment="TOP_CENTER" layoutX="48.0" layoutY="166.0" prefHeight="337.0" prefWidth="443.0">
+      <VBox alignment="TOP_CENTER" layoutX="48.0" layoutY="166.0" prefHeight="337.0" prefWidth="443.0" spacing="20.0">
          <children>
-            <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="44.0" prefWidth="329.0" text="Upload File">
-               <font>
-                  <Font name="System Bold" size="36.0" />
-               </font>
-               <VBox.margin>
-                  <Insets top="20.0" />
-               </VBox.margin>
-            </Label>
             <Label text="Choose a file with names you want to practice">
                <font>
                   <Font size="16.0" />
@@ -72,12 +59,12 @@
                   <Insets top="15.0" />
                </VBox.margin>
             </Label>
-            <Label prefHeight="20.0" prefWidth="342.0" text="Select file:">
+            <Label prefHeight="33.0" prefWidth="116.0" styleClass="internal-header" text=" Select file:">
                <VBox.margin>
                   <Insets bottom="5.0" top="30.0" />
                </VBox.margin>
                <font>
-                  <Font size="16.0" />
+                  <Font size="20.0" />
                </font>
             </Label>
             <HBox alignment="CENTER" prefHeight="46.0" prefWidth="334.0">
@@ -107,5 +94,15 @@
             <Insets top="10.0" />
          </padding>
       </VBox>
+      <Label alignment="CENTER" prefHeight="100.0" prefWidth="900.0" styleClass="scene-header" text="Upload File">
+         <font>
+            <Font name="System Bold" size="40.0" />
+         </font>
+      </Label>
+      <Button fx:id="backButton" layoutX="48.0" layoutY="34.0" mnemonicParsing="false" onAction="#backButtonClicked" styleClass="header-button" text="Back">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Button>
    </children>
 </AnchorPane>

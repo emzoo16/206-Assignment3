@@ -20,20 +20,14 @@
          <center>
             <VBox alignment="CENTER" prefHeight="200.0" prefWidth="300.0" BorderPane.alignment="CENTER">
                <children>
-                  <Label text="Name(s) not found">
-                     <font>
-                        <Font name="System Bold" size="24.0" />
-                     </font>
+                  <Pane prefHeight="31.0" prefWidth="300.0" styleClass="internal-header">
+                     <children>
+                        <Label layoutY="7.0" prefHeight="15.0" prefWidth="300.0" text=" The following names could not be generated" />
+                     </children>
                      <VBox.margin>
-                        <Insets bottom="10.0" top="20.0" />
+                        <Insets left="25.0" right="25.0" />
                      </VBox.margin>
-                  </Label>
-                  <Label text="The following names could not be generated" />
-                  <Label prefHeight="17.0" prefWidth="316.0" text="Names that were not found are shown in brackets.">
-                     <VBox.margin>
-                        <Insets bottom="15.0" />
-                     </VBox.margin>
-                  </Label>
+                  </Pane>
                   <ListView fx:id="notFoundListView" prefHeight="163.0" prefWidth="330.0">
                      <VBox.margin>
                         <Insets bottom="10.0" left="25.0" right="25.0" />
@@ -52,6 +46,13 @@
                </padding>
             </VBox>
          </center>
+         <top>
+            <Label alignment="CENTER" prefHeight="50.0" prefWidth="350.0" styleClass="scene-header" text="Name(s) not found" BorderPane.alignment="CENTER">
+               <font>
+                  <Font name="System Bold" size="24.0" />
+               </font>
+            </Label>
+         </top>
       </BorderPane>
    </children>
 </AnchorPane>

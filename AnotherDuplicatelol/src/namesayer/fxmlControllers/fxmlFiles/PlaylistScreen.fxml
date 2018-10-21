@@ -18,40 +18,49 @@
 
 <AnchorPane prefHeight="600.0" prefWidth="900.0" style="-fx-border-image-width: 10;" stylesheets="@../../css/default.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="namesayer.fxmlControllers.PlaylistController">
    <children>
-      <Button fx:id="practiceButton" layoutX="590.0" layoutY="126.0" mnemonicParsing="false" onAction="#practiceButtonClicked" prefHeight="46.0" prefWidth="127.0" text="New Playlist">
+      <Button fx:id="practiceButton" layoutX="601.0" layoutY="126.0" mnemonicParsing="false" onAction="#practiceButtonClicked" prefHeight="46.0" prefWidth="119.0" text="New Playlist">
          <font>
             <Font size="16.0" />
          </font>
       </Button>
-      <Button fx:id="uploadButton" layoutX="730.0" layoutY="126.0" mnemonicParsing="false" onAction="#uploadButtonClicked" prefHeight="46.0" prefWidth="119.0" text="Upload File">
+      <Button fx:id="uploadButton" layoutX="736.0" layoutY="126.0" mnemonicParsing="false" onAction="#uploadButtonClicked" prefHeight="46.0" prefWidth="113.0" text="Upload File">
          <font>
             <Font size="16.0" />
          </font>
       </Button>
-      <Label layoutX="61.0" layoutY="143.0" prefHeight="28.0" prefWidth="314.0" text="Current playlists:">
-         <font>
-            <Font size="20.0" />
-         </font>
-      </Label>
-      <Button fx:id="backButton" layoutX="49.0" layoutY="40.0" mnemonicParsing="false" onAction="#backButtonClicked" text="Back">
-         <font>
-            <Font size="16.0" />
-         </font></Button>
-      <Label alignment="CENTER" layoutX="175.0" layoutY="49.0" prefHeight="46.0" prefWidth="561.0" text="Practice Names">
-         <font>
-            <Font name="System Bold" size="40.0" />
-         </font>
-      </Label>
-      <CheckBox fx:id="randomiseBox" layoutX="251.0" layoutY="146.0" mnemonicParsing="false" text="Randomise Order">
-         <font>
-            <Font size="16.0" />
-         </font>
-      </CheckBox>
-      <StackPane alignment="TOP_CENTER" layoutY="167.0" prefHeight="421.0" prefWidth="892.0">
+      <Pane layoutX="49.0" layoutY="126.0" prefHeight="46.0" prefWidth="526.0" styleClass="internal-header">
          <children>
-            <Label fx:id="noPlaylistText" text="You currently have no playlists. Click 'New Playlist' to create a new playlist">
+            <CheckBox fx:id="randomiseBox" layoutX="283.0" layoutY="11.0" mnemonicParsing="false" text="Randomise Order">
                <font>
                   <Font size="16.0" />
+               </font>
+            </CheckBox>
+            <Label layoutX="9.0" layoutY="8.0" prefHeight="28.0" prefWidth="314.0" text="Current playlists:">
+               <font>
+                  <Font size="20.0" />
+               </font>
+            </Label>
+         </children>
+      </Pane>
+      <Pane prefHeight="100.0" prefWidth="900.0" styleClass="scene-header">
+         <children>
+            <Label alignment="CENTER" layoutX="170.0" layoutY="26.0" prefHeight="46.0" prefWidth="561.0" text="Practice Names">
+               <font>
+                  <Font name="System Bold" size="40.0" />
+               </font>
+            </Label>
+            <Button fx:id="backButton" layoutX="51.0" layoutY="34.0" mnemonicParsing="false" onAction="#backButtonClicked" styleClass="header-button" text="Back">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Button>
+         </children>
+      </Pane>
+      <StackPane alignment="TOP_CENTER" layoutY="167.0" prefHeight="421.0" prefWidth="892.0">
+         <children>
+            <Label fx:id="noPlaylistText" styleClass="blue-label" text="You currently have no playlists. Click 'New Playlist' to create a new playlist">
+               <font>
+                  <Font size="20.0" />
                </font>
                <StackPane.margin>
                   <Insets top="130.0" />
@@ -65,15 +74,15 @@
                            <children>
                               <StackPane prefHeight="170.0" prefWidth="250.0">
                                  <children>
-                                    <Button fx:id="playlist1" mnemonicParsing="false" onAction="#playlistClicked" prefHeight="170.0" prefWidth="250.0">
+                                    <Button fx:id="playlist1" mnemonicParsing="false" onAction="#playlistClicked" prefHeight="170.0" prefWidth="250.0" styleClass="playlist-button">
                                        <font>
-                                          <Font size="16.0" />
+                                          <Font name="System Bold" size="18.0" />
                                        </font>
                                        <StackPane.margin>
                                           <Insets />
                                        </StackPane.margin>
                                     </Button>
-                                    <Button fx:id="delete1" mnemonicParsing="false" onAction="#deleteButtonClicked" prefHeight="20.0" prefWidth="20.0" text="X" StackPane.alignment="TOP_LEFT">
+                                    <Button fx:id="delete1" mnemonicParsing="false" onAction="#deleteButtonClicked" prefHeight="20.0" prefWidth="20.0" styleClass="playlist-delete-button" text="X" StackPane.alignment="TOP_LEFT">
                                        <StackPane.margin>
                                           <Insets />
                                        </StackPane.margin>
@@ -85,8 +94,11 @@
                               </StackPane>
                               <StackPane prefHeight="170.0" prefWidth="250.0">
                                  <children>
-                                    <Button fx:id="playlist4" mnemonicParsing="false" onAction="#playlistClicked" prefHeight="170.0" prefWidth="250.0" />
-                                    <Button fx:id="delete4" mnemonicParsing="false" onAction="#deleteButtonClicked" prefHeight="20.0" prefWidth="20.0" text="X" StackPane.alignment="TOP_LEFT">
+                                    <Button fx:id="playlist4" mnemonicParsing="false" onAction="#playlistClicked" prefHeight="170.0" prefWidth="250.0" styleClass="playlist-button">
+                                       <font>
+                                          <Font name="System Bold" size="18.0" />
+                                       </font></Button>
+                                    <Button fx:id="delete4" mnemonicParsing="false" onAction="#deleteButtonClicked" prefHeight="20.0" prefWidth="20.0" styleClass="playlist-delete-button" text="X" StackPane.alignment="TOP_LEFT">
                                        <StackPane.margin>
                                           <Insets />
                                        </StackPane.margin>
@@ -105,12 +117,12 @@
                            <children>
                               <StackPane prefHeight="170.0" prefWidth="250.0">
                                  <children>
-                                    <Button fx:id="playlist2" mnemonicParsing="false" onAction="#playlistClicked" prefHeight="170.0" prefWidth="250.0">
+                                    <Button fx:id="playlist2" mnemonicParsing="false" onAction="#playlistClicked" prefHeight="170.0" prefWidth="250.0" styleClass="playlist-button">
                                        <font>
-                                          <Font size="16.0" />
+                                          <Font name="System Bold" size="18.0" />
                                        </font>
                                     </Button>
-                                    <Button fx:id="delete2" mnemonicParsing="false" onAction="#deleteButtonClicked" prefHeight="20.0" prefWidth="20.0" text="X" StackPane.alignment="TOP_LEFT">
+                                    <Button fx:id="delete2" mnemonicParsing="false" onAction="#deleteButtonClicked" prefHeight="20.0" prefWidth="20.0" styleClass="playlist-delete-button" text="X" StackPane.alignment="TOP_LEFT">
                                        <StackPane.margin>
                                           <Insets />
                                        </StackPane.margin>
@@ -122,8 +134,11 @@
                               </StackPane>
                               <StackPane prefHeight="170.0" prefWidth="250.0">
                                  <children>
-                                    <Button fx:id="playlist5" mnemonicParsing="false" onAction="#playlistClicked" prefHeight="170.0" prefWidth="250.0" />
-                                    <Button fx:id="delete5" mnemonicParsing="false" onAction="#deleteButtonClicked" prefHeight="20.0" prefWidth="20.0" text="X" StackPane.alignment="TOP_LEFT">
+                                    <Button fx:id="playlist5" mnemonicParsing="false" onAction="#playlistClicked" prefHeight="170.0" prefWidth="250.0" styleClass="playlist-button">
+                                       <font>
+                                          <Font name="System Bold" size="18.0" />
+                                       </font></Button>
+                                    <Button fx:id="delete5" mnemonicParsing="false" onAction="#deleteButtonClicked" prefHeight="20.0" prefWidth="20.0" styleClass="playlist-delete-button" text="X" StackPane.alignment="TOP_LEFT">
                                        <StackPane.margin>
                                           <Insets />
                                        </StackPane.margin>
@@ -142,8 +157,11 @@
                            <children>
                               <StackPane prefHeight="170.0" prefWidth="250.0">
                                  <children>
-                                    <Button fx:id="playlist3" mnemonicParsing="false" onAction="#playlistClicked" prefHeight="170.0" prefWidth="250.0" />
-                                    <Button fx:id="delete3" mnemonicParsing="false" onAction="#deleteButtonClicked" prefHeight="20.0" prefWidth="20.0" text="X" StackPane.alignment="TOP_LEFT">
+                                    <Button fx:id="playlist3" mnemonicParsing="false" onAction="#playlistClicked" prefHeight="170.0" prefWidth="250.0" styleClass="playlist-button">
+                                       <font>
+                                          <Font name="System Bold" size="18.0" />
+                                       </font></Button>
+                                    <Button fx:id="delete3" mnemonicParsing="false" onAction="#deleteButtonClicked" prefHeight="20.0" prefWidth="20.0" styleClass="playlist-delete-button" text="X" StackPane.alignment="TOP_LEFT">
                                        <StackPane.margin>
                                           <Insets />
                                        </StackPane.margin>
@@ -155,8 +173,11 @@
                               </StackPane>
                               <StackPane prefHeight="170.0" prefWidth="250.0">
                                  <children>
-                                    <Button fx:id="playlist6" mnemonicParsing="false" onAction="#playlistClicked" prefHeight="170.0" prefWidth="250.0" />
-                                    <Button fx:id="delete6" mnemonicParsing="false" onAction="#deleteButtonClicked" prefHeight="20.0" prefWidth="20.0" text="X" StackPane.alignment="TOP_LEFT">
+                                    <Button fx:id="playlist6" mnemonicParsing="false" onAction="#playlistClicked" prefHeight="170.0" prefWidth="250.0" styleClass="playlist-button">
+                                       <font>
+                                          <Font name="System Bold" size="18.0" />
+                                       </font></Button>
+                                    <Button fx:id="delete6" mnemonicParsing="false" onAction="#deleteButtonClicked" prefHeight="20.0" prefWidth="20.0" styleClass="playlist-delete-button" text="X" StackPane.alignment="TOP_LEFT">
                                        <StackPane.margin>
                                           <Insets />
                                        </StackPane.margin>

@@ -19,44 +19,40 @@
 
 <AnchorPane prefHeight="600.0" prefWidth="900.0" stylesheets="@../../css/default.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="namesayer.fxmlControllers.TestMicrophoneController">
    <children>
-      <VBox alignment="CENTER" layoutX="243.0" layoutY="110.0" prefHeight="500.0" prefWidth="700.0" stylesheets="@../../css/default.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <Pane prefHeight="100.0" prefWidth="900.0" styleClass="scene-header">
          <children>
-            <HBox prefHeight="25.0" prefWidth="700.0">
-               <padding>
-                  <Insets left="30.0" />
-               </padding>
-               <VBox.margin>
-                  <Insets bottom="10.0" left="20.0" top="20.0" />
-               </VBox.margin>
-               <children>
-                  <Button fx:id="backButton" mnemonicParsing="false" onAction="#backButtonClicked" text="Back">
-                     <font>
-                        <Font size="16.0" />
-                     </font>
-                  </Button>
-               </children>
-            </HBox>
-            <Label text="Test Your Microphone">
+            <Label layoutX="203.0" layoutY="26.0" text="Test Your Microphone">
                <font>
-                  <Font name="System Bold" size="36.0" />
+                  <Font name="System Bold" size="40.0" />
                </font>
-               <VBox.margin>
-                  <Insets top="30.0" />
-               </VBox.margin>
             </Label>
-            <Label prefHeight="44.0" text="Press Test to start the microphone test.">
-               <VBox.margin>
-                  <Insets bottom="10.0" top="10.0" />
-               </VBox.margin>
+            <Button fx:id="backButton" layoutX="66.0" layoutY="34.0" mnemonicParsing="false" onAction="#backButtonClicked" styleClass="header-button" text="Back">
                <font>
                   <Font size="16.0" />
-               </font></Label>
+               </font>
+            </Button>
+         </children>
+      </Pane>
+      <VBox alignment="CENTER" layoutX="222.0" layoutY="100.0" prefHeight="500.0" prefWidth="457.0" spacing="20.0" stylesheets="@../../css/default.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="222.0" AnchorPane.rightAnchor="221.0" AnchorPane.topAnchor="100.0">
+         <children>
+            <Pane prefHeight="46.0" prefWidth="457.0" styleClass="internal-header">
+               <children>
+                  <Label layoutX="130.0" layoutY="1.0" prefHeight="44.0" text="Press Test to begin.">
+                     <font>
+                        <Font size="20.0" />
+                     </font>
+                  </Label>
+               </children>
+            </Pane>
             <ImageView fitHeight="155.0" fitWidth="210.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../../imageResources/icons8-microphone-100.png" />
+                  <Image url="@../../imageResources/icons8-microphone-filled-100.png" />
                </image>
+               <VBox.margin>
+                  <Insets top="5.0" />
+               </VBox.margin>
             </ImageView>
-            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="20.0">
+            <HBox alignment="CENTER" prefHeight="55.0" prefWidth="457.0" spacing="20.0">
                <children>
                   <ProgressBar fx:id="progressBar" prefHeight="37.0" prefWidth="460.0" progress="0.0" />
                </children>

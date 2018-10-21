@@ -1,29 +1,68 @@
 .root {
-    -fx-background-color: #004976;
+    -fx-background-color: "white";
+}
+
+.scene-header {
+    -fx-background-color: #337E99;
+}
+
+.internal-header {
+    -fx-background-color: #337E99;
+    -fx-background-radius: 5;
 }
 
 .button {
-    -fx-background-color: "white";
+    -fx-background-color: #337E99;
     -fx-background-radius: 5;
-    -fx-text-fill: "black";
+    -fx-text-fill: "white";
     -fx-background-insets: 0,1,2;
     -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 10, 0.0 , 0 , 1 );
 }
 
 .label {
     -fx-text-fill: "white";
-    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 10, 0.0 , 0 , 1 );
 }
 
 .check-box {
-    -fx-text-fill: "white";
+    -fx-text-fill: "white"
+}
+
+.blue-label {
+    -fx-text-fill: #337E99;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0) , 0, 0.0 , 0 , 0 );
 }
 
 .icon-button {
-       -fx-background-color: "white";
-           -fx-background-radius: 5em;
-           -fx-text-fill: "black";
-           -fx-background-insets: 0,1,2;
-           -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 10, 0.0 , 0 , 1 );
-           -fx-padding: 0,0,0,0;
+     -fx-background-color: "white";
+     -fx-background-radius: 5em;
+     -fx-text-fill: "black";
+     -fx-background-insets: 0,1,2;
+     -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 10, 0.0 , 0 , 1 );
+     -fx-padding: 0,0,0,0;
+}
+
+.header-button {
+     -fx-background-color: "white";
+     -fx-background-radius: 5;
+     -fx-text-fill: "black";
+     -fx-background-insets: 0,1,2;
+     -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 10, 0.0 , 0 , 1 );
+}
+
+.playlist-button {
+     -fx-background-color: "white";
+     -fx-background-radius: 5;
+     -fx-border-color: #337E99;
+     -fx-border-width: 4;
+     -fx-border-radius: 5;
+     -fx-text-fill: #337E99;
+     -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0) , 0, 0.0 , 0 , 0 );
+}
+
+.playlist-delete-button {
+    -fx-background-color: #FF6666;
+    -fx-background-radius: 5;
+    -fx-border-width: 0;
+    -fx-text-fill: "white";
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0) , 0, 0.0 , 0 , 0 );
 }

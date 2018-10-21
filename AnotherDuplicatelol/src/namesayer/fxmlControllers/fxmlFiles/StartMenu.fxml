@@ -16,14 +16,6 @@
    <center>
       <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="35.0" styleClass="/css/default.css" BorderPane.alignment="CENTER">
          <children>
-            <Label text="Name Sayer">
-               <font>
-                  <Font size="100.0" />
-               </font>
-               <VBox.margin>
-                  <Insets bottom="30.0" />
-               </VBox.margin>
-            </Label>
             <Button fx:id="practiceButton" mnemonicParsing="false" onAction="#beginPractice" prefHeight="45.0" prefWidth="239.0" text="Practice">
                <font>
                   <Font size="24.0" />
@@ -45,4 +37,15 @@
          </children>
       </VBox>
    </center>
+   <top>
+      <Pane prefHeight="200.0" prefWidth="900.0" BorderPane.alignment="CENTER">
+         <children>
+            <Label alignment="CENTER" layoutY="-10.0" prefHeight="200.0" prefWidth="900.0" styleClass="scene-header" text="Name Sayer">
+               <font>
+                  <Font size="100.0" />
+               </font>
+            </Label>
+         </children>
+      </Pane>
+   </top>
 </BorderPane>

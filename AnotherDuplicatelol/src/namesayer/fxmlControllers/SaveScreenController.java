@@ -15,7 +15,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
 import namesayer.helperClasses.DatabaseList;
 
-public class SaveScreenController implements Initializable {
+public class SaveScreenController {
 
     DatabaseList listOfRecordings;
     int playlistNum;
@@ -32,11 +32,6 @@ public class SaveScreenController implements Initializable {
     TextField nameText;
 
     String playlistName;
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        // TODO Auto-generated method stub
-
-    }
 
     @FXML
     public void saveButtonClicked(ActionEvent event) {

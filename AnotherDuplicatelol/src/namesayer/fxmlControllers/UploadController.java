@@ -175,7 +175,6 @@ public class UploadController implements Initializable, ConcatenatedRecordingLoa
 			namesToLoad = 0;
 			nameListView.setItems(workspaceRecordings.getRecordingNames());
 			continueButton.setDisable(false);
-			uploadButton.setDisable(false);
 		}
 	}
 

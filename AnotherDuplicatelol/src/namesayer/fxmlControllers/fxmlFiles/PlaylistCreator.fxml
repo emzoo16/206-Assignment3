@@ -14,12 +14,12 @@
 
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="900.0" stylesheets="@../../css/default.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="namesayer.fxmlControllers.PlaylistCreatorController">
    <children>
-      <Label alignment="TOP_CENTER" layoutX="-3.0" layoutY="47.0" prefHeight="50.0" prefWidth="903.0" text="Select Names">
+      <Label alignment="CENTER" layoutY="-1.0" prefHeight="100.0" prefWidth="900.0" styleClass="scene-header" text="Select Names">
          <font>
             <Font name="System Bold" size="40.0" />
          </font>
       </Label>
-      <Button fx:id="returnButton" layoutX="55.0" layoutY="44.0" mnemonicParsing="false" onAction="#returnToPlaylist" text="Return">
+      <Button fx:id="returnButton" layoutX="55.0" layoutY="33.0" mnemonicParsing="false" onAction="#returnToPlaylist" styleClass="header-button" text="Back">
          <font>
             <Font size="16.0" />
          </font></Button>
@@ -27,29 +27,29 @@
          <font>
             <Font size="16.0" />
          </font></Button>
-      <ListView fx:id="listView" layoutX="571.0" layoutY="138.0" prefHeight="344.0" prefWidth="276.0" />
-      <Label layoutX="626.0" layoutY="103.0" text="Currently Selected">
+      <ListView fx:id="listView" layoutX="571.0" layoutY="159.0" prefHeight="344.0" prefWidth="276.0" />
+      <Label alignment="CENTER" layoutX="571.0" layoutY="119.0" prefHeight="32.0" prefWidth="276.0" styleClass="internal-header" text="Currently Selected">
          <font>
             <Font size="20.0" />
          </font>
       </Label>
-      <Button fx:id="databaseButton" layoutX="59.0" layoutY="529.0" mnemonicParsing="false" onAction="#viewDatabase" text="View Database">
+      <Button fx:id="databaseButton" layoutX="55.0" layoutY="545.0" mnemonicParsing="false" onAction="#viewDatabase" text="View Database">
          <font>
             <Font size="16.0" />
          </font></Button>
-      <Button fx:id="removeButton" layoutX="658.0" layoutY="530.0" mnemonicParsing="false" onAction="#removeFromPlaylist" text="Remove">
+      <Button fx:id="removeButton" layoutX="658.0" layoutY="545.0" mnemonicParsing="false" onAction="#removeFromPlaylist" text="Remove">
          <font>
             <Font size="16.0" />
          </font></Button>
-      <Button fx:id="continueButton" layoutX="756.0" layoutY="531.0" mnemonicParsing="false" onAction="#continueToWorkspace" text="Continue">
+      <Button fx:id="continueButton" layoutX="753.0" layoutY="545.0" mnemonicParsing="false" onAction="#continueToWorkspace" text="Continue">
          <font>
             <Font size="16.0" />
          </font></Button>
-      <CheckBox fx:id="randomiseBox" layoutX="581.0" layoutY="492.0" mnemonicParsing="false" text="Randomise Order">
+      <CheckBox fx:id="randomiseBox" layoutX="570.0" layoutY="512.0" mnemonicParsing="false" prefHeight="22.0" prefWidth="175.0" styleClass="internal-header" text="Randomise Order">
          <font>
             <Font size="16.0" />
          </font></CheckBox>
-      <Label layoutX="159.0" layoutY="135.0" text="Search For Names">
+      <Label alignment="CENTER" layoutX="55.0" layoutY="143.0" prefHeight="32.0" prefWidth="404.0" styleClass="internal-header" text="Search For Names">
          <font>
             <Font size="20.0" />
          </font>

@@ -27,66 +27,90 @@
    <children>
       <Pane layoutX="-6.0" prefHeight="600.0" prefWidth="900.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <VBox alignment="TOP_CENTER" layoutX="396.0" layoutY="137.0" prefHeight="434.0" prefWidth="505.0" spacing="15.0">
+            <VBox alignment="TOP_CENTER" layoutX="443.0" layoutY="137.0" prefHeight="434.0" prefWidth="400.0" spacing="15.0">
                <children>
-                  <Label fx:id="playingLabel" alignment="CENTER" prefHeight="23.0" prefWidth="376.0" text="Now Playing: Demo Recording" textAlignment="CENTER">
-                     <font>
-                        <Font name="System Bold" size="18.0" />
-                     </font>
-                  </Label>
-                  <Label fx:id="recordingNameLabel" alignment="CENTER" prefHeight="104.0" prefWidth="350.0">
-                     <font>
-                        <Font name="System Bold" size="30.0" />
-                     </font>
-                  </Label>
-                  <Label fx:id="ratingLabel" />
-                  <HBox alignment="CENTER" prefHeight="50.0" prefWidth="350.0" spacing="10.0">
+                  <Pane prefHeight="335.0" prefWidth="400.0" styleClass="internal-header">
                      <children>
-                        <Button fx:id="previousButton" depthTest="ENABLE" mnemonicParsing="false" onAction="#previousButtonClicked" prefHeight="50.0" prefWidth="50.0" styleClass="icon-button">
+                        <Label fx:id="recordingNameLabel" alignment="CENTER" layoutY="48.0" prefHeight="104.0" prefWidth="400.0" text="Placeholder">
+                           <font>
+                              <Font name="System Bold" size="30.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="playingLabel" alignment="CENTER" layoutY="3.0" prefHeight="23.0" prefWidth="400.0" text="Now Playing: Demo Recording" textAlignment="CENTER">
+                           <font>
+                              <Font name="System Bold" size="18.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="ratingLabel" alignment="CENTER" layoutY="154.0" prefHeight="32.0" prefWidth="400.0" text="Placeholder">
                            <font>
                               <Font size="16.0" />
                            </font>
-                           <graphic>
-                              <ImageView fitHeight="36.0" fitWidth="36.0" pickOnBounds="true" preserveRatio="true">
-                                 <viewport>
-                                    <Rectangle2D />
-                                 </viewport>
-                              </ImageView>
-                           </graphic></Button>
-                        <Button fx:id="playButton" alignment="CENTER" mnemonicParsing="false" onAction="#playButtonClicked" prefHeight="50.0" prefWidth="50.0" styleClass="icon-button">
+                        </Label>
+                        <HBox alignment="CENTER" layoutX="25.0" layoutY="209.0" prefHeight="50.0" prefWidth="350.0" spacing="10.0">
+                           <children>
+                              <Button fx:id="previousButton" depthTest="ENABLE" mnemonicParsing="false" onAction="#previousButtonClicked" prefHeight="50.0" prefWidth="50.0" styleClass="icon-button">
+                                 <font>
+                                    <Font size="16.0" />
+                                 </font>
+                                 <graphic>
+                                    <ImageView fitHeight="36.0" fitWidth="36.0" pickOnBounds="true" preserveRatio="true">
+                                       <viewport>
+                                          <Rectangle2D />
+                                       </viewport>
+                                       <image>
+                                          <Image url="@../../imageResources/icons8-skip-to-start-filled-100.png" />
+                                       </image>
+                                    </ImageView>
+                                 </graphic>
+                              </Button>
+                              <Button fx:id="playButton" alignment="CENTER" mnemonicParsing="false" onAction="#playButtonClicked" prefHeight="50.0" prefWidth="50.0" styleClass="icon-button">
+                                 <font>
+                                    <Font size="16.0" />
+                                 </font>
+                                 <graphic>
+                                    <ImageView fx:id="playStopImage" fitHeight="25.0" fitWidth="30.0" layoutX="3.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../../imageResources/icons8-play-filled-100.png" />
+                                       </image>
+                                    </ImageView>
+                                 </graphic>
+                              </Button>
+                              <Button fx:id="nextButton" mnemonicParsing="false" onAction="#nextButtonClicked" prefHeight="50.0" prefWidth="50.0" styleClass="icon-button">
+                                 <font>
+                                    <Font size="16.0" />
+                                 </font>
+                                 <graphic>
+                                    <ImageView fitHeight="36.0" fitWidth="36.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../../imageResources/icons8-end-filled-100.png" />
+                                       </image>
+                                    </ImageView>
+                                 </graphic>
+                              </Button>
+                           </children>
+                           <opaqueInsets>
+                              <Insets />
+                           </opaqueInsets>
+                        </HBox>
+                        <Button fx:id="toggleButton" layoutX="175.0" layoutY="271.0" mnemonicParsing="false" onAction="#toggleTab" prefHeight="50.0" prefWidth="50.0" styleClass="icon-button">
                            <font>
                               <Font size="16.0" />
                            </font>
                            <graphic>
                               <ImageView fitHeight="36.0" fitWidth="36.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../../imageResources/icons8-play-filled-100.png" />
-                                 </image></ImageView>
-                           </graphic></Button>
-                        <Button fx:id="nextButton" mnemonicParsing="false" onAction="#nextButtonClicked" prefHeight="50.0" prefWidth="50.0" styleClass="icon-button">
-                           <font>
-                              <Font size="16.0" />
-                           </font>
-                           <graphic>
-                              <ImageView fitHeight="36.0" fitWidth="36.0" pickOnBounds="true" preserveRatio="true" />
-                           </graphic></Button>
+                                    <Image url="@../../imageResources/icons8-replace-filled-100.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </Button>
                      </children>
-                     <opaqueInsets>
-                        <Insets />
-                     </opaqueInsets>
-                  </HBox>
-                  <Button fx:id="toggleButton" mnemonicParsing="false" onAction="#toggleTab" prefHeight="35.0" prefWidth="80.0" text="Toggle">
-                     <font>
-                        <Font size="16.0" />
-                     </font>
-                     <VBox.margin>
-                        <Insets />
-                     </VBox.margin></Button>
+                  </Pane>
                   <HBox alignment="CENTER" prefHeight="35.0" prefWidth="334.0">
                      <children>
                         <ImageView fitHeight="27.0" fitWidth="28.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@../Resources/Speaker.png" />
+                              <Image url="@../../imageResources/icons8-audio-52.png" />
                            </image>
                         </ImageView>
                         <Slider fx:id="volumeSlider" blockIncrement="0.1" max="1.0" prefHeight="26.0" prefWidth="172.0">
@@ -161,21 +185,21 @@
                   </HBox>
                </children>
             </VBox>
-            <Button fx:id="loopButton" layoutX="722.0" layoutY="43.0" mnemonicParsing="false" onAction="#playLoop" text="Loop Practice">
-               <font>
-                  <Font size="16.0" />
-               </font>
-            </Button>
-            <Button fx:id="returnButton" layoutX="49.0" layoutY="41.0" mnemonicParsing="false" onAction="#returnToStart" prefHeight="32.0" prefWidth="161.0" text="Return to menu">
-               <font>
-                  <Font size="16.0" />
-               </font>
-            </Button>
-            <Label layoutX="353.0" layoutY="42.0" prefHeight="17.0" prefWidth="260.0" text="Play Names">
+            <Label alignment="CENTER" prefHeight="100.0" prefWidth="900.0" styleClass="scene-header" text="Play Names">
                <font>
                   <Font size="40.0" />
                </font>
             </Label>
+            <Button fx:id="returnButton" layoutX="48.0" layoutY="34.0" mnemonicParsing="false" onAction="#returnToStart" prefHeight="32.0" prefWidth="161.0" styleClass="header-button" text="Return to menu">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Button>
+            <Button fx:id="loopButton" layoutX="712.0" layoutY="34.0" mnemonicParsing="false" onAction="#playLoop" styleClass="header-button" text="Listen to loop">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Button>
          </children>
       </Pane>
    </children>

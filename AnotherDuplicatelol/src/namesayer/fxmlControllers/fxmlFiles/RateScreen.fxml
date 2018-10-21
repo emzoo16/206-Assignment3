@@ -15,18 +15,26 @@
 
 <AnchorPane prefHeight="250.0" prefWidth="350.0" stylesheets="@../../css/default.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="namesayer.fxmlControllers.RateScreenController">
    <children>
-      <VBox alignment="TOP_CENTER" prefHeight="300.0" prefWidth="400.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <VBox alignment="TOP_CENTER" prefHeight="300.0" prefWidth="400.0" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <Label text="Rate This Recording">
+            <Label alignment="CENTER" prefHeight="50.0" prefWidth="350.0" styleClass="scene-header" text="Rate This Recording">
                <font>
                   <Font size="18.0" />
                </font>
                <VBox.margin>
-                  <Insets top="25.0" />
+                  <Insets />
                </VBox.margin>
             </Label>
-            <Label text="What would you rate the quality of this recording?" />
-            <Label fx:id="rateText">
+            <Pane prefHeight="56.0" prefWidth="319.0" styleClass="internal-header">
+               <children>
+                  <Label alignment="CENTER" layoutX="26.0" layoutY="3.0" prefHeight="22.0" prefWidth="248.0" text="How would you rate this recording?" />
+                  <Label layoutX="16.0" layoutY="33.0" text="This rating only applies for demo recordings" />
+               </children>
+               <VBox.margin>
+                  <Insets left="15.0" right="15.0" />
+               </VBox.margin>
+            </Pane>
+            <Label fx:id="rateText" prefHeight="29.0" styleClass="blue-label">
                <font>
                   <Font size="24.0" />
                </font>
