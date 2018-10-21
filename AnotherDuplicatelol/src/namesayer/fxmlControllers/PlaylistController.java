@@ -101,7 +101,7 @@ public class PlaylistController implements Initializable, ConcatenatedRecordingL
 
 		//Set tooptips for buttons.
 		uploadButton.setTooltip(new Tooltip("Upload a text file of names\nfrom your device"));
-		practiceButton.setTooltip(new Tooltip("Practice a new playlist"));
+		practiceButton.setTooltip(new Tooltip("Create a new playlist"));
 		randomiseBox.setTooltip(new Tooltip("Randomise the plyaing order of \nnames in the selected playlist"));
 
 

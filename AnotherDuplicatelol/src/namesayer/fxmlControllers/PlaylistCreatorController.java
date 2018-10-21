@@ -43,6 +43,8 @@ public class PlaylistCreatorController implements Initializable, ConcatenatedRec
     private CheckBox randomiseBox;
     @FXML
     private Button continueButton;
+    @FXML
+    private Button databaseButton;
 
     private DatabaseList searchList;
     private ObservableList<String> searchableItems;
@@ -234,6 +236,11 @@ public class PlaylistCreatorController implements Initializable, ConcatenatedRec
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+    	
+    	//Set tooltip hints for user.
+    	inputField.setTooltip(new Tooltip("Type a name you want to \nadd to the playlist"));
+    	databaseButton.setTooltip(new Tooltip("Shows a list of all names in the database"));
+    	
         searchView.setVisible(false);
         searchList = new DatabaseList();
         searchList.displayAll();

@@ -32,10 +32,7 @@ import namesayer.recordingTypes.Recording;
 
 public class WorkspaceController implements Initializable, PlayController {
 
-	//Current index in the listView 
-	int currentIndex = 0;
-	int ownCurrentIndex = 0;
-	double volume;
+	
 	//FXML variables
 	@FXML
 	Slider volumeSlider;
@@ -76,6 +73,10 @@ public class WorkspaceController implements Initializable, PlayController {
 	@FXML
 	ImageView playStopImage;
 
+	//Current index in the listView 
+	int currentIndex = 0;
+	int ownCurrentIndex = 0;
+	double volume;
 	DatabaseList listOfRecordings;
 	Boolean isOnDatabase = true;
 	int recordClicked = 0;
@@ -84,7 +85,15 @@ public class WorkspaceController implements Initializable, PlayController {
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+		
+		//Set tooptips for buttons.
+		toggleButton.setTooltip(new Tooltip("Change between demo and\npersonal recordings"));
+		rateButton.setTooltip(new Tooltip("Rate the current demo\nrecording"));
+		saveButton.setTooltip(new Tooltip("Save the current playlist"));
+		recordButton.setTooltip(new Tooltip("Record a new personal recording for\nthe current demo recording"));
 
+		
+		//Initialize the number of playlists to zero prior to counting playlists.
 		playlistNum = 0;
 
 		//Set the volume to the max to begin with.
