@@ -1,0 +1,29 @@
+.root {
+    -fx-background-color: #004976;
+}
+
+.button {
+    -fx-background-color: "white";
+    -fx-background-radius: 5;
+    -fx-text-fill: "black";
+    -fx-background-insets: 0,1,2;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 10, 0.0 , 0 , 1 );
+}
+
+.label {
+    -fx-text-fill: "white";
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 10, 0.0 , 0 , 1 );
+}
+
+.check-box {
+    -fx-text-fill: "white";
+}
+
+.icon-button {
+       -fx-background-color: "white";
+           -fx-background-radius: 5em;
+           -fx-text-fill: "black";
+           -fx-background-insets: 0,1,2;
+           -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 10, 0.0 , 0 , 1 );
+           -fx-padding: 0,0,0,0;
+}
