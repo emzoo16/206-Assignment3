@@ -28,13 +28,13 @@ public class DatabaseList {
         recordingsMap = new HashMap<>();
         recordingNames = new ArrayList<>();
         //Gets the files in an array
-        File folder = new File("Database/");
+        File folder = new File("Resources/Database/");
         File[] ArrayOfFiles = folder.listFiles();
         int count = 1;
         if (ArrayOfFiles != null) {
             for (File file : ArrayOfFiles) {
                 //Validates the file
-                if (file.isFile() && !file.toString().startsWith("Database/.")) {
+                if (file.isFile() && !file.toString().startsWith("Resources/Database/.")) {
                     String fileString = file.getName();
                     //Removes extension and codes.
                     String trimFileString = fileString.substring(fileString.lastIndexOf("_")+1,fileString.indexOf("."));

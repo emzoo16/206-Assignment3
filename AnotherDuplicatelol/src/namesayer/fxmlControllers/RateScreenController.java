@@ -53,9 +53,6 @@ public class RateScreenController implements Initializable  {
 		rateSlider.setValue(3.00);
 		rateText.setText(rating + ". Average");
 
-		File file = new File("Review");
-		file.mkdirs();
-
 		rateSlider.valueProperty().addListener(new InvalidationListener() {
 
 			@Override
@@ -91,7 +88,7 @@ public class RateScreenController implements Initializable  {
 	public void confirmButtonClicked(ActionEvent event){
 
 		//Creating the new file if it doesn't already exist
-		File file = new File("./Review/" + currentName + ".txt");
+		File file = new File("./Resources/Review/" + currentName + ".txt");
 
 		if (!file.exists()) {
 			try {

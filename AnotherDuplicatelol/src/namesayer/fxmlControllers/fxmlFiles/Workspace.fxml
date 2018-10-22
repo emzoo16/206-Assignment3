@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.geometry.Rectangle2D?>
 <?import javafx.scene.control.Button?>
@@ -16,7 +22,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="600.0" prefWidth="900.0" stylesheets="@../../css/default.css" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="namesayer.fxmlControllers.WorkspaceController">
+<AnchorPane prefHeight="600.0" prefWidth="900.0" stylesheets="@../../css/default.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="namesayer.fxmlControllers.WorkspaceController">
    <children>
       <Pane layoutX="-6.0" prefHeight="600.0" prefWidth="900.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -24,7 +30,7 @@
                <children>
                   <Pane prefHeight="345.0" prefWidth="400.0" styleClass="internal-header">
                      <children>
-                        <Label fx:id="recordingNameLabel" alignment="CENTER" layoutY="48.0" prefHeight="104.0" prefWidth="400.0" text="Placeholder">
+                        <Label fx:id="recordingNameLabel" alignment="CENTER" layoutY="48.0" prefHeight="104.0" prefWidth="400.0" text="Placeholder" textAlignment="CENTER" wrapText="true">
                            <font>
                               <Font name="System Bold" size="30.0" />
                            </font>
@@ -140,7 +146,7 @@
                   </HBox>
                   <TabPane fx:id="tabPane" prefHeight="429.0" prefWidth="344.0" tabClosingPolicy="UNAVAILABLE">
                      <tabs>
-                        <Tab text="Demo's">
+                        <Tab text="Demo Recordings">
                            <content>
                               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="375.0" prefWidth="200.0">
                                  <children>

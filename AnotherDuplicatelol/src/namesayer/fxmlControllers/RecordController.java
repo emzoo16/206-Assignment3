@@ -5,7 +5,10 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
+import namesayer.interfaces.PlayController;
 import namesayer.recordingTypes.DemoRecording;
 import namesayer.recordingTypes.PersonalRecording;
 
@@ -18,7 +21,7 @@ import javax.sound.sampled.*;
 import java.nio.file.Paths;
 import java.util.ResourceBundle;
 
-public class RecordController implements Initializable {
+public class RecordController implements Initializable, PlayController {
 	
 	
 	@FXML
@@ -39,6 +42,8 @@ public class RecordController implements Initializable {
     Button demoButton;
     @FXML
     Label instructionLabel;
+    @FXML
+    ImageView playOrStopImage;
 
     //Controls the recording process. Starts/stops recording
     Boolean running;
@@ -54,6 +59,11 @@ public class RecordController implements Initializable {
     WorkspaceController parentController;
     
     TargetDataLine line;
+
+    Clip clip;
+
+    private static final String STOP_IMAGE = "namesayer/imageResources/icons8-stop-filled-100.png";
+    private static final String PLAY_IMAGE = "namesayer/imageResources/icons8-play-filled-100.png";
    
 
     /*
@@ -76,7 +86,7 @@ public class RecordController implements Initializable {
     	statusLabel.setText("Recording...");
 
         //Disable the record button once the user starts the recording.
-        recordButton.setDisable(true);
+        recordButton.setVisible(false);
 
         //Variable used to stop the recording externally.
         running = true;
@@ -139,25 +149,31 @@ public class RecordController implements Initializable {
      */
     @FXML
     private void playRecording() {
-        try {
-            //Gets the URL for the temporary recording.
-            URL url = Paths.get("audio.wav").toUri().toURL();
+        if (clip != null && clip.isActive()) {
+            clip.stop();
+            playOrStopImage.setImage(new Image(PLAY_IMAGE));
+        } else {
+            try {
+                //Gets the URL for the temporary recording.
+                URL url = Paths.get("audio.wav").toUri().toURL();
 
-            AudioInputStream stream = AudioSystem.getAudioInputStream(url);
-            DataLine.Info info = new DataLine.Info(Clip.class, stream.getFormat());
-
-            //create a new clip to play the file on the dataline.
-            Clip clip = (Clip) AudioSystem.getLine(info);
-            clip.open(stream);
-            clip.start();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (UnsupportedAudioFileException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (LineUnavailableException e) {
-            e.printStackTrace();
+                AudioInputStream stream = AudioSystem.getAudioInputStream(url);
+                DataLine.Info info = new DataLine.Info(Clip.class, stream.getFormat());
+                //create a new clip to play the file on the dataline.
+                clip = (Clip) AudioSystem.getLine(info);
+                clip.open(stream);
+                playOrStopImage.setImage(new Image(STOP_IMAGE));
+                addClipListener(clip);
+                clip.start();
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (UnsupportedAudioFileException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (LineUnavailableException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -166,7 +182,13 @@ public class RecordController implements Initializable {
      */
     @FXML
     private void playDemo() {
-        //databaseRecording.play(volume);
+        if (databaseRecording.isPlaying()) {
+            databaseRecording.stopPlaying();
+        } else {
+            databaseRecording.setController(this);
+            demoButton.setText("Stop Demo");
+            databaseRecording.play(volume);
+        }
     }
 
     /*
@@ -175,6 +197,7 @@ public class RecordController implements Initializable {
      */
     @FXML
     private void keepRecording() {
+        stopAllPlaying();
         String databaseRecordingName = databaseRecording.getFileName();
         int recordingNumber = databaseRecording.getUnusedAttemptsNumber();
         String recordingFileName = databaseRecordingName.substring(0, databaseRecordingName.lastIndexOf("."));
@@ -184,16 +207,16 @@ public class RecordController implements Initializable {
             version = shortName.substring(shortName.indexOf("("), shortName.lastIndexOf(")") + 1);
         }
         if (shortName.contains(" ")) {
-            recording = new PersonalRecording(recordingFileName + version + "-" + (recordingNumber) + ".wav", "ConcatenatedPersonalRecordings/");
+            recording = new PersonalRecording(recordingFileName + version + "-" + (recordingNumber) + ".wav", "Resources/ConcatenatedPersonalRecordings/");
             databaseRecording.addAttempt(recording);
             File originalFile = new File("audio.wav");
-            File newFile = new File("ConcatenatedPersonalRecordings/" + recording.getFileName());
+            File newFile = new File("Resources/ConcatenatedPersonalRecordings/" + recording.getFileName());
             originalFile.renameTo(newFile);
         } else {
-            recording = new PersonalRecording(recordingFileName + version + "-" + (recordingNumber) + ".wav", "PersonalRecordings/");
+            recording = new PersonalRecording(recordingFileName + version + "-" + (recordingNumber) + ".wav", "Resources/PersonalRecordings/");
             databaseRecording.addAttempt(recording);
             File originalFile = new File("audio.wav");
-            File newFile = new File("PersonalRecordings/" + recording.getFileName());
+            File newFile = new File("Resources/PersonalRecordings/" + recording.getFileName());
             originalFile.renameTo(newFile);
 
         }
@@ -202,11 +225,24 @@ public class RecordController implements Initializable {
         currentStage.close();
     }
 
+    /**
+     *
+     */
+    private void stopAllPlaying() {
+        if (clip != null && clip.isActive()) {
+            clip.stop();
+        }
+        if (databaseRecording.isPlaying()) {
+            databaseRecording.stopPlaying();
+        }
+    }
+
     /*
      * Takes the user back to the workspace.
      */
     @FXML
     private void returnToWorkspace() {
+        stopAllPlaying();
         //Close the recording window
         Stage currentStage = (Stage) returnButton.getScene().getWindow();
         currentStage.close();
@@ -243,13 +279,30 @@ public class RecordController implements Initializable {
     /*
      * Passes information between recordController and WorkspaceController
      */
-    public void passInformation(DemoRecording databaseRecording, WorkspaceController controller) {
+    public void passInformation(DemoRecording databaseRecording, WorkspaceController controller, Double volume) {
         this.databaseRecording = databaseRecording;
         parentController = controller;
+        this.volume = volume;
+    }
+
+    private void addClipListener(Clip currentClip) {
+        currentClip.addLineListener(new LineListener() {
+            @Override
+            public void update(LineEvent event) {
+                if (clip != null && !clip.isActive()) {
+                    playOrStopImage.setImage(new Image(PLAY_IMAGE));
+                }
+            }
+        });
     }
  
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         setComponentsForRecording();
+    }
+
+    @Override
+    public void playingFinished() {
+        demoButton.setText("Play Demo");
     }
 }

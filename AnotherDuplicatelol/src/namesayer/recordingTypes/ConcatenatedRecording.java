@@ -35,7 +35,7 @@ public class ConcatenatedRecording extends DemoRecording {
         removeRecordingSilence(fileNames, fullName);
 
 		//loads all the personal recordings into the map
-        File folder = new File("ConcatenatedPersonalRecordings/");
+        File folder = new File("Resources/ConcatenatedPersonalRecordings/");
         File[] ArrayOfFiles = folder.listFiles();
         if (ArrayOfFiles != null) {
             for (File file : ArrayOfFiles) {
@@ -45,13 +45,13 @@ public class ConcatenatedRecording extends DemoRecording {
                     Character digit = recordingFileName.charAt(recordingFileName.lastIndexOf("-") + 1);
                     String recordingNumber = digit.toString();
                     String recordingName = (this.shortName + "-" + recordingNumber);
-                    userAttempts.put(recordingName, new PersonalRecording(recordingFileName, "ConcatenatedPersonalRecordings/"));
+                    userAttempts.put(recordingName, new PersonalRecording(recordingFileName, "Resources/ConcatenatedPersonalRecordings/"));
                 }
             }
         } else {
             //Cant find any personal recordings
         }
-        path = "ConcatenatedRecordings/";
+        path = "Resources/ConcatenatedRecordings/";
 
     }
 
@@ -81,7 +81,7 @@ public class ConcatenatedRecording extends DemoRecording {
                 for (String file : fileNames) {
                     String tmpFileName = fullItem.replaceAll(" ", "");
                     tmpFileName = tmpFileName + index + ".wav";
-                    String cmd = "ffmpeg -y -i " + "./Database/" + file + " -af silenceremove=1:0:-50dB " + tmpFileName;
+                    String cmd = "ffmpeg -y -i " + "./Resources/Database/" + file + " -af silenceremove=1:0:-50dB " + tmpFileName;
                     ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
                     Process process = builder.start();
                     process.waitFor();
@@ -112,7 +112,7 @@ public class ConcatenatedRecording extends DemoRecording {
                     inputStreams = inputStreams + "[" + number + ":0]";
                     number += 1;
                 }
-                String tmpFileName = "./ConcatenatedRecordings/" + fullItem.replaceAll(" ", "") + ".wav";
+                String tmpFileName = "./Resources/ConcatenatedRecordings/" + fullItem.replaceAll(" ", "") + ".wav";
                 String cmd = "ffmpeg -y " + catInput +
                         "-filter_complex '"+inputStreams+"concat=n="+number+":v=0:a=1[out]' " +
                         "-map '[out]' " + tmpFileName;

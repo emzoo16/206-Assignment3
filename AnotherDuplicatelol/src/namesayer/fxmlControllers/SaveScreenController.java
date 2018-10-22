@@ -65,7 +65,7 @@ public class SaveScreenController {
     }
 
     public boolean createPlaylist(String name) {
-        File file = new File("./Playlists/" + name + ".txt");
+        File file = new File("./Resources/Playlists/" + name + ".txt");
         if(!file.exists()) {
             try {
                 PrintWriter writer = new PrintWriter(file);

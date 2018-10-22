@@ -32,7 +32,7 @@ import namesayer.recordingTypes.Recording;
 
 public class WorkspaceController implements Initializable, PlayController {
 
-	
+
 	//FXML variables
 	@FXML
 	Slider volumeSlider;
@@ -73,7 +73,7 @@ public class WorkspaceController implements Initializable, PlayController {
 	@FXML
 	ImageView playStopImage;
 
-	//Current index in the listView 
+	//Current index in the listView
 	int currentIndex = 0;
 	int ownCurrentIndex = 0;
 	double volume;
@@ -85,14 +85,14 @@ public class WorkspaceController implements Initializable, PlayController {
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		
+
 		//Set tooptips for buttons.
 		toggleButton.setTooltip(new Tooltip("Change between demo and\npersonal recordings"));
 		rateButton.setTooltip(new Tooltip("Rate the current demo\nrecording"));
 		saveButton.setTooltip(new Tooltip("Save the current playlist"));
 		recordButton.setTooltip(new Tooltip("Record a new personal recording for\nthe current demo recording"));
 
-		
+
 		//Initialize the number of playlists to zero prior to counting playlists.
 		playlistNum = 0;
 
@@ -136,10 +136,12 @@ public class WorkspaceController implements Initializable, PlayController {
 					deleteButton.setDisable(false);
 					ownListView.getSelectionModel().select(ownCurrentIndex);
 					ratingLabel.setVisible(false);
+					rateButton.setDisable(true);
 					playingLabel.setText("Now Playing: Personal Recording");
 				} else {
-					ratingLabel.setVisible(true);
 					isOnDatabase = true;
+					ratingLabel.setVisible(true);
+					rateButton.setDisable(false);
 					deleteButton.setDisable(true);
 					playingLabel.setText("Now Playing: Demo Recording");
 				}
@@ -306,11 +308,11 @@ public class WorkspaceController implements Initializable, PlayController {
 			Alert alert = new Alert(AlertType.CONFIRMATION);
 			alert.setTitle("Delete Confirmation");
 			alert.setHeaderText(null);
-			alert.setContentText("Are you sure you want to delete?");
+			alert.setContentText("Are you sure you want to delete this recording?");
 			Optional<ButtonType> action = alert.showAndWait();
 
 			if (action.get() == ButtonType.OK) {
-				File creationFile = new File("PersonalRecordings/");
+				File creationFile = new File("Resources/PersonalRecordings/");
 
 				for (final File fileEntry : creationFile.listFiles()) {
 
@@ -338,7 +340,7 @@ public class WorkspaceController implements Initializable, PlayController {
 			Parent recordSceneParent = fxmlLoader.load();
 			RecordController controller = fxmlLoader.getController();
 			DemoRecording currentDatabaseRecording = listOfRecordings.getRecording(dataListView.getSelectionModel().getSelectedItem());
-			controller.passInformation(currentDatabaseRecording, this);
+			controller.passInformation(currentDatabaseRecording, this, volume);
 			Scene recordScene = new Scene(recordSceneParent);
 			Stage recordStage = new Stage();
 			recordStage.setScene(recordScene);
@@ -447,6 +449,21 @@ public class WorkspaceController implements Initializable, PlayController {
 	 */
 	@FXML
 	private void returnToStart() {
+		if (!saveButton.isDisabled()) {
+			Alert alert = new Alert(AlertType.CONFIRMATION);
+			alert.setTitle("Return to Start");
+			alert.setHeaderText("Any unsaved playlist will be lost");
+			alert.setContentText("Are you sure you want to continue?");
+			Optional<ButtonType> action = alert.showAndWait();
+			if (action.get() == ButtonType.OK) {
+				transitionToStart();
+			}
+		} else {
+			transitionToStart();
+		}
+	}
+
+	private void transitionToStart() {
 		try {
 			Stage stage = (Stage) returnButton.getScene().getWindow();
 			Parent createScene = FXMLLoader.load(getClass().getResource("fxmlFiles/StartMenu.fxml"));
@@ -470,8 +487,8 @@ public class WorkspaceController implements Initializable, PlayController {
 		recordingNameLabel.setText(currentName);
 	}
 
-	public void playlistCount() {
-		File folder = new File("Playlists/");
+	private void playlistCount() {
+		File folder = new File("Resources/Playlists/");
 		File[] listOfFiles = folder.listFiles();
 		for(File file : listOfFiles) {
 			if (file.isFile() && file.getName().endsWith(".txt")) {
@@ -484,7 +501,7 @@ public class WorkspaceController implements Initializable, PlayController {
 	 * This method writes the rating for a recording to a file.
 	 */
 	public void setRating(String currentName) {
-		File file = new File("./Review/" + currentName + ".txt");
+		File file = new File("./Resources/Review" + currentName + ".txt");
 		if (file.exists()) {
 			int[] ratingArray = new int[2];
 			Scanner scanner = null;
@@ -541,8 +558,8 @@ public class WorkspaceController implements Initializable, PlayController {
 	 */
 	public void removeFromBadFile(String name) {
 
-		File tmpFile = new File("./Review/temp.txt");
-		File file = new File("./Review/BadRecordings.txt");
+		File tmpFile = new File("./Resources/Reviewtemp.txt");
+		File file = new File("./Resources/ReviewBadRecordings.txt");
 		try {
 			BufferedReader reader = new BufferedReader(new FileReader(file));
 			BufferedWriter writer = new BufferedWriter(new FileWriter(tmpFile));
@@ -567,7 +584,7 @@ public class WorkspaceController implements Initializable, PlayController {
 	 * below 2.5
 	 */
 	public void addToBadFile(String name) {
-		File file = new File("./Review/BadRecordings.txt");
+		File file = new File("./Resources/ReviewBadRecordings.txt");
 
 		//Append the given name to the BadRecordings file.
 		if (file.exists()) {
@@ -595,7 +612,7 @@ public class WorkspaceController implements Initializable, PlayController {
 	 * This method checks if the recording of the name passed is in the BadRecordings file.
 	 */
 	public Boolean isBadRecording(String name) {
-		File file = new File("./Review/BadRecordings.txt");
+		File file = new File("./Resources/ReviewBadRecordings.txt");
 
 		//Scans the file line by line to check if the given name is in the file.
 		if (file.exists()) {

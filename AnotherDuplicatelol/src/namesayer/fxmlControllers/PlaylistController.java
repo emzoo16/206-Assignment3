@@ -13,13 +13,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
+import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.Tooltip;
 import javafx.stage.Stage;
 import namesayer.helperClasses.PlaylistLoader;
 import namesayer.helperClasses.DatabaseList;
@@ -68,6 +63,9 @@ public class PlaylistController implements Initializable, ConcatenatedRecordingL
 	@FXML
 	Label noPlaylistText;
 
+	@FXML
+	ProgressIndicator loadingIndicator;
+
 	//Place the buttons in a list for easier handling.
 	List<Button> playlistButtons = new ArrayList<>();
 
@@ -98,6 +96,8 @@ public class PlaylistController implements Initializable, ConcatenatedRecordingL
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+
+		loadingIndicator.setVisible(false);
 
 		//Set tooptips for buttons.
 		uploadButton.setTooltip(new Tooltip("Upload a text file of names\nfrom your device"));
@@ -143,7 +143,7 @@ public class PlaylistController implements Initializable, ConcatenatedRecordingL
 	 */
 	public void setplaylistButtons(){
 
-		File folder = new File("Playlists/");
+		File folder = new File("Resources/Playlists/");
 		File[] listOfFiles = folder.listFiles();
 
 		//Start off with a clean slate by making all buttons invisible.
@@ -187,11 +187,11 @@ public class PlaylistController implements Initializable, ConcatenatedRecordingL
 		Alert alert = new Alert(AlertType.CONFIRMATION);
 		alert.setTitle("Delete Confirmation");
 		alert.setHeaderText(null);
-		alert.setContentText("Are you sure you want to delete?");
+		alert.setContentText("Are you sure you want to delete this playlist?");
 		Optional<ButtonType> action = alert.showAndWait();
 
 		if (action.get() == ButtonType.OK) {
-			File playlistFiles = new File("Playlists/");
+			File playlistFiles = new File("Resources/Playlists/");
 
 			for (final File fileEntry : playlistFiles.listFiles()) {
 				String currentFile = fileEntry.getName();
@@ -215,10 +215,11 @@ public class PlaylistController implements Initializable, ConcatenatedRecordingL
 	@FXML
 	public void playlistClicked(ActionEvent event) {
 		disableAllButtons();
+		loadingIndicator.setVisible(true);
 		//Get a reference to the current selected file and find the playlist text file that corresponds to it.
 		Button clickedPlaylist = (Button) event.getSource();
 		String playlist = clickedPlaylist.getText() + ".txt";
-		currentPlaylistFile = new File("Playlists/"+playlist);
+		currentPlaylistFile = new File("Resources/Playlists/"+playlist);
 
 		//Create a playlist loader to scan and upload the names in the playlist.
 		PlaylistLoader loader = new PlaylistLoader((Stage) uploadButton.getScene().getWindow(), null);

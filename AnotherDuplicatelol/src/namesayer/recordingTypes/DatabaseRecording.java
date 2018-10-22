@@ -12,7 +12,7 @@ public class DatabaseRecording extends DemoRecording {
         userAttempts = new HashMap<>();
         fileName = fullyQualifiedName;
         this.shortName = shortName;
-        File folder = new File("PersonalRecordings/");
+        File folder = new File("Resources/PersonalRecordings/");
         File[] ArrayOfFiles = folder.listFiles();
         if (ArrayOfFiles != null) {
             for (File file : ArrayOfFiles) {
@@ -22,12 +22,12 @@ public class DatabaseRecording extends DemoRecording {
                     Character digit = recordingFileName.charAt(recordingFileName.lastIndexOf("-") + 1);
                     String recordingNumber = digit.toString();
                     String recordingName = (this.shortName + "-" + recordingNumber);
-                    userAttempts.put(recordingName, new PersonalRecording(recordingFileName, "PersonalRecordings/"));
+                    userAttempts.put(recordingName, new PersonalRecording(recordingFileName, "Resources/PersonalRecordings/"));
                 }
             }
         } else {
             //Cant find any personal recordings
         }
-        path = "Database/";
+        path = "Resources/Database/";
     }
 }

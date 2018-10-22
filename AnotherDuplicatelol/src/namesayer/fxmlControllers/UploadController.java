@@ -42,6 +42,8 @@ public class UploadController implements Initializable, ConcatenatedRecordingLoa
 	Button continueButton;
 	@FXML 
 	ListView<String> nameListView;
+	@FXML
+	ProgressIndicator loadingIndicator;
 	
 	
 	 //Keeping track of the number in the listViews the user has currently selected
@@ -63,7 +65,7 @@ public class UploadController implements Initializable, ConcatenatedRecordingLoa
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		namesToLoad = 0;
-				
+		loadingIndicator.setVisible(false);
 		workspaceRecordings = new DatabaseList();
 		
 		//Make the textfield uneditable.
@@ -96,7 +98,7 @@ public class UploadController implements Initializable, ConcatenatedRecordingLoa
 			Alert alert = new Alert(AlertType.WARNING);
 			alert.setTitle("Warning");
 			alert.setHeaderText(null);
-			alert.setContentText("Please load a name before continuing." );
+			alert.setContentText("Please load a name before continuing.");
 			alert.showAndWait();
 		}else {
 			try {
@@ -156,8 +158,11 @@ public class UploadController implements Initializable, ConcatenatedRecordingLoa
 			alert.showAndWait();
 			
 		}else {
+			workspaceRecordings = new DatabaseList();
+			nameListView.getItems().clear();
 			uploadButton.setDisable(true);
 			continueButton.setDisable(true);
+			loadingIndicator.setVisible(true);
 			scanFile();
 		}
 	}
@@ -175,6 +180,8 @@ public class UploadController implements Initializable, ConcatenatedRecordingLoa
 			namesToLoad = 0;
 			nameListView.setItems(workspaceRecordings.getRecordingNames());
 			continueButton.setDisable(false);
+			uploadButton.setDisable(false);
+			loadingIndicator.setVisible(false);
 		}
 	}
 
@@ -204,7 +211,7 @@ public class UploadController implements Initializable, ConcatenatedRecordingLoa
 					Recording obj = referenceList.getRecording(recording);
 					fileNames.add(obj.getFileName());
 				}
-				//Creates the concatenated recording and adds it to the workspace
+				//Creates the concatenated recording
 				DemoRecording concatenatedRecording = new ConcatenatedRecording(fileNames, name, this);
 				namesToLoad++;
 			} else {
@@ -222,7 +229,7 @@ public class UploadController implements Initializable, ConcatenatedRecordingLoa
 			Parent warningSceneParent = fxmlLoader.load();
 			Scene warningScene = new Scene(warningSceneParent);
 
-			//Getting the instance of the warning controller and passing the
+			//Getting the instance of the warning controller and passing the list of names that aren't in the database
 			UploadWarningController controller = fxmlLoader.getController();
 			controller.setNotFoundList(notFoundDisplay);
 
@@ -250,6 +257,7 @@ public class UploadController implements Initializable, ConcatenatedRecordingLoa
 			nameListView.setItems(workspaceRecordings.getRecordingNames());
 			continueButton.setDisable(false);
 			uploadButton.setDisable(false);
+			loadingIndicator.setVisible(false);
 		}
 
 	}

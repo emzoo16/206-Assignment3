@@ -14,12 +14,12 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception{
         //Making a personal recordings folder if it doesn't exist to hold user recordings
-        File file1 = new File("PersonalRecordings/");
+        File file1 = new File("Resources/PersonalRecordings/");
         if (!file1.exists()) {
             file1.mkdirs();
         }
         //Removing everything from the concatenated recordings file if it exists, otherwise creating it
-        File file2 = new File("ConcatenatedRecordings/");
+        File file2 = new File("Resources/ConcatenatedRecordings/");
         if (file2.exists()) {
             File[] files = file2.listFiles();
             for (File file : files) {
@@ -29,14 +29,19 @@ public class Main extends Application {
             file2.mkdirs();
         }
         //Making a folder to hold personal recordings for concatenated recordings
-        File file3 = new File("ConcatenatedPersonalRecordings/");
+        File file3 = new File("Resources/ConcatenatedPersonalRecordings/");
         if (!file3.exists()) {
             file3.mkdirs();
         }
         //Making a folder to hold playlists
-        File file4 = new File("Playlists");
+        File file4 = new File("Resources/Playlists/");
         if (!file4.exists()) {
             file4.mkdirs();
+        }
+        //Making a folder to store ratings
+        File file5 = new File("Resources/Review/");
+        if (!file5.exists()) {
+            file5.mkdirs();
         }
 
         Parent root = FXMLLoader.load(getClass().getResource("fxmlFiles/StartMenu.fxml"));

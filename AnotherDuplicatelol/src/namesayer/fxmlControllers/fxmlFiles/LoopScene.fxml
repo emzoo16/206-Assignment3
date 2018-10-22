@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
@@ -7,14 +11,14 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="350.0" prefWidth="450.0" stylesheets="@../../css/default.css" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="namesayer.fxmlControllers.LoopSceneController">
+<AnchorPane prefHeight="350.0" prefWidth="450.0" stylesheets="@../../css/default.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="namesayer.fxmlControllers.LoopSceneController">
     <children>
         <Label alignment="CENTER" prefHeight="50.0" prefWidth="452.0" styleClass="scene-header" text="Loop Practice ">
             <font>
                 <Font name="System Bold" size="20.0" />
             </font>
         </Label>
-        <Label fx:id="recordingLabel" alignment="CENTER" layoutX="226.0" layoutY="116.0" prefHeight="59.0" prefWidth="202.0" styleClass="blue-label" text="Name goes here">
+        <Label fx:id="recordingLabel" alignment="CENTER" layoutX="226.0" layoutY="116.0" prefHeight="59.0" prefWidth="202.0" styleClass="blue-label" text="Name goes here" textAlignment="CENTER" wrapText="true">
             <font>
                 <Font size="18.0" />
             </font>
@@ -32,6 +36,6 @@
             </font>
         </Label>
         <Button fx:id="startButton" layoutX="93.0" layoutY="291.0" mnemonicParsing="false" onAction="#playLoop" text="Start" />
-      <Button fx:id="cancelButton" layoutX="296.0" layoutY="291.0" mnemonicParsing="false" onAction="#returnToWorkspace" text="Cancel" />
+        <Button fx:id="cancelButton" layoutX="296.0" layoutY="291.0" mnemonicParsing="false" onAction="#returnToWorkspace" text="Cancel" />
     </children>
 </AnchorPane>
