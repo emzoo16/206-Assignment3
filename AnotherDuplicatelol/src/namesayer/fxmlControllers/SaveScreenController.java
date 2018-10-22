@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
@@ -12,10 +13,12 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import namesayer.helperClasses.DatabaseList;
 
-public class SaveScreenController {
+public class SaveScreenController implements Initializable {
 
     DatabaseList listOfRecordings;
     int playlistNum;
@@ -45,7 +48,7 @@ public class SaveScreenController {
 
             if(createPlaylist(nameText.getText())) {;
                 workspaceSaveButton.setDisable(true);
-                Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                Stage currentStage = (Stage) saveButton.getScene().getWindow();
                 currentStage.close();
             }
         }
@@ -87,4 +90,15 @@ public class SaveScreenController {
         }
     }
 
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        nameText.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+                if (event.getCode().equals(KeyCode.ENTER)) {
+                    saveButtonClicked(new ActionEvent());
+                }
+            }
+        });
+    }
 }
