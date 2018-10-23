@@ -1,10 +1,15 @@
 package namesayer.recordingTypes;
 
 import javafx.concurrent.Task;
+import namesayer.helperClasses.WorkspaceModel;
 import namesayer.interfaces.ConcatenatedRecordingLoader;
 import namesayer.helperClasses.DatabaseList;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,7 +36,7 @@ public class ConcatenatedRecording extends DemoRecording {
             this.shortName = this.shortName + namePart.substring(0,1).toUpperCase() + namePart.substring(1).toLowerCase() + " ";
         }
         this.shortName = this.shortName.trim();
-        this.fileName = fullName.replaceAll(" ", "") + ".wav";
+        this.fileName = fullName.replaceAll("[\\s+\\(\\)]", "") + ".wav";
         removeRecordingSilence(fileNames, fullName);
 
 		//loads all the personal recordings into the map
@@ -67,11 +72,9 @@ public class ConcatenatedRecording extends DemoRecording {
         for (String file : fileNames) {
             String tmpFileName = fullItem.replaceAll(" ", "");
             tmpFileName = tmpFileName + index + ".wav";
-            tmpFiles.add(tmpFileName);
+            tmpFiles.add(tmpFileName.replaceAll("[\\(\\)]", ""));
             index++;
         }
-
-        final List<String> finalTempFiles = new ArrayList<>(tmpFiles);
 
         //remove silence either side for all recordings and creates the temp files for all
         Task<Void> removeSilenceTask = new Task<Void>() {
@@ -79,7 +82,7 @@ public class ConcatenatedRecording extends DemoRecording {
             protected Void call() throws Exception {
                 int index = 1;
                 for (String file : fileNames) {
-                    String tmpFileName = fullItem.replaceAll(" ", "");
+                    String tmpFileName = fullItem.replaceAll("[\\(\\)\\s+]", "");
                     tmpFileName = tmpFileName + index + ".wav";
                     String cmd = "ffmpeg -y -i " + "./Resources/Database/" + file + " -af silenceremove=1:0:-50dB " + tmpFileName;
                     ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
@@ -112,10 +115,10 @@ public class ConcatenatedRecording extends DemoRecording {
                     inputStreams = inputStreams + "[" + number + ":0]";
                     number += 1;
                 }
-                String tmpFileName = "./Resources/ConcatenatedRecordings/" + fullItem.replaceAll(" ", "") + ".wav";
+                String fileName = "./Resources/ConcatenatedRecordings/" + fullItem.replaceAll("[\\s+\\)\\(]", "") + ".wav";
                 String cmd = "ffmpeg -y " + catInput +
                         "-filter_complex '"+inputStreams+"concat=n="+number+":v=0:a=1[out]' " +
-                        "-map '[out]' " + tmpFileName;
+                        "-map '[out]' " + fileName;
                 ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
                 Process process = builder.start();
                 process.waitFor();
@@ -123,40 +126,18 @@ public class ConcatenatedRecording extends DemoRecording {
             }
             @Override
             protected void succeeded() {
-                regulateRecordingVolume(tmpFiles, fullItem);
+                DatabaseList helperList = new DatabaseList();
+                helperList.add(getThisRecording());
+                WorkspaceModel model = WorkspaceModel.getInstance();
+                model.addToCurrentWorkspaceRecordings(helperList);
+                model.notifyOfConcatenateCompletion();
+                deletetmpFiles(tmpFiles);
             }
         };
         Thread catThread = new Thread(concatenateTask);
         catThread.setDaemon(true);
         catThread.start();
 
-    }
-
-    private void regulateRecordingVolume(List<String> tmpFiles, String fullItem) {
-        //regulate volume for all
-        Task<Void> regulateVolumeTask = new Task<Void>() {
-            @Override
-            protected Void call() throws Exception {
-                for (String file : tmpFiles) {
-                    String cmd = "ffmpeg -y -i "+file+" -filter:a \"volume=0.5\" " + file;
-                    ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", cmd);
-                    Process process = builder.start();
-                    process.waitFor();
-                }
-                return null;
-            }
-            @Override
-            protected void succeeded() {
-                //This list allows us to reuse the addPlaylistRecordings method.
-                DatabaseList helperList = new DatabaseList();
-                helperList.add(getThisRecording());
-                controller.addPlaylistRecordings(helperList);
-                deletetmpFiles(tmpFiles);
-            }
-        };
-        Thread volumeThread = new Thread(regulateVolumeTask);
-        volumeThread.setDaemon(true);
-        volumeThread.start();
     }
 
     private void deletetmpFiles(List<String> tmpFiles) {

@@ -19,6 +19,7 @@ import javafx.scene.control.cell.CheckBoxListCell;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import namesayer.helperClasses.DatabaseList;
+import namesayer.helperClasses.WorkspaceModel;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -49,8 +50,10 @@ public class DatabaseViewController implements Initializable {
         for (String recordingName : selectedItems) {
             returnedRecordings.add(recordingName);
         }
-        controller.addPlaylistRecordings(returnedRecordings);
+        WorkspaceModel model = WorkspaceModel.getInstance();
+        model.addToCurrentWorkspaceRecordings(returnedRecordings);
         Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        WorkspaceModel.getInstance().notifyOfStageClose();
         currentStage.close();
     }
 

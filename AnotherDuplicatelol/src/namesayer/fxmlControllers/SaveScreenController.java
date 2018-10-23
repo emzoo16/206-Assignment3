@@ -17,6 +17,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import namesayer.helperClasses.DatabaseList;
+import namesayer.helperClasses.WorkspaceModel;
 
 public class SaveScreenController implements Initializable {
 
@@ -45,9 +46,7 @@ public class SaveScreenController implements Initializable {
             alert.setContentText("Please enter a name before continuing." );
             alert.showAndWait();
         }else{
-
             if(createPlaylist(nameText.getText())) {;
-                workspaceSaveButton.setDisable(true);
                 Stage currentStage = (Stage) saveButton.getScene().getWindow();
                 currentStage.close();
             }
@@ -58,13 +57,6 @@ public class SaveScreenController implements Initializable {
     public void cancelButtonClicked(ActionEvent event) {
         Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         currentStage.close();
-    }
-
-    public void setRecordingList(DatabaseList list) {
-        this.listOfRecordings = list;
-    }
-    public void setButton(Button button) {
-        this.workspaceSaveButton = button;
     }
 
     public boolean createPlaylist(String name) {
@@ -92,6 +84,7 @@ public class SaveScreenController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        listOfRecordings = WorkspaceModel.getInstance().getCurrentWorkspaceRecordings();
         nameText.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {

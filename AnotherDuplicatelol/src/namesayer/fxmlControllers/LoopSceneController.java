@@ -3,12 +3,14 @@ package namesayer.fxmlControllers;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import com.sun.corba.se.spi.orbutil.threadpool.Work;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import namesayer.helperClasses.WorkspaceModel;
 import namesayer.recordingTypes.PersonalRecording;
 import namesayer.interfaces.PlayController;
 import namesayer.recordingTypes.DemoRecording;
@@ -77,19 +79,17 @@ public class LoopSceneController implements Initializable, PlayController {
         currentStage.close();
     }
 
-    public void passRecording(DemoRecording passedRecording, double volume) {
-        this.volume = volume;
-        this.recording = passedRecording;
-        recordingLabel.setText(this.recording.getShortName());
-        personalList.setItems(FXCollections.observableArrayList(recording.getUserAttempts()));
-        personalList.getSelectionModel().select(0);
-    }
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         ObservableList<Integer> options = FXCollections.observableArrayList(1, 2, 3, 4, 5);
         loopCombo.setItems(options);
         hasPlayedOnce = false;
+        WorkspaceModel model = WorkspaceModel.getInstance();
+        this.volume = model.getVolume();
+        this.recording = model.getCurrentDemoRecording();
+        recordingLabel.setText(this.recording.getShortName());
+        personalList.setItems(FXCollections.observableArrayList(recording.getUserAttempts()));
+        personalList.getSelectionModel().select(0);
     }
 
     public void playingFinished() {

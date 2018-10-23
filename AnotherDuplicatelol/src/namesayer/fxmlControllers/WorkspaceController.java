@@ -14,23 +14,20 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 import namesayer.helperClasses.DatabaseList;
+import namesayer.helperClasses.UIManager;
+import namesayer.helperClasses.WorkspaceModel;
+import namesayer.interfaces.ParentStageController;
 import namesayer.interfaces.PlayController;
 import namesayer.recordingTypes.DemoRecording;
 import namesayer.recordingTypes.Recording;
 
-public class WorkspaceController implements Initializable, PlayController {
+public class WorkspaceController implements Initializable, PlayController, ParentStageController {
 
 
 	//FXML variables
@@ -79,25 +76,27 @@ public class WorkspaceController implements Initializable, PlayController {
 	double volume;
 	DatabaseList listOfRecordings;
 	Boolean isOnDatabase = true;
-	int recordClicked = 0;
-	int playlistNum;
+	private WorkspaceModel model;
+	private boolean playing;
+	Recording playingRecording;
 
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-
+		model = WorkspaceModel.getInstance();
+		initializeModelValues();
+		refreshPersonalRecordings(dataListView.getSelectionModel().getSelectedItem());
+		model.setCurrentDemoRecording(listOfRecordings.getRecording(dataListView.getSelectionModel().getSelectedItem()));
+		model.setStageController(this);
 		//Set tooptips for buttons.
 		toggleButton.setTooltip(new Tooltip("Change between demo and\npersonal recordings"));
 		rateButton.setTooltip(new Tooltip("Rate the current demo\nrecording"));
 		saveButton.setTooltip(new Tooltip("Save the current playlist"));
 		recordButton.setTooltip(new Tooltip("Record a new personal recording for\nthe current demo recording"));
 
-
-		//Initialize the number of playlists to zero prior to counting playlists.
-		playlistNum = 0;
-
 		//Set the volume to the max to begin with.
 		volume = 1.0;
+		model.setVolume(volume);
 		volumeSlider.setValue(volume);
 
 
@@ -109,9 +108,9 @@ public class WorkspaceController implements Initializable, PlayController {
 										String newValue) {
 						//Sets the recording label to the current selected recording.
 						recordingNameLabel.setText(newValue);
-
+						model.setCurrentDemoRecording(listOfRecordings.getRecording(newValue));
 						currentIndex = dataListView.getSelectionModel().getSelectedIndex();
-						setRating(newValue);
+						refreshRating();
 						refreshPersonalRecordings(newValue);
 						ownCurrentIndex = 0;
 					}
@@ -155,12 +154,29 @@ public class WorkspaceController implements Initializable, PlayController {
 			@Override
 			public void invalidated(Observable observable) {
 				volume = volumeSlider.getValue();
+				model.setVolume(volume);
 			}
 
 		});
 
 		//Delete button is initially disabled prior to users selecting a recording.
 		deleteButton.setDisable(true);
+	}
+
+	public void stageHasClosed() {
+		refreshPersonalRecordings(dataListView.getSelectionModel().getSelectedItem());
+		refreshRating();
+	}
+
+	public void initializeModelValues() {
+		dataList = model.getCurrentRecordingsDisplay();
+		dataListView.setItems(dataList);
+		listOfRecordings = model.getCurrentWorkspaceRecordings();
+		dataListView.scrollTo(currentIndex);
+		dataListView.getSelectionModel().select(currentIndex);
+		String currentName = dataListView.getSelectionModel().getSelectedItem();
+		recordingNameLabel.setText(currentName);
+		playing = false;
 	}
 
 	/*
@@ -196,15 +212,18 @@ public class WorkspaceController implements Initializable, PlayController {
 
 	private void setUpForPlaying(Recording recording, double volume) {
 		recording.setController(this);
-		if (recording.isPlaying()) {
-			recording.stopPlaying();
+		if (playing) {
+			playingRecording.stopPlaying();
 		} else {
 			recording.play(volume);
+			playingRecording = recording;
+			playing = true;
 			playStopImage.setImage(new Image("namesayer/imageResources/icons8-stop-filled-100.png"));
 		}
 	}
 
 	public void playingFinished() {
+		playing = false;
 		playStopImage.setImage(new Image("namesayer/imageResources/icons8-play-filled-100.png"));
 	}
 
@@ -261,38 +280,16 @@ public class WorkspaceController implements Initializable, PlayController {
 	 * This method takes the user back to the workspace creator scene.
 	 */
 	@FXML
-	public void backButtonClicked(ActionEvent event) throws Exception {
-		try {
-			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("fxmlFiles/PlaylistCreator.fxml"));
-			Parent createScene = fxmlLoader.load();
-			PlaylistCreatorController controller = fxmlLoader.getController();
-			controller.addPlaylistRecordings(listOfRecordings);
-			Stage stage = (Stage) backButton.getScene().getWindow();
-			stage.setScene(new Scene(createScene));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	public void backButtonClicked(ActionEvent event) {
+		UIManager.changeScenes("fxmlFiles/PlaylistCreator.fxml");
 	}
 
 	/*
 	 * This method takes the user to the rate screen.
 	 */
 	@FXML
-	public void rateButtonClicked(ActionEvent event) throws Exception {
-		String currentName = dataListView.getSelectionModel().getSelectedItem();
-		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("fxmlFiles/RateScreen.fxml"));
-		Parent rateSceneParent = fxmlLoader.load();
-		RateScreenController controller = fxmlLoader.getController();
-		controller.setCurrentName(currentName);
-		controller.setWorkSpaceController(this);
-		Scene rateScene = new Scene(rateSceneParent);
-		Stage rateStage = new Stage();
-		rateStage.setScene(rateScene);
-
-		//Disable the background window when the rate stage is displayed.
-		rateStage.initModality(Modality.WINDOW_MODAL);
-		rateStage.initOwner(((Node)event.getSource()).getScene().getWindow() );
-		rateStage.show();
+	public void rateButtonClicked() {
+		UIManager.openStage("fxmlFiles/RateScreen.fxml");
 	}
 
 	/*
@@ -334,94 +331,27 @@ public class WorkspaceController implements Initializable, PlayController {
 	 * This method handles when the user wants to record their own recording.
 	 */
 	@FXML
-	public void recordButtonClicked(ActionEvent event) {
-		try {
-			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("fxmlFiles/RecordScreen.fxml"));
-			Parent recordSceneParent = fxmlLoader.load();
-			RecordController controller = fxmlLoader.getController();
-			DemoRecording currentDatabaseRecording = listOfRecordings.getRecording(dataListView.getSelectionModel().getSelectedItem());
-			controller.passInformation(currentDatabaseRecording, this, volume);
-			Scene recordScene = new Scene(recordSceneParent);
-			Stage recordStage = new Stage();
-			recordStage.setScene(recordScene);
-
-			//Disable the background window when the record stage is displayed.
-			recordStage.initModality(Modality.WINDOW_MODAL);
-			recordStage.initOwner(((Node)event.getSource()).getScene().getWindow() );
-
-			recordStage.show();
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	public void recordButtonClicked() {
+		UIManager.openStage("fxmlFiles/RecordScreen.fxml");
 	}
 
 	/*
 	 * This method is invoked when the user wants to save a playlist.
 	 */
 	@FXML
-	public void saveButtonClicked(ActionEvent event) {
-		playlistNum = 0;
-		playlistCount();
-		if(playlistNum < 6) {
-			try {
-				FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("fxmlFiles/SaveScreen.fxml"));
-				Parent rateSceneParent = fxmlLoader.load();
-				SaveScreenController controller = fxmlLoader.getController();
-				controller.setRecordingList(listOfRecordings);
-				controller.setButton(saveButton);
-				Scene rateScene = new Scene(rateSceneParent);
-				Stage rateStage = new Stage();
-				rateStage.setScene(rateScene);
-
-				//Disable the background window when the rate stage is displayed.
-				rateStage.initModality(Modality.WINDOW_MODAL);
-				rateStage.initOwner(((Node)event.getSource()).getScene().getWindow() );
-				rateStage.show();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}else {
-			try {
-				FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("fxmlFiles/ReplacePlaylist.fxml"));
-				Parent deleteSceneParent = fxmlLoader.load();
-				DeletePlaylistController controller = fxmlLoader.getController();
-				controller.setRecordingList(listOfRecordings);
-				controller.setButton(saveButton);
-				Scene deleteScene = new Scene(deleteSceneParent);
-				Stage deleteStage = new Stage();
-				deleteStage.setScene(deleteScene);
-
-				//Disable the background window when the rate stage is displayed.
-				deleteStage.initModality(Modality.WINDOW_MODAL);
-				deleteStage.initOwner(((Node)event.getSource()).getScene().getWindow() );
-				deleteStage.show();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+	public void saveButtonClicked() {
+		if(playlistCount() < 6) {
+			UIManager.openStage("fxmlFiles/SaveScreen.fxml");
+		} else {
+			UIManager.openStage("fxmlFiles/ReplacePlaylist.fxml");
 		}
 
 	}
 
 	@FXML
-	private void playLoop(ActionEvent event) {
+	private void playLoop() {
 		if (!ownListView.getItems().isEmpty()) {
-			try {
-				FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("fxmlFiles/LoopScene.fxml"));
-				Parent loopParent = fxmlLoader.load();
-				LoopSceneController controller = fxmlLoader.getController();
-				controller.passRecording(listOfRecordings.getRecording(dataListView.getSelectionModel().getSelectedItem()), volume);
-				Scene loopScene = new Scene(loopParent);
-				Stage loopStage = new Stage();
-				loopStage.setScene(loopScene);
-
-				//Disable the background window when the rate stage is displayed.
-				loopStage.initModality(Modality.WINDOW_MODAL);
-				loopStage.initOwner(((Node) event.getSource()).getScene().getWindow());
-				loopStage.show();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			UIManager.openStage("fxmlFiles/LoopScene.fxml");
 		} else {
 			Alert alert = new Alert(AlertType.ERROR);
 			alert.setTitle("No Personal Recordings");
@@ -464,30 +394,11 @@ public class WorkspaceController implements Initializable, PlayController {
 	}
 
 	private void transitionToStart() {
-		try {
-			Stage stage = (Stage) returnButton.getScene().getWindow();
-			Parent createScene = FXMLLoader.load(getClass().getResource("fxmlFiles/StartMenu.fxml"));
-			stage.setScene(new Scene(createScene));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		UIManager.changeScenes("fxmlFiles/StartMenu.fxml");
 	}
 
-	/*
-	 *
-	 */
-	public void setWorkspaceRecordingsAndController(DatabaseList recordings, ObservableList<String> recordingNames) {
-		dataList = recordingNames;
-		dataListView.setItems(dataList);
-		listOfRecordings = recordings;
-
-		dataListView.scrollTo(currentIndex);
-		dataListView.getSelectionModel().select(currentIndex);
-		String currentName = dataListView.getSelectionModel().getSelectedItem();
-		recordingNameLabel.setText(currentName);
-	}
-
-	private void playlistCount() {
+	private int playlistCount() {
+		int playlistNum = 0;
 		File folder = new File("Resources/Playlists/");
 		File[] listOfFiles = folder.listFiles();
 		for(File file : listOfFiles) {
@@ -495,140 +406,23 @@ public class WorkspaceController implements Initializable, PlayController {
 				playlistNum ++;
 			}
 		}
-	}
-
-	/*
-	 * This method writes the rating for a recording to a file.
-	 */
-	public void setRating(String currentName) {
-		File file = new File("./Resources/Review" + currentName + ".txt");
-		if (file.exists()) {
-			int[] ratingArray = new int[2];
-			Scanner scanner = null;
-			int count = 0;
-			try {
-				scanner = new Scanner(file);
-				while (scanner.hasNextLine()) {
-					ratingArray[count] = Integer.parseInt(scanner.nextLine());
-					count++;
-				}
-
-				//Calculates the average score of the recording by adding the ratings and
-				//dividing by the total number of reviews.
-				int ratingSum = ratingArray[0];
-				double averageRating = (double) ratingSum / (ratingArray[1]);
-				updateRating(averageRating, currentName);
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			}
-		} else {
-			updateRating(-1, currentName);
-		}
+		return playlistNum;
 	}
 
 	/*
 	 * This method updates the rating on the UI.
 	 */
-	public void updateRating(double rating, String name) {
-
+	public void refreshRating() {
+		double rating = listOfRecordings.getRecording(dataListView.getSelectionModel().getSelectedItem()).getRating();
 		//If the rating is above 2.5, print the rating normally.
 		if (rating > 2.5) {
 			ratingLabel.setText(String.format("Average Rating: %.2f", rating));
-			if (isBadRecording(name)) {
-				removeFromBadFile(name);
-			}
 		}
 		//If the rating is below or equal to 2.5, add a bad quality warning to warn the user.
 		else if (rating >= 0) {
 			ratingLabel.setText(String.format("Average Rating: %.2f *Poor Quality*", rating));
-			if (!isBadRecording(name)) {
-				addToBadFile(name);
-			}
 		} else {
-			if (isBadRecording(name)) {
-				removeFromBadFile(name);
-			}
 			ratingLabel.setText("Not Yet Rated");
 		}
-	}
-
-	/*
-	 * This method removes the name of a recording from the 'bad recording' list once it's
-	 * rating exceeds 2.5.
-	 */
-	public void removeFromBadFile(String name) {
-
-		File tmpFile = new File("./Resources/Reviewtemp.txt");
-		File file = new File("./Resources/ReviewBadRecordings.txt");
-		try {
-			BufferedReader reader = new BufferedReader(new FileReader(file));
-			BufferedWriter writer = new BufferedWriter(new FileWriter(tmpFile));
-
-			String lineToRemove = name;
-			String currentLine;
-
-			while((currentLine = reader.readLine()) != null) {
-				String trimmedLine = currentLine.trim();
-				if(trimmedLine.equals(lineToRemove)) continue;
-				writer.write(currentLine + System.getProperty("line.separator"));
-			}
-			writer.close();
-			reader.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	/*
-	 * This method adds the name of the recording to the bad recording list once its rating falls
-	 * below 2.5
-	 */
-	public void addToBadFile(String name) {
-		File file = new File("./Resources/ReviewBadRecordings.txt");
-
-		//Append the given name to the BadRecordings file.
-		if (file.exists()) {
-			try {
-				Writer output;
-				output = new BufferedWriter(new FileWriter(file, true));
-				output.append(name);
-				((BufferedWriter) output).newLine();
-				output.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		} else {
-			try {
-				PrintWriter writer = new PrintWriter(file);
-				writer.println(name);
-				writer.close();
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-
-	/*
-	 * This method checks if the recording of the name passed is in the BadRecordings file.
-	 */
-	public Boolean isBadRecording(String name) {
-		File file = new File("./Resources/ReviewBadRecordings.txt");
-
-		//Scans the file line by line to check if the given name is in the file.
-		if (file.exists()) {
-			try {
-				Scanner scanner = new Scanner(file);
-				while (scanner.hasNextLine()) {
-					if (scanner.nextLine().contains(name)) {
-						return true;
-					}
-				}
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			}
-		} else {
-			return false;
-		}
-		return false;
 	}
 }

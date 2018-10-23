@@ -8,7 +8,7 @@ public class PersonalRecording extends Recording {
     public PersonalRecording(String name, String path) {
         String subString = name.substring(name.lastIndexOf("_") + 1);
         shortName = subString.replaceAll(".wav", "");
-        fileName = name;
+        fileName = name.replaceAll(" ", "");
         this.path = path;
     }
 }

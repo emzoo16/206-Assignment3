@@ -1,5 +1,6 @@
 package namesayer.fxmlControllers;
 
+import com.sun.corba.se.spi.orbutil.threadpool.Work;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
@@ -7,30 +8,26 @@ import javafx.collections.*;
 import javafx.collections.transformation.FilteredList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.CheckBoxListCell;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.event.ActionEvent;
 import namesayer.helperClasses.DatabaseList;
+import namesayer.helperClasses.UIManager;
+import namesayer.helperClasses.WorkspaceModel;
 import namesayer.interfaces.ConcatenatedRecordingLoader;
+import namesayer.interfaces.ParentStageController;
 import namesayer.recordingTypes.ConcatenatedRecording;
 import namesayer.recordingTypes.DemoRecording;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 
-public class PlaylistCreatorController implements Initializable, ConcatenatedRecordingLoader {
+public class PlaylistCreatorController implements Initializable, ConcatenatedRecordingLoader, ParentStageController {
     @FXML
     private Button returnButton;
     @FXML
@@ -56,18 +53,14 @@ public class PlaylistCreatorController implements Initializable, ConcatenatedRec
 
     private static final int SEARCHVIEW_CELL_HEIGHT = 24;
 
+    private WorkspaceModel model;
+
     /**
      * Invoked when returnButton is pressed
      */
     @FXML
     private void returnToPlaylist() {
-        try {
-            Stage stage = (Stage) returnButton.getScene().getWindow();
-            Parent createScene = FXMLLoader.load(getClass().getResource("fxmlFiles/PlaylistScreen.fxml"));
-            stage.setScene(new Scene(createScene));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        UIManager.changeScenes("fxmlFiles/PlaylistScreen.fxml");
     }
 
     /**
@@ -158,22 +151,8 @@ public class PlaylistCreatorController implements Initializable, ConcatenatedRec
      */
     @FXML
     private void viewDatabase(ActionEvent event) {
-        try {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("fxmlFiles/DatabaseView.fxml"));
-            Parent databaseParent = fxmlLoader.load();
-            DatabaseViewController controller = fxmlLoader.getController();
-            controller.setPlaylistCreatorController(this);
-            Stage databaseStage = new Stage();
-            Scene databaseViewScene = new Scene(databaseParent);
-            databaseStage.setScene(databaseViewScene);
-
-            //Disable the background window when the rate stage is displayed.
-            databaseStage.initModality(Modality.WINDOW_MODAL);
-            databaseStage.initOwner(((Node) event.getSource()).getScene().getWindow());
-            databaseStage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        model.setStageController(this);
+        UIManager.openStage("fxmlFiles/DatabaseView.fxml");
     }
 
     /**
@@ -194,22 +173,15 @@ public class PlaylistCreatorController implements Initializable, ConcatenatedRec
     @FXML
     private void continueToWorkspace() {
         if (!playlist.getRecordingNames().isEmpty()) {
-            try {
-                FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("fxmlFiles/Workspace.fxml"));
-                Parent createScene = fxmlLoader.load();
-                WorkspaceController controller = fxmlLoader.getController();
-                if (randomiseBox.isSelected()) {
-                    ObservableList<String> randomisedList = playlist.getRecordingNames();
-                    Collections.shuffle(randomisedList);
-                    controller.setWorkspaceRecordingsAndController(playlist, randomisedList);
-                } else {
-                    controller.setWorkspaceRecordingsAndController(playlist, playlist.getRecordingNames());
-                }
-                Stage stage = (Stage) continueButton.getScene().getWindow();
-                stage.setScene(new Scene(createScene));
-            } catch (IOException e) {
-                e.printStackTrace();
+            WorkspaceModel.getInstance().setCurrentWorkspaceRecordings(playlist);
+            if (randomiseBox.isSelected()) {
+                ObservableList<String> randomisedList = playlist.getRecordingNames();
+                Collections.shuffle(randomisedList);
+                WorkspaceModel.getInstance().setCurrentRecordingsDisplay(randomisedList);
+            } else {
+                WorkspaceModel.getInstance().setCurrentRecordingsDisplay(playlist.getRecordingNames());
             }
+            UIManager.changeScenes("fxmlFiles/Workspace.fxml");
         } else {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Invalid WorkSpace");
@@ -220,13 +192,14 @@ public class PlaylistCreatorController implements Initializable, ConcatenatedRec
         }
     }
 
-    public void addPlaylistRecordings(DatabaseList list) {
-        List<String> keptRecordings = list.getRecordingNames();
-        for (String recordingName : keptRecordings) {
-            playlist.add(list.getRecording(recordingName));
-        }
-        selectedItems.clear();
-        listView.setItems(playlist.getRecordingNames());
+    public void concatenationComplete() {
+        playlist = model.getCurrentWorkspaceRecordings();
+        listView.setItems(model.getCurrentRecordingsDisplay());
+    }
+
+    public void stageHasClosed() {
+        playlist = model.getCurrentWorkspaceRecordings();
+        listView.setItems(model.getCurrentRecordingsDisplay());
     }
 
     /**
@@ -236,6 +209,8 @@ public class PlaylistCreatorController implements Initializable, ConcatenatedRec
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        model = WorkspaceModel.getInstance();
+        model.setLoadingController(this);
 
         //Set tooltip hints for user.
         inputField.setTooltip(new Tooltip("Type a name you want to \nadd to the playlist"));
@@ -266,7 +241,7 @@ public class PlaylistCreatorController implements Initializable, ConcatenatedRec
         setupShortcuts();
 
         selectedItems = FXCollections.observableSet();
-        playlist = new DatabaseList();
+        playlist = model.getCurrentWorkspaceRecordings();
         listView.setItems(playlist.getRecordingNames());
         listView.setCellFactory(CheckBoxListCell.forListView(new Callback<String, ObservableValue<Boolean>>() {
             @Override

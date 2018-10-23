@@ -1,5 +1,6 @@
 package namesayer.fxmlControllers;
 
+import com.sun.corba.se.spi.orbutil.threadpool.Work;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -8,6 +9,7 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
+import namesayer.helperClasses.WorkspaceModel;
 import namesayer.interfaces.PlayController;
 import namesayer.recordingTypes.DemoRecording;
 import namesayer.recordingTypes.PersonalRecording;
@@ -62,11 +64,14 @@ public class RecordController implements Initializable, PlayController {
 
     Clip clip;
 
+    WorkspaceModel model;
+
     private static final String STOP_IMAGE = "namesayer/imageResources/icons8-stop-filled-100.png";
     private static final String PLAY_IMAGE = "namesayer/imageResources/icons8-play-filled-100.png";
    
 
     /*
+     * This method is invoked when the user chooses not to keep their recording and retry.
      * This method is invoked when the user chooses not to keep their recording and retry.
      * The UI is set up again for recording.
      */
@@ -92,7 +97,7 @@ public class RecordController implements Initializable, PlayController {
         running = true;
 
         //Record the audio from a dataline.
-        AudioFormat format =  new AudioFormat(8000, 8, 1, true, true);
+        AudioFormat format =  new AudioFormat(44000, 8, 1, true, true);
         try {
             //Initializing and opening the dataline.
             DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
@@ -111,7 +116,7 @@ public class RecordController implements Initializable, PlayController {
                     AudioInputStream inputStream = new AudioInputStream(line);
 
                     //New file audio will be saved in.
-                    File audioFile = new File("./audio.wav");
+                    File audioFile = new File("./Resources/audio.wav");
 
                     //Write the input from the microphone to a file named 'audioFile'.
                     while(running) {
@@ -155,7 +160,7 @@ public class RecordController implements Initializable, PlayController {
         } else {
             try {
                 //Gets the URL for the temporary recording.
-                URL url = Paths.get("audio.wav").toUri().toURL();
+                URL url = Paths.get("Resources/audio.wav").toUri().toURL();
 
                 AudioInputStream stream = AudioSystem.getAudioInputStream(url);
                 DataLine.Info info = new DataLine.Info(Clip.class, stream.getFormat());
@@ -203,24 +208,24 @@ public class RecordController implements Initializable, PlayController {
         String recordingFileName = databaseRecordingName.substring(0, databaseRecordingName.lastIndexOf("."));
         String version = "";
         String shortName = databaseRecording.getShortName();
-        if (shortName.contains("(")) {
-            version = shortName.substring(shortName.indexOf("("), shortName.lastIndexOf(")") + 1);
-        }
         if (shortName.contains(" ")) {
-            recording = new PersonalRecording(recordingFileName + version + "-" + (recordingNumber) + ".wav", "Resources/ConcatenatedPersonalRecordings/");
+            recording = new PersonalRecording(shortName + "-" + (recordingNumber) + ".wav", "Resources/ConcatenatedPersonalRecordings/");
             databaseRecording.addAttempt(recording);
-            File originalFile = new File("audio.wav");
+            File originalFile = new File("Resources/audio.wav");
             File newFile = new File("Resources/ConcatenatedPersonalRecordings/" + recording.getFileName());
             originalFile.renameTo(newFile);
         } else {
+            if (shortName.contains("(")) {
+                version = shortName.substring(shortName.indexOf("("), shortName.lastIndexOf(")") + 1);
+            }
             recording = new PersonalRecording(recordingFileName + version + "-" + (recordingNumber) + ".wav", "Resources/PersonalRecordings/");
             databaseRecording.addAttempt(recording);
-            File originalFile = new File("audio.wav");
+            File originalFile = new File("Resources/audio.wav");
             File newFile = new File("Resources/PersonalRecordings/" + recording.getFileName());
             originalFile.renameTo(newFile);
 
         }
-        parentController.refreshPersonalRecordings(databaseRecording.getShortName());
+        model.notifyOfStageClose();
         Stage currentStage = (Stage) returnButton.getScene().getWindow();
         currentStage.close();
     }
@@ -274,16 +279,9 @@ public class RecordController implements Initializable, PlayController {
         keepButton.setVisible(true);
         demoButton.setVisible(true);
         stopButton.setVisible(false);    
-        }
-
-    /*
-     * Passes information between recordController and WorkspaceController
-     */
-    public void passInformation(DemoRecording databaseRecording, WorkspaceController controller, Double volume) {
-        this.databaseRecording = databaseRecording;
-        parentController = controller;
-        this.volume = volume;
     }
+
+
 
     private void addClipListener(Clip currentClip) {
         currentClip.addLineListener(new LineListener() {
@@ -299,6 +297,9 @@ public class RecordController implements Initializable, PlayController {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         setComponentsForRecording();
+        model = WorkspaceModel.getInstance();
+        this.databaseRecording = model.getCurrentDemoRecording();
+        this.volume = model.getVolume();
     }
 
     @Override

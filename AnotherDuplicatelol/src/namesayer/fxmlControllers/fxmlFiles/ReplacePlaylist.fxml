@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="350.0" prefWidth="400.0" stylesheets="@../../css/default.css" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="namesayer.fxmlControllers.DeletePlaylistController">
+<AnchorPane prefHeight="350.0" prefWidth="400.0" stylesheets="@../../css/default.css" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="namesayer.fxmlControllers.ReplacePlaylistController">
     <children>
         <Label alignment="CENTER" prefHeight="50.0" prefWidth="400.0" styleClass="scene-header" text="Playlist limit reached">
             <font>

@@ -19,9 +19,7 @@ public class PlaylistLoader {
     private Stage stage;
     private UploadController controller;
 
-    public PlaylistLoader(Stage stage, UploadController controller) {
-        this.stage = stage;
-        this.controller = controller;
+    public PlaylistLoader() {
     }
 
     /*
@@ -65,7 +63,7 @@ public class PlaylistLoader {
                 if (notFoundDisplay.isEmpty() == false && controller != null) {
                     // != to null is because only the upload screen will show the incorrect names (playlist screen isn't
                     // suppose to have incorrect names)
-                    controller.showUploadWarning(notFoundDisplay);
+                    WorkspaceModel.getInstance().setNotFoundNames(notFoundDisplay);
                 }
 
                 return namesList;

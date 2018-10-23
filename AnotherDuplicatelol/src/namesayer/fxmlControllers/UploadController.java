@@ -1,23 +1,20 @@
 package namesayer.fxmlControllers;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.FileChooser;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
+import namesayer.helperClasses.WorkspaceModel;
 import namesayer.helperClasses.DatabaseList;
 import namesayer.helperClasses.PlaylistLoader;
+import namesayer.helperClasses.UIManager;
 import namesayer.interfaces.ConcatenatedRecordingLoader;
 import namesayer.recordingTypes.ConcatenatedRecording;
 import namesayer.recordingTypes.DemoRecording;
@@ -57,6 +54,7 @@ public class UploadController implements Initializable, ConcatenatedRecordingLoa
 	//List of recording objects to be passed to the workspaceController.
 	DatabaseList workspaceRecordings;
 
+	WorkspaceModel model;
 	//Concatenated recordings are created using multithreading which can cause issues if the user quickly moves to the
 	//next scene. In order to alleviate this we keep this number of names to load and once the number of names in the
 	//list matches this number the continue/upload button is re-enabled.
@@ -64,6 +62,8 @@ public class UploadController implements Initializable, ConcatenatedRecordingLoa
 	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+		model = WorkspaceModel.getInstance();
+		model.setLoadingController(this);
 		namesToLoad = 0;
 		loadingIndicator.setVisible(false);
 		workspaceRecordings = new DatabaseList();
@@ -78,14 +78,7 @@ public class UploadController implements Initializable, ConcatenatedRecordingLoa
 	 */
 	@FXML
 	public void backButtonClicked() {
-		try {
-			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("fxmlFiles/PlaylistScreen.fxml"));
-			Parent playlistScene = fxmlLoader.load();
-			Stage stage = (Stage) backButton.getScene().getWindow();
-			stage.setScene(new Scene(playlistScene));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		UIManager.changeScenes("fxmlFiles/PlaylistScreen.fxml");
 	}
 
 	/*
@@ -101,25 +94,16 @@ public class UploadController implements Initializable, ConcatenatedRecordingLoa
 			alert.setContentText("Please load a name before continuing.");
 			alert.showAndWait();
 		}else {
-			try {
-				FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("fxmlFiles/Workspace.fxml"));
-				Parent playlistScene = fxmlLoader.load();
-				WorkspaceController controller = fxmlLoader.getController();
-				//Passing the selected recordings to the workspace so they can be shown in the listviews in the
-				//workspace.
-				if (randomiseBox.isSelected()) {
-					ObservableList<String> randomisedList = workspaceRecordings.getRecordingNames();
-					Collections.shuffle(randomisedList);
-					controller.setWorkspaceRecordingsAndController(workspaceRecordings, randomisedList);
-				} else {
-					controller.setWorkspaceRecordingsAndController(workspaceRecordings, workspaceRecordings.getRecordingNames());
-				}
-				
-				Stage stage = (Stage) continueButton.getScene().getWindow();
-				stage.setScene(new Scene(playlistScene));
-			} catch (IOException e) {
-				e.printStackTrace();
+			WorkspaceModel model = WorkspaceModel.getInstance();
+			model.setCurrentWorkspaceRecordings(workspaceRecordings);
+			if (randomiseBox.isSelected()) {
+				ObservableList<String> randomisedList = workspaceRecordings.getRecordingNames();
+				Collections.shuffle(randomisedList);
+				model.setCurrentRecordingsDisplay(randomisedList);
+			} else {
+				model.setCurrentRecordingsDisplay(workspaceRecordings.getRecordingNames());
 			}
+			UIManager.changeScenes("fxmlFiles/Workspace.fxml");
 		}
 	}
 
@@ -173,9 +157,12 @@ public class UploadController implements Initializable, ConcatenatedRecordingLoa
 	 * added to the list to be played.
 	 */
 	public void scanFile() {
-		PlaylistLoader loader = new PlaylistLoader((Stage) uploadButton.getScene().getWindow(), this);
+		PlaylistLoader loader = new PlaylistLoader();
 		List<String> names = loader.loadPlaylist(currentFile);
 		addNames(names);
+		model.addToCurrentWorkspaceRecordings(workspaceRecordings);
+		System.out.println(namesToLoad);
+		System.out.println(workspaceRecordings.getRecordingNames().size());
 		if (workspaceRecordings.getRecordingNames().size() == namesToLoad) {
 			namesToLoad = 0;
 			nameListView.setItems(workspaceRecordings.getRecordingNames());
@@ -223,42 +210,19 @@ public class UploadController implements Initializable, ConcatenatedRecordingLoa
 		}
 	}
 
-	public void showUploadWarning(List<String> notFoundDisplay) {
-		try {
-			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("fxmlFiles/UploadWarning.fxml"));
-			Parent warningSceneParent = fxmlLoader.load();
-			Scene warningScene = new Scene(warningSceneParent);
-
-			//Getting the instance of the warning controller and passing the list of names that aren't in the database
-			UploadWarningController controller = fxmlLoader.getController();
-			controller.setNotFoundList(notFoundDisplay);
-
-			Stage warningStage = new Stage();
-			warningStage.setScene(warningScene);
-
-			//Disable the background window when the warning stage is displayed.
-			warningStage.initModality(Modality.WINDOW_MODAL);
-			warningStage.initOwner(uploadButton.getScene().getWindow());
-
-			warningStage.show();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
+	public void showUploadWarning() {
+		UIManager.openStage("fxmlFiles/UploadWarning.fxml");
 	}
 
-	public void addPlaylistRecordings(DatabaseList list) {
-		List<String> concatenatedRecording = list.getRecordingNames();
-		for (String recordingName : concatenatedRecording) {
-			workspaceRecordings.add(list.getRecording(recordingName));
-		}
-		if (workspaceRecordings.getRecordingNames().size() == namesToLoad) {
+	public void concatenationComplete() {
+		System.out.println(model.getCurrentWorkspaceRecordings().getRecordingNames().size());
+		if (model.getCurrentWorkspaceRecordings().getRecordingNames().size() == namesToLoad) {
+			workspaceRecordings = model.getCurrentWorkspaceRecordings();
 			namesToLoad = 0;
 			nameListView.setItems(workspaceRecordings.getRecordingNames());
 			continueButton.setDisable(false);
 			uploadButton.setDisable(false);
 			loadingIndicator.setVisible(false);
 		}
-
 	}
 }

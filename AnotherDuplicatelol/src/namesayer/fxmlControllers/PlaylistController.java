@@ -1,23 +1,22 @@
 package namesayer.fxmlControllers;
 
 import java.io.File;
-import java.io.IOException;
 
 import java.net.URL;
 import java.util.*;
 
+import com.sun.corba.se.spi.orbutil.threadpool.Work;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
 import namesayer.helperClasses.PlaylistLoader;
 import namesayer.helperClasses.DatabaseList;
+import namesayer.helperClasses.UIManager;
+import namesayer.helperClasses.WorkspaceModel;
 import namesayer.interfaces.ConcatenatedRecordingLoader;
 import namesayer.recordingTypes.ConcatenatedRecording;
 import namesayer.recordingTypes.DemoRecording;
@@ -92,10 +91,15 @@ public class PlaylistController implements Initializable, ConcatenatedRecordingL
 
 	private boolean hasConcatenated;
 
+	private WorkspaceModel model;
+
 
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+		model = WorkspaceModel.getInstance();
+		model.setLoadingController(this);
+		model.setCurrentWorkspaceRecordings(new DatabaseList());
 
 		loadingIndicator.setVisible(false);
 
@@ -222,35 +226,25 @@ public class PlaylistController implements Initializable, ConcatenatedRecordingL
 		currentPlaylistFile = new File("Resources/Playlists/"+playlist);
 
 		//Create a playlist loader to scan and upload the names in the playlist.
-		PlaylistLoader loader = new PlaylistLoader((Stage) uploadButton.getScene().getWindow(), null);
+		PlaylistLoader loader = new PlaylistLoader();
 		List<String> names = loader.loadPlaylist(currentPlaylistFile);
 		addNames(names);
+		model.addToCurrentWorkspaceRecordings(workspaceRecordings);
 		if (!hasConcatenated) {
 			moveToWorkspace();
 		}
 	}
 
 	private void moveToWorkspace() {
-		try {
-			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("fxmlFiles/Workspace.fxml"));
-			Parent playlistScene = fxmlLoader.load();
-			WorkspaceController controller = fxmlLoader.getController();
-
-			//Passing the selected recordings to the workspace so they can be shown in the listviews in the
-			//workspace.
-			if (randomiseBox.isSelected()) {
-				ObservableList<String> randomisedList = workspaceRecordings.getRecordingNames();
-				Collections.shuffle(randomisedList);
-				controller.setWorkspaceRecordingsAndController(workspaceRecordings, randomisedList);
-			} else {
-				controller.setWorkspaceRecordingsAndController(workspaceRecordings, workspaceRecordings.getRecordingNames());
-			}
-
-			Stage stage = (Stage) playlist1.getScene().getWindow();
-			stage.setScene(new Scene(playlistScene));
-		} catch (IOException e) {
-			e.printStackTrace();
+		WorkspaceModel.getInstance().setCurrentWorkspaceRecordings(workspaceRecordings);
+		if (randomiseBox.isSelected()) {
+			ObservableList<String> randomisedList = workspaceRecordings.getRecordingNames();
+			Collections.shuffle(randomisedList);
+			WorkspaceModel.getInstance().setCurrentRecordingsDisplay(randomisedList);
+		} else {
+			WorkspaceModel.getInstance().setCurrentRecordingsDisplay(workspaceRecordings.getRecordingNames());
 		}
+		UIManager.changeScenes("fxmlFiles/Workspace.fxml");
 	}
 
 	/*
@@ -259,15 +253,7 @@ public class PlaylistController implements Initializable, ConcatenatedRecordingL
 	 */
 	@FXML
 	public void uploadButtonClicked() {
-		try {
-			Stage stage = (Stage) practiceButton.getScene().getWindow();
-			Parent createScene = FXMLLoader.load(getClass().getResource("fxmlFiles/UploadScreen.fxml"));
-			stage.setScene(new Scene(createScene));
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
+		UIManager.changeScenes("fxmlFiles/UploadScreen.fxml");
 	}
 
 	/*
@@ -275,15 +261,7 @@ public class PlaylistController implements Initializable, ConcatenatedRecordingL
 	 */
 	@FXML
 	public void practiceButtonClicked() {
-		try {
-			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("fxmlFiles/PlaylistCreator.fxml"));
-			Parent playlistScene = fxmlLoader.load();
-			Stage stage = (Stage) practiceButton.getScene().getWindow();
-			stage.setScene(new Scene(playlistScene));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
+		UIManager.changeScenes("fxmlFiles/PlaylistCreator.fxml");
 	}
 
 	/*
@@ -291,31 +269,7 @@ public class PlaylistController implements Initializable, ConcatenatedRecordingL
 	 */
 	@FXML
 	public void backButtonClicked() {
-		try {
-			Stage stage = (Stage) backButton.getScene().getWindow();
-			Parent createScene = FXMLLoader.load(getClass().getResource("fxmlFiles/StartMenu.fxml"));
-			stage.setScene(new Scene(createScene));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	/*
-	 * Set all playlist related buttons invisible.
-	 */
-	public void setButtons() {
-
-		//Start off with a clean slate by making all buttons invisible.
-		for (int i=0; i<6; i++){
-			playlistButtons.get(i).setVisible(false);
-			deleteButtons.get(i).setVisible(false);
-		}
-		//Make the buttons visible and set the text to the corresponding name.
-		for (int i=0; i<playlistNum; i++){
-			playlistButtons.get(i).setVisible(true);
-			playlistButtons.get(i).setText(playlistNames.get(i));
-			deleteButtons.get(i).setVisible(true);
-		}
+		UIManager.changeScenes("fxmlFiles/StartMenu.fxml");
 	}
 
 	/*
@@ -356,11 +310,8 @@ public class PlaylistController implements Initializable, ConcatenatedRecordingL
 	}
 
 	@Override
-	public void addPlaylistRecordings(DatabaseList list) {
-		List<String> concatenatedRecording = list.getRecordingNames();
-		for (String recordingName : concatenatedRecording) {
-			workspaceRecordings.add(list.getRecording(recordingName));
-		}
+	public void concatenationComplete() {
+		workspaceRecordings = model.getCurrentWorkspaceRecordings();
 		if (workspaceRecordings.getRecordingNames().size() == namesToLoad) {
 			moveToWorkspace();
 		}

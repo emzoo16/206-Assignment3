@@ -6,6 +6,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import namesayer.helperClasses.WorkspaceModel;
+import namesayer.helperClasses.UIManager;
 
 import java.io.File;
 
@@ -43,6 +45,10 @@ public class Main extends Application {
         if (!file5.exists()) {
             file5.mkdirs();
         }
+
+        WorkspaceModel model = WorkspaceModel.getInstance();
+        model.setPrimaryStage(primaryStage);
+        UIManager.setPrimaryStage(primaryStage);
 
         Parent root = FXMLLoader.load(getClass().getResource("fxmlFiles/StartMenu.fxml"));
         primaryStage.setTitle("Name Sayer");

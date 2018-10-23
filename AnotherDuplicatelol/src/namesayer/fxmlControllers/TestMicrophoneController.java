@@ -13,14 +13,11 @@ import javax.sound.sampled.TargetDataLine;
 
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
-import javafx.stage.Stage;
+import namesayer.helperClasses.UIManager;
 
 public class TestMicrophoneController implements Initializable{
 
@@ -61,13 +58,7 @@ public class TestMicrophoneController implements Initializable{
 	 */
 	@FXML
 	public void backButtonClicked() {
-		try {
-			Stage stage = (Stage) backButton.getScene().getWindow();
-			Parent createScene = FXMLLoader.load(getClass().getResource("fxmlFiles/StartMenu.fxml"));
-			stage.setScene(new Scene(createScene));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		UIManager.changeScenes("fxmlFiles/StartMenu.fxml");
 	}
 
 	/*
