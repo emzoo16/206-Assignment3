@@ -1,6 +1,5 @@
 package namesayer.fxmlControllers;
 
-import com.sun.corba.se.spi.orbutil.threadpool.Work;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -27,44 +26,44 @@ public class RecordController implements Initializable, PlayController {
 	
 	
 	@FXML
-    private Button stopButton;
+	Button stopButton;
 	@FXML
-    private Label statusLabel;
+	Label statusLabel;
     @FXML
-    private Button recordButton;
+    Button recordButton;
     @FXML
-    private Button redoButton;
+    Button redoButton;
     @FXML
-    private Button playButton;
+    Button playButton;
     @FXML
-    private Button keepButton;
+    Button keepButton;
     @FXML
-    private Button returnButton;
+    Button returnButton;
     @FXML
-    private Button demoButton;
+    Button demoButton;
     @FXML
-    private Label instructionLabel;
+    Label instructionLabel;
     @FXML
-    private ImageView playOrStopImage;
+    ImageView playOrStopImage;
 
     //Controls the recording process. Starts/stops recording
-    private Boolean running;
+    Boolean running;
     
     //Stores the current chosen volume.
-    private Double volume;
+    Double volume;
 
     //Recording objects 
-    private PersonalRecording recording;
-    private DemoRecording databaseRecording;
+    PersonalRecording recording;
+    DemoRecording databaseRecording;
 
     //Reference to the workspace controller
-    private WorkspaceController parentController;
+    WorkspaceController parentController;
+    
+    TargetDataLine line;
 
-    private TargetDataLine line;
+    Clip clip;
 
-    private Clip clip;
-
-    private WorkspaceModel model;
+    WorkspaceModel model;
 
     private static final String STOP_IMAGE = "namesayer/imageResources/icons8-stop-filled-100.png";
     private static final String PLAY_IMAGE = "namesayer/imageResources/icons8-play-filled-100.png";
@@ -141,7 +140,7 @@ public class RecordController implements Initializable, PlayController {
      * This method is invoked when the user wants to stop their recording.
      */
     @FXML
-    private void stopButtonClicked() {
+    public void stopButtonClicked() {
     	running = false;
         line.stop();
         line.close();
@@ -203,26 +202,21 @@ public class RecordController implements Initializable, PlayController {
     @FXML
     private void keepRecording() {
         stopAllPlaying();
-        //Builds the fileName for the new personal recording
         String databaseRecordingName = databaseRecording.getFileName();
         int recordingNumber = databaseRecording.getUnusedAttemptsNumber();
         String recordingFileName = databaseRecordingName.substring(0, databaseRecordingName.lastIndexOf("."));
         String version = "";
         String shortName = databaseRecording.getShortName();
-        //If it is a concatenated name
         if (shortName.contains(" ")) {
-            //Changes the temp audio.wav file to the new file name and creates the personal recording
             recording = new PersonalRecording(shortName + "-" + (recordingNumber) + ".wav", "Resources/ConcatenatedPersonalRecordings/");
             databaseRecording.addAttempt(recording);
             File originalFile = new File("Resources/audio.wav");
             File newFile = new File("Resources/ConcatenatedPersonalRecordings/" + recording.getFileName());
             originalFile.renameTo(newFile);
-        } else { //If it is a single length name
-            //Gets the version of the recording
+        } else {
             if (shortName.contains("(")) {
                 version = shortName.substring(shortName.indexOf("("), shortName.lastIndexOf(")") + 1);
             }
-            //Chenges the temp audio.wav file to the new file name and creates the personal recording
             recording = new PersonalRecording(recordingFileName + version + "-" + (recordingNumber) + ".wav", "Resources/PersonalRecordings/");
             databaseRecording.addAttempt(recording);
             File originalFile = new File("Resources/audio.wav");
@@ -230,14 +224,13 @@ public class RecordController implements Initializable, PlayController {
             originalFile.renameTo(newFile);
 
         }
-        //Allows the workspace to update
         model.notifyOfStageClose();
         Stage currentStage = (Stage) returnButton.getScene().getWindow();
         currentStage.close();
     }
 
     /**
-     * Stops both recordings from playing, this method is invoked when the stage is closed
+     *
      */
     private void stopAllPlaying() {
         if (clip != null && clip.isActive()) {
@@ -288,10 +281,7 @@ public class RecordController implements Initializable, PlayController {
     }
 
 
-    /**
-     * This checks the clip that is playing has finished and updates the button icon accordingly
-     * @param currentClip
-     */
+
     private void addClipListener(Clip currentClip) {
         currentClip.addLineListener(new LineListener() {
             @Override
@@ -302,12 +292,7 @@ public class RecordController implements Initializable, PlayController {
             }
         });
     }
-
-    /**
-     * Initializes the buttons and the model variables
-     * @param location
-     * @param resources
-     */
+ 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         setComponentsForRecording();
@@ -316,9 +301,6 @@ public class RecordController implements Initializable, PlayController {
         this.volume = model.getVolume();
     }
 
-    /**
-     *Changes the label on the demo button once playing has finished.
-     */
     @Override
     public void playingFinished() {
         demoButton.setText("Play Demo");

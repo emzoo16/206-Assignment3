@@ -10,6 +10,8 @@ import namesayer.helperClasses.WorkspaceModel;
 import java.io.IOException;
 
 public class StartMenuController {
+	
+	
     @FXML
     private Button practiceButton;
     @FXML

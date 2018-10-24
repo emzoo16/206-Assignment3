@@ -21,67 +21,31 @@ import namesayer.helperClasses.WorkspaceModel;
 
 public class SaveScreenController implements Initializable {
 
-    DatabaseList listOfRecordings;
-    int playlistNum;
-    String name;
-    Button workspaceSaveButton;
+	/**
+	 * FXML variables.
+	 */
+    @FXML
+    private Button saveButton;
 
     @FXML
-    Button saveButton;
+    private Button cancelButton;
 
     @FXML
-    Button cancelButton;
+    private TextField nameText;
 
-    @FXML
-    TextField nameText;
-
+    
+    //The name the user inputs into the textfield for the new playlist.
     String playlistName;
 
-    @FXML
-    public void saveButtonClicked(ActionEvent event) {
-        if (nameText.getText().equals("")) {
-            Alert alert = new Alert(AlertType.WARNING);
-            alert.setTitle("Warning");
-            alert.setHeaderText(null);
-            alert.setContentText("Please enter a name before continuing." );
-            alert.showAndWait();
-        }else{
-            if(createPlaylist(nameText.getText())) {;
-                Stage currentStage = (Stage) saveButton.getScene().getWindow();
-                currentStage.close();
-            }
-        }
-    }
-
-    @FXML
-    public void cancelButtonClicked(ActionEvent event) {
-        Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        currentStage.close();
-    }
-
-    public boolean createPlaylist(String name) {
-        File file = new File("./Resources/Playlists/" + name + ".txt");
-        if(!file.exists()) {
-            try {
-                PrintWriter writer = new PrintWriter(file);
-                for (String currentName : listOfRecordings.getRecordingNames()) {
-                    writer.println(currentName);
-                }
-                writer.close();
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-            return true;
-        }else{
-            Alert alert = new Alert(AlertType.WARNING);
-            alert.setTitle("Warning");
-            alert.setHeaderText(null);
-            alert.setContentText("This name already exists. Please choose another" );
-            alert.showAndWait();
-            return false;
-        }
-    }
-
+    //The list of recordings that are currently in the workspace list.
+    DatabaseList listOfRecordings;
+    
+    //A reference to the save button in the workspace.
+    Button workspaceSaveButton;
+    
+    /**
+     * 
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         listOfRecordings = WorkspaceModel.getInstance().getCurrentWorkspaceRecordings();
@@ -94,4 +58,72 @@ public class SaveScreenController implements Initializable {
             }
         });
     }
+
+    /**
+     * This method is invoked when the user clicks the save button in the save screen.
+     */
+    @FXML
+    private void saveButtonClicked(ActionEvent event) {
+    	
+    	//If no name has been entered, show a warning prompting the user to enter a name.
+        if (nameText.getText().equals("")) {
+            Alert alert = new Alert(AlertType.WARNING);
+            alert.setTitle("Warning");
+            alert.setHeaderText(null);
+            alert.setContentText("Please enter a name before continuing." );
+            alert.showAndWait();
+        }
+        //If the user has entered a name, try to create a playlist with that name. If the
+        //playlist was successfully created, close the stage.
+        else{
+            if(createPlaylist(nameText.getText())) {;
+                Stage currentStage = (Stage) saveButton.getScene().getWindow();
+                currentStage.close();
+            }
+        }
+    }
+    
+    
+	/**
+	 * If the user chooses to cancel saving the playlist, close the save screen stage and return them to the workspace.
+	 */
+    @FXML
+    private void cancelButtonClicked(ActionEvent event) {
+        Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        currentStage.close();
+    }
+    
+    /**
+     * This method is responsible for creating a new playlist with the provided name. It returns a boolean value. True if
+   	 * a new playlist was created succesfully, false if it wasn't.
+     */
+    private boolean createPlaylist(String name) {
+    	
+        File file = new File("./Resources/Playlists/" + name + ".txt");
+        
+        //If a playlist does not already exist with the given name, create a new text file. Add all the current names in the 
+        //Listview in the workspace to this file.
+        if(!file.exists()) {
+            try {
+                PrintWriter writer = new PrintWriter(file);
+                for (String currentName : listOfRecordings.getRecordingNames()) {
+                    writer.println(currentName);
+                }
+                writer.close();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            return true;
+        }
+        //If a playlist already exists with the name, show a warning telling the user to choose another name.
+        else{
+            Alert alert = new Alert(AlertType.WARNING);
+            alert.setTitle("Warning");
+            alert.setHeaderText(null);
+            alert.setContentText("This name already exists. Please choose another" );
+            alert.showAndWait();
+            return false;
+        }
+    }
+
 }

@@ -100,9 +100,16 @@ public abstract class DemoRecording extends Recording {
         updateRating(finalRating);
     }
 
+    /**
+     * Gets the rating for this demo recording. If the demo has previously been rated, read through the file containing the
+     * ratings and set it to the rating field.
+     */
     public double getRating() {
         File rateFile = new File("./Resources/Review/" + shortName + ".txt");
         if (rateFile.exists()) {
+        	
+        	//the ratings are stored in the file as two numbers. The first is the total sum of all ratings
+        	//given for the recording. The second is the total number of ratings given.
             int[] ratingArray = new int[2];
             Scanner scanner = null;
             int count = 0;
@@ -125,6 +132,10 @@ public abstract class DemoRecording extends Recording {
         return -1;
     }
 
+    /**
+     * This method updates the rating for the current with the given rating. It checks if the rating is below 2.5
+     * If is is, it will be added to the bad recordings file.
+     */
     private void updateRating(double rating) {
         //If the rating is above 2.5, print the rating normally.
         if (rating > 2.5) {
@@ -144,14 +155,14 @@ public abstract class DemoRecording extends Recording {
         }
     }
 
-    /*
+    /**
      * This method removes the name of a recording from the 'bad recording' list once it's
      * rating exceeds 2.5.
      */
     private void removeFromBadFile() {
 
-        File tmpFile = new File("./Resources/Review/Reviewtemp.txt");
-        File file = new File("./Resources/Review/ReviewBadRecordings.txt");
+        File tmpFile = new File("./Resources/Reviewtemp.txt");
+        File file = new File("./Resources/ReviewBadRecordings.txt");
         try {
             BufferedReader reader = new BufferedReader(new FileReader(file));
             BufferedWriter writer = new BufferedWriter(new FileWriter(tmpFile));
@@ -166,19 +177,17 @@ public abstract class DemoRecording extends Recording {
             }
             writer.close();
             reader.close();
-            file.delete();
-            tmpFile.renameTo(file);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    /*
+    /**
      * This method adds the name of the recording to the bad recording list once its rating falls
      * below 2.5
      */
     private void addToBadFile() {
-        File file = new File("./Resources/Review/ReviewBadRecordings.txt");
+        File file = new File("./Resources/ReviewBadRecordings.txt");
 
         //Append the given name to the BadRecordings file.
         if (file.exists()) {
@@ -202,11 +211,11 @@ public abstract class DemoRecording extends Recording {
         }
     }
 
-    /*
+    /**
      * This method checks if the recording of the name passed is in the BadRecordings file.
      */
     private Boolean isBadRecording() {
-        File file = new File("./Resources/Review/ReviewBadRecordings.txt");
+        File file = new File("./Resources/ReviewBadRecordings.txt");
 
         //Scans the file line by line to check if the given name is in the file.
         if (file.exists()) {

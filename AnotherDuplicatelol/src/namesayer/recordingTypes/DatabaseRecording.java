@@ -4,7 +4,8 @@ import java.io.File;
 import java.util.HashMap;
 
 public class DatabaseRecording extends DemoRecording {
-    /*
+    
+	/**
      * This class represents a single database recording and its corresponding personal
      * recordings.
      */
@@ -16,7 +17,7 @@ public class DatabaseRecording extends DemoRecording {
         File[] ArrayOfFiles = folder.listFiles();
         if (ArrayOfFiles != null) {
             for (File file : ArrayOfFiles) {
-                //Validates the file
+                //Validates the file 
                 if (file.isFile() && (file.getName()).contains(shortName + "-")) {
                     String recordingFileName = file.getName();
                     Character digit = recordingFileName.charAt(recordingFileName.lastIndexOf("-") + 1);

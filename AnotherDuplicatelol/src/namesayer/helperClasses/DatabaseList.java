@@ -20,7 +20,7 @@ public class DatabaseList {
     //A list of all names of recordings which are being used from the database, with the first letter captialized.
     private List<String> recordingNames;
 
-    /*
+    /**
      * This class represents the list of database recordings.
      */
     public DatabaseList() {
@@ -55,27 +55,37 @@ public class DatabaseList {
         }
     }
 
-	//Makes the recording part of the map of used recordings
+	/**
+	 * Makes the recording part of the map of used recordings
+	 */
     public void add(String name) {
         recordingsMap.put(name, dataBaseRecordings.get(name));
     }
 	
-	//Used for adding concatenated recordings, because they aren't in the database
+	/**
+	 * Used for adding concatenated recordings, because they aren't in the database
+	 */
     public void add(DemoRecording recording){ recordingsMap.put(recording.getShortName(), recording); }
 
-	//returns the recording
+	/**
+	 * returns the recording
+	 */
     public DemoRecording getRecording(String name) {
         return recordingsMap.get(name);
     }
 
-    //Gets a list of all recordings currently being used
+    /**
+     * Gets a list of all recordings currently being used
+     */
     public ObservableList<String> getRecordingNames() {
         ObservableList<String> recordingsList = FXCollections.observableArrayList(recordingsMap.keySet());
         Collections.sort(recordingsList);
         return recordingsList;
     }
 
-	//removes a recording form the recordings being used
+	/**
+	 * removes a recording form the recordings being used
+	 */
     public void remove(String name) {
         if (recordingsMap.keySet().contains(name)) {
             recordingsMap.remove(name);
@@ -86,7 +96,9 @@ public class DatabaseList {
         }
     }
 	
-	//Makes it so all recordings in the database are being used
+	/**
+	 * Makes it so all recordings in the database are being used
+	 */
     public void displayAll() {
         recordingsMap = new HashMap<>(dataBaseRecordings);
     }

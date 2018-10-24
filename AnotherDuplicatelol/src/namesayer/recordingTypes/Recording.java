@@ -16,24 +16,32 @@ public abstract class Recording {
     
     //Path to the audio file of the name.
     protected String path;
-
+    
     private PlayController controller;
 
+    //A reference to the thread that plays the audio. This is so we can check the status
+    //of audio playback.
     private Thread playThread;
 
+    /**
+     * This method creates a new Thread to play the audio on.
+     */
     public Recording() {
         playThread = new Thread();
     }
 
+    //This variable that checks if the thread has been stopped. This would mean the audio also
+    //stops.
     private boolean playingInterrupted;
 
+    
     private SourceDataLine audioLine;
 
-    /*
+    /**
      * Plays the wav file corresponding to the recording object. A volume value is passed in to 
      *set the volume accordingly. A reference to the progessBar is also given so the recording object
      *can update the progress bar as it plays.
-     **/
+     */
     public void play(double volume) {
         playingInterrupted = false;
         AudioPlayer player = new AudioPlayer(volume);
@@ -53,19 +61,19 @@ public abstract class Recording {
         playThread.start();
     }
 
-    /*
+    /**
      * Returns the name of the recording without the preceeding numbers.
      */
     public String getShortName() {
         return shortName;
     }
 
-    /*
+    /**
      * Returns the file name of the recording
      */
     public String getFileName() { return fileName; }
 
-    /*
+    /**
      * Returns the version number of the recording.
      */
     public int getNumber() {
@@ -74,7 +82,7 @@ public abstract class Recording {
     }
 
     /**
-     * To get the reference
+     * To get the reference 
      */
     private class AudioPlayer {
 
@@ -117,7 +125,7 @@ public abstract class Recording {
             }
         }
 
-        /*
+        /**
          * Sets the volume of the audio clip given a double value. The double is converted to decibels.
          */
         void setVolume(double volume, SourceDataLine audioLine) {
@@ -133,16 +141,25 @@ public abstract class Recording {
         this.controller = controller;
     }
 
-    private void playingCompleted() {
+    /**
+     * It checks if the recording has finished and 
+     */
+    public void playingCompleted() {
         controller.playingFinished();
     }
 
+    /**
+     * Stops playback of audio by interrupting the thread.
+     */
     public void stopPlaying() {
         if (playThread.isAlive()) {
             playingInterrupted = true;
         }
     }
 
+    /**
+     * Checks if the thread has been interrupted, ie the audio has stopped playing.
+     */
     public boolean isPlaying() {
         if (playThread != null) {
             return playThread.isAlive();

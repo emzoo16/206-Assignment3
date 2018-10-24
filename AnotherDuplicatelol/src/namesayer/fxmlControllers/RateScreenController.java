@@ -25,39 +25,45 @@ public class RateScreenController implements Initializable  {
 
 	//FXML variables
 	@FXML
-	Label rateText;
+	private Label rateText;
 
 	@FXML
-	Button confirmButton;
+	private Button confirmButton;
+	
 	@FXML
-	CheckBox check1,check2,check3,check4,check5;
+	private Slider rateSlider;
 
-	@FXML
-	Slider rateSlider;
+	//The name of the recording being rated.
+	private String currentName;
 
-	//The folder containing all the reviews.
-	String currentName;
+	//Model to pass values between controllers.
+	private WorkspaceModel model;
 
-	WorkspaceModel model;
+	//Stores the rating the user gives. Initially set at zero.
+	private int rating = 0;
 
-	//Stores the rating the user gives.
-	int rating = 0;
-
-	/*
-	 * On initialising, creates a review folder if it doesn't yet exist to store all
-	 * the reviews from users.
+	/**
+	 * Initializes the rating slider to 3 for an average score. 
 	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+		
+		//get an instance of the workspace.
 		model = WorkspaceModel.getInstance();
+		
+		//Upon opening the screen, the slider will be set to '3'
 		rating=3;
 		rateSlider.setValue(3.00);
 		rateText.setText(rating + ". Average");
 
+		
+		//Add a listener to change the text and position of the slider whenever the user moves the slider.
+		//The slider has been coded to snap to certain positions in the slider indicating the related scores.
 		rateSlider.valueProperty().addListener(new InvalidationListener() {
 
 			@Override
 			public void invalidated(Observable observable) {
+				//Get the value of the slider and use it to adjust the text on top of the slider.
 				rating = (int)rateSlider.getValue();
 
 				if (rating == 1) {
@@ -82,11 +88,12 @@ public class RateScreenController implements Initializable  {
 
 	}
 
-	/*
-	 * This method writes the users review to the file with the corresponding name.
+	/**
+	 * This method is invoked when users confirm the rating. It sets the users chosen rating to 
+	 * the demo recording and closes the stage.
 	 */
 	@FXML
-	public void confirmButtonClicked(ActionEvent event){
+	private void confirmButtonClicked(ActionEvent event) {
 		model.getCurrentDemoRecording().rate(rating);
 		model.notifyOfStageClose();
 		Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
