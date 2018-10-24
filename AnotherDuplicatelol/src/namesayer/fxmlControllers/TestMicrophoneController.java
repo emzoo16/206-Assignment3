@@ -21,22 +21,12 @@ import namesayer.helperClasses.UIManager;
 
 public class TestMicrophoneController implements Initializable{
 
+	@FXML
+	private Button testStopButton;
 
 	@FXML
-	Button stopButton;
+	private ProgressBar progressBar;
 
-	@FXML
-	Button backButton;
-
-	@FXML
-	Button testStopButton;
-
-
-	@FXML
-	Label testLabel;
-
-	@FXML
-	ProgressBar progressBar;
 
 	//Variable that controls if the test microphone bar is running.
 	Boolean running = true;
@@ -57,7 +47,7 @@ public class TestMicrophoneController implements Initializable{
 	 * the menu screen.
 	 */
 	@FXML
-	public void backButtonClicked() {
+	private void backButtonClicked() {
 		UIManager.changeScenes("fxmlFiles/StartMenu.fxml");
 	}
 
@@ -67,7 +57,7 @@ public class TestMicrophoneController implements Initializable{
 	 *the bar for the microphone.
 	 */
 	@FXML
-	public void testStopButtonClicked() {
+	private void testStopButtonClicked() {
 		if(testStopButton.getText().equals("Test")) {
 			testStopButton.setText("Stop");
 			running = true;
@@ -85,7 +75,7 @@ public class TestMicrophoneController implements Initializable{
 	 * This method is responsible for making the progress bar react to the users input into
 	 * the microphone. The user can then gauge if their microphone is working.
 	 */
-	public void startMicBar() {
+	private void startMicBar() {
 
 		AudioFormat format =  new AudioFormat(8000, 8, 1, true, true);
 

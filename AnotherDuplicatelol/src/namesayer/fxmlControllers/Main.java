@@ -16,40 +16,43 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception{
         //Making a personal recordings folder if it doesn't exist to hold user recordings
-        File file1 = new File("Resources/PersonalRecordings/");
-        if (!file1.exists()) {
-            file1.mkdirs();
+        File personalRecordingsFile = new File("Resources/PersonalRecordings/");
+        if (!personalRecordingsFile.exists()) {
+            personalRecordingsFile.mkdirs();
         }
         //Removing everything from the concatenated recordings file if it exists, otherwise creating it
-        File file2 = new File("Resources/ConcatenatedRecordings/");
-        if (file2.exists()) {
-            File[] files = file2.listFiles();
+        File catRecordingsFile = new File("Resources/ConcatenatedRecordings/");
+        if (catRecordingsFile.exists()) {
+            File[] files = catRecordingsFile.listFiles();
             for (File file : files) {
                 file.delete();
             }
         } else {
-            file2.mkdirs();
+            catRecordingsFile.mkdirs();
         }
         //Making a folder to hold personal recordings for concatenated recordings
-        File file3 = new File("Resources/ConcatenatedPersonalRecordings/");
-        if (!file3.exists()) {
-            file3.mkdirs();
+        File catPersonalFile = new File("Resources/ConcatenatedPersonalRecordings/");
+        if (!catPersonalFile.exists()) {
+            catPersonalFile.mkdirs();
         }
         //Making a folder to hold playlists
-        File file4 = new File("Resources/Playlists/");
-        if (!file4.exists()) {
-            file4.mkdirs();
+        File playlistsFile = new File("Resources/Playlists/");
+        if (!playlistsFile.exists()) {
+            playlistsFile.mkdirs();
         }
         //Making a folder to store ratings
-        File file5 = new File("Resources/Review/");
-        if (!file5.exists()) {
-            file5.mkdirs();
+        File reviewFile = new File("Resources/Review/");
+        if (!reviewFile.exists()) {
+            reviewFile.mkdirs();
         }
 
+        //Initializes the model
         WorkspaceModel model = WorkspaceModel.getInstance();
         model.setPrimaryStage(primaryStage);
+        //Sets the UIManager primary stage to allow it to swap scenes easily
         UIManager.setPrimaryStage(primaryStage);
 
+        //Loads the start menu
         Parent root = FXMLLoader.load(getClass().getResource("fxmlFiles/StartMenu.fxml"));
         primaryStage.setTitle("Name Sayer");
         primaryStage.setScene(new Scene(root));

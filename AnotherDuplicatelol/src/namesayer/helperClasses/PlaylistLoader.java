@@ -1,15 +1,10 @@
 package namesayer.helperClasses;
 
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 import namesayer.fxmlControllers.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -60,7 +55,7 @@ public class PlaylistLoader {
                         notFoundDisplay.add(line);
                     }
                 }
-                if (notFoundDisplay.isEmpty() == false && controller != null) {
+                if (notFoundDisplay.isEmpty() == false && WorkspaceModel.getInstance().getLoadingController() instanceof UploadController) {
                     // != to null is because only the upload screen will show the incorrect names (playlist screen isn't
                     // suppose to have incorrect names)
                     WorkspaceModel.getInstance().setNotFoundNames(notFoundDisplay);

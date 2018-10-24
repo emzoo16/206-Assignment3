@@ -10,7 +10,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.FileChooser;
-import javafx.stage.Stage;
 import namesayer.helperClasses.WorkspaceModel;
 import namesayer.helperClasses.DatabaseList;
 import namesayer.helperClasses.PlaylistLoader;
@@ -26,40 +25,41 @@ public class UploadController implements Initializable, ConcatenatedRecordingLoa
 	 * FXML variables 
 	 */
 	@FXML
-	Button uploadButton;
+	private Button uploadButton;
 	@FXML
-	Button browseButton;
+	private Button browseButton;
 	@FXML
-	TextField fileText;
+	private TextField fileText;
 	@FXML
-	Button backButton;
+	private Button backButton;
 	@FXML
-	CheckBox randomiseBox;
+	private CheckBox randomiseBox;
 	@FXML
-	Button continueButton;
+	private Button continueButton;
 	@FXML 
-	ListView<String> nameListView;
+	private ListView<String> nameListView;
 	@FXML
-	ProgressIndicator loadingIndicator;
-	
-	
-	 //Keeping track of the number in the listViews the user has currently selected
-	 //in the playListView and nameListView respectively. 
-	int playlistIndex;
-	int nameIndex;
+	private ProgressIndicator loadingIndicator;
 	
 	//Stores a reference to the file the user chooses from the file chooser.
-	File currentFile;
+	private File currentFile;
 
 	//List of recording objects to be passed to the workspaceController.
-	DatabaseList workspaceRecordings;
+	private DatabaseList workspaceRecordings;
 
-	WorkspaceModel model;
+	//Model to pass and recieve information between controllers.
+	private WorkspaceModel model;
+
+
 	//Concatenated recordings are created using multithreading which can cause issues if the user quickly moves to the
 	//next scene. In order to alleviate this we keep this number of names to load and once the number of names in the
 	//list matches this number the continue/upload button is re-enabled.
 	private int namesToLoad;
-	
+
+
+	/**
+	 * sets the model and otehr fields.
+	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		model = WorkspaceModel.getInstance();
@@ -72,30 +72,33 @@ public class UploadController implements Initializable, ConcatenatedRecordingLoa
 		fileText.setEditable(false);
 	}
 
-	/*
+	/**
 	 * This method is invoked when the user clicks the back button. Takes the user back to the start
 	 * menu.
 	 */
 	@FXML
-	public void backButtonClicked() {
+	private void backButtonClicked() {
 		UIManager.changeScenes("fxmlFiles/PlaylistScreen.fxml");
 	}
 
-	/*
+	/**
 	 * This button is invoked when the user is ready to continue to the workspace, where they will play the 
 	 * selected recordings.
 	 */
 	@FXML
-	public void continueButtonClicked() {
+	private void continueButtonClicked() {
+		//Checks the user has uploaded something
 		if(nameListView.getItems().isEmpty()) {
 			Alert alert = new Alert(AlertType.WARNING);
 			alert.setTitle("Warning");
 			alert.setHeaderText(null);
 			alert.setContentText("Please load a name before continuing.");
 			alert.showAndWait();
-		}else {
+		} else {
+			//Updates the model so the workspace can get the recordings
 			WorkspaceModel model = WorkspaceModel.getInstance();
 			model.setCurrentWorkspaceRecordings(workspaceRecordings);
+			//Updates the display in the workspace based on whether the randomise box is ticked
 			if (randomiseBox.isSelected()) {
 				ObservableList<String> randomisedList = workspaceRecordings.getRecordingNames();
 				Collections.shuffle(randomisedList);
@@ -111,7 +114,7 @@ public class UploadController implements Initializable, ConcatenatedRecordingLoa
 	 * This method brings up a file chooser where the user is prompted to choose a .txt file to upload.
 	 */
 	@FXML
-	public void browseButtonClicked() {
+	private void browseButtonClicked() {
 		//Creating a new FileChooser with a filter so it only accepts .txt files.
 		FileChooser fileChooser = new FileChooser();
 		FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT files (*.txt)", "*.txt");
@@ -131,8 +134,9 @@ public class UploadController implements Initializable, ConcatenatedRecordingLoa
 	 * This method is invoked when the user chooses to upload the chosen file from the fileChooser.
 	 */
 	@FXML
-	public void uploadButtonClicked() {
-		
+	private void uploadButtonClicked() {
+		model.setCurrentWorkspaceRecordings(new DatabaseList());
+		model.setNotFoundNames(null);
 		//If no file is chosen, show a warning alert.
 		if(currentFile == null) {
 			Alert alert = new Alert(AlertType.WARNING);
@@ -156,15 +160,22 @@ public class UploadController implements Initializable, ConcatenatedRecordingLoa
 	 * names and searches if they are present in the database. If they are, the names are 
 	 * added to the list to be played.
 	 */
-	public void scanFile() {
+	private void scanFile() {
+		//Gets a loader object to read the file
 		PlaylistLoader loader = new PlaylistLoader();
 		List<String> names = loader.loadPlaylist(currentFile);
+		//Adds all the loaded names to the workspace
 		addNames(names);
+		//Set the model to include the new recordings
 		model.addToCurrentWorkspaceRecordings(workspaceRecordings);
-		System.out.println(namesToLoad);
-		System.out.println(workspaceRecordings.getRecordingNames().size());
+
+		//If there are no concatenated recordings
 		if (workspaceRecordings.getRecordingNames().size() == namesToLoad) {
 			namesToLoad = 0;
+			//If some names weren't added warn the user
+			if (model.getNotFoundNames() != null) {
+				UIManager.openStage("fxmlFiles/UploadWarning.fxml");
+			}
 			nameListView.setItems(workspaceRecordings.getRecordingNames());
 			continueButton.setDisable(false);
 			uploadButton.setDisable(false);
@@ -175,7 +186,7 @@ public class UploadController implements Initializable, ConcatenatedRecordingLoa
 	/*
 	 * This method will add all the names in the list of found names to the workspace.
 	 */
-	public void addNames(List<String> namesList) {
+	private void addNames(List<String> namesList) {
 		
 		//A list to get the file names of all recordings to create a concatenated recording
 		DatabaseList referenceList = new DatabaseList();
@@ -210,14 +221,17 @@ public class UploadController implements Initializable, ConcatenatedRecordingLoa
 		}
 	}
 
-	public void showUploadWarning() {
-		UIManager.openStage("fxmlFiles/UploadWarning.fxml");
-	}
-
+	/**
+	 * Updates the controller once a concatenated recording has finished loading, this checks if all have finished
+	 * and if they have allows the user to continue
+	 */
 	public void concatenationComplete() {
-		System.out.println(model.getCurrentWorkspaceRecordings().getRecordingNames().size());
 		if (model.getCurrentWorkspaceRecordings().getRecordingNames().size() == namesToLoad) {
 			workspaceRecordings = model.getCurrentWorkspaceRecordings();
+			//If some names weren't found
+			if (model.getNotFoundNames() != null) {
+				UIManager.openStage("fxmlFiles/UploadWarning.fxml");
+			}
 			namesToLoad = 0;
 			nameListView.setItems(workspaceRecordings.getRecordingNames());
 			continueButton.setDisable(false);

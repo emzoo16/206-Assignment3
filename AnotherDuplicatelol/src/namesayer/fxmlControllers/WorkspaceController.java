@@ -32,55 +32,55 @@ public class WorkspaceController implements Initializable, PlayController, Paren
 
 	//FXML variables
 	@FXML
-	Slider volumeSlider;
+	private Slider volumeSlider;
 	@FXML
-	Label playingLabel;
+	private Label playingLabel;
 	@FXML
-	Button nextButton;
+	private Button nextButton;
 	@FXML
-	Button previousButton;
+	private Button previousButton;
 	@FXML
-	Button backButton;
+	private Button backButton;
 	@FXML
-	Button rateButton;
+	private Button rateButton;
 	@FXML
-	Label recordingNameLabel;
+	private Label recordingNameLabel;
 	@FXML
-	Button recordButton;
+	private Button recordButton;
 	@FXML
-	Label ratingLabel;
+	private Label ratingLabel;
 	@FXML
-	Button toggleButton;
+	private Button toggleButton;
 	@FXML
-	Button returnButton;
+	private Button returnButton;
 	@FXML
-	Button deleteButton;
+	private Button deleteButton;
 	@FXML
-	Button saveButton;
+	private Button saveButton;
 	@FXML
-	Button playButton;
+	private Button playButton;
 	@FXML
-	ListView<String> dataListView;
-	ObservableList<String> dataList = FXCollections.observableArrayList();
+	private ListView<String> dataListView;
+	private ObservableList<String> dataList = FXCollections.observableArrayList();
 	@FXML
-	ListView<String> ownListView;
-	ObservableList<String> ownList = FXCollections.observableArrayList();
+	private ListView<String> ownListView;
+	private ObservableList<String> ownList = FXCollections.observableArrayList();
 	@FXML
-	TabPane tabPane;
+	private TabPane tabPane;
 	@FXML
-	ImageView playStopImage;
+	private ImageView playStopImage;
 
 	//Current index in the listView
-	int currentIndex = 0;
-	int ownCurrentIndex = 0;
-	double volume;
-	DatabaseList listOfRecordings;
-	Boolean isOnDatabase = true;
+	private int currentIndex = 0;
+	private int ownCurrentIndex = 0;
+	private double volume;
+	private DatabaseList listOfRecordings;
+	private Boolean isOnDatabase = true;
 	private WorkspaceModel model;
 	private boolean playing;
-	Recording playingRecording;
+	private Recording playingRecording;
 
-
+	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		model = WorkspaceModel.getInstance();
@@ -88,6 +88,8 @@ public class WorkspaceController implements Initializable, PlayController, Paren
 		refreshPersonalRecordings(dataListView.getSelectionModel().getSelectedItem());
 		model.setCurrentDemoRecording(listOfRecordings.getRecording(dataListView.getSelectionModel().getSelectedItem()));
 		model.setStageController(this);
+		refreshRating();
+
 		//Set tooptips for buttons.
 		toggleButton.setTooltip(new Tooltip("Change between demo and\npersonal recordings"));
 		rateButton.setTooltip(new Tooltip("Rate the current demo\nrecording"));
@@ -257,6 +259,7 @@ public class WorkspaceController implements Initializable, PlayController, Paren
 	 */
 	@FXML
 	public void previousButtonClicked(ActionEvent event) {
+
 		if (isOnDatabase) {
 			if (currentIndex > 0) {
 				currentIndex--;
@@ -309,8 +312,18 @@ public class WorkspaceController implements Initializable, PlayController, Paren
 			Optional<ButtonType> action = alert.showAndWait();
 
 			if (action.get() == ButtonType.OK) {
-				File creationFile = new File("Resources/PersonalRecordings/");
 
+				//Check if the currently selected file is a concatenated recording or a single name recording. This will
+				//Determine the folder the name is searched from.
+				File creationFile;
+				if (ownCurrentName.contains(" ")){
+					creationFile = new File("Resources/ConcatenatedPersonalRecordings/");
+				}else {
+					creationFile = new File("Resources/PersonalRecordings/");
+				}
+
+				//Search through the selected folder for a file with the selected name. If it is there, delete the
+				//file. Update the listview so that the deleted file is no longer showing.
 				for (final File fileEntry : creationFile.listFiles()) {
 
 					String currentFile = fileEntry.getName();

@@ -12,7 +12,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.CheckBoxListCell;
@@ -26,10 +25,6 @@ import java.util.ResourceBundle;
 
 public class DatabaseViewController implements Initializable {
     @FXML
-    private Button addButton;
-    @FXML
-    private Button backButton;
-    @FXML
     private ListView listView;
     @FXML
     private TextField searchField;
@@ -39,26 +34,29 @@ public class DatabaseViewController implements Initializable {
     private FilteredList<String> filteredList;
     private ObservableList<String> searchableItems;
 
-    private PlaylistCreatorController controller;
-
     /**
-     * Invoked when the add button is pressed
+     * Invoked when the add button is pressed, this method adds all of the selected recordings to the model to be passed
+     * to the Playlist creator contorller. After this is done the stage is colsed.
      */
     @FXML
     private void add(ActionEvent event) {
         DatabaseList returnedRecordings = new DatabaseList();
+        //Add all the selected names to a databaselist so it can pass them to the model
         for (String recordingName : selectedItems) {
             returnedRecordings.add(recordingName);
         }
         WorkspaceModel model = WorkspaceModel.getInstance();
+        //Pass the names to the model
         model.addToCurrentWorkspaceRecordings(returnedRecordings);
         Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        //Notify that the databaseView stage has closed so PlaylistCreator can update the listView
         WorkspaceModel.getInstance().notifyOfStageClose();
+        //Close the current stage
         currentStage.close();
     }
 
     /**
-     * Invoked when the back button is pressed
+     * Invoked when the back button is pressed, this method closes the stage.
      */
     @FXML
     private void back(ActionEvent event) {
@@ -66,23 +64,22 @@ public class DatabaseViewController implements Initializable {
         currentStage.close();
     }
 
-    public void setPlaylistCreatorController(PlaylistCreatorController controller) {
-        this.controller = controller;
-    }
     /**
-     * Sets up the list view to work with checkboxes and to search correctly
-     * @param location
-     * @param resources
+     * Sets up the list view to work with checkboxes and initializes the search field
+     *
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         selectedItems = FXCollections.observableSet();
         databaseList = new DatabaseList();
+        //Set the list to display everything in the database
         databaseList.displayAll();
+        //Initialize the search list
         searchableItems = databaseList.getRecordingNames();
         filteredList = new FilteredList<>(searchableItems, data -> true);
         setupSearch();
         listView.setItems(filteredList);
+        //Add checkboxes
         listView.setCellFactory(CheckBoxListCell.forListView(new Callback<String, ObservableValue<Boolean>>() {
             @Override
             public ObservableValue<Boolean> call(String item) {
@@ -94,6 +91,7 @@ public class DatabaseViewController implements Initializable {
                         selectedItems.remove(item);
                     }
                 });
+                //Allows the GUI to remember everything which has been selected
                 observable.set(selectedItems.contains(item));
                 selectedItems.addListener((SetChangeListener.Change<? extends String> c) ->
                         observable.set(selectedItems.contains(item)));
@@ -114,6 +112,7 @@ public class DatabaseViewController implements Initializable {
                 if (search == null || search.isEmpty()){
                     return true;
                 }
+                //Ignores Capitalization
                 String lowerCaseSearch = search.toLowerCase();
                 return currentValue.toLowerCase().contains(lowerCaseSearch);
             });

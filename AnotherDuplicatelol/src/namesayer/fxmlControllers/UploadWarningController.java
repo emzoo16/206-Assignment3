@@ -13,9 +13,10 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.stage.Stage;
+import namesayer.helperClasses.WorkspaceModel;
 
 
-public class UploadWarningController {
+public class UploadWarningController implements Initializable{
 
 	/*
 	 * FXML variables
@@ -26,15 +27,26 @@ public class UploadWarningController {
 	
 	@FXML 
 	ListView<String> notFoundListView;
-	ObservableList<String> notFoundList = FXCollections.observableArrayList();
-	
+	ObservableList<String> notFoundList;
+
+	/**
+	 * If the user confirms they have seen the not found recordings
+	 * @param event
+	 */
 	@FXML
 	public void okButtonClicked(ActionEvent event) {
 		Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
 		currentStage.close();
 	}
-	public void setNotFoundList(List<String> notFound) {
-		notFoundList = FXCollections.observableArrayList(notFound);
+
+	/**
+	 * Sets the not found recordings from the model.
+	 * @param location
+	 * @param resources
+	 */
+	@Override
+	public void initialize(URL location, ResourceBundle resources) {
+		notFoundList = FXCollections.observableArrayList(WorkspaceModel.getInstance().getNotFoundNames());
 		notFoundListView.setItems(notFoundList);
 	}
 }

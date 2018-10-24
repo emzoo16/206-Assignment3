@@ -87,7 +87,6 @@ public class WorkspaceModel {
 
     public void setNotFoundNames(List<String> notFoundNames) {
         this.notFoundNames = notFoundNames;
-        uploadController.showUploadWarning();
     }
 
     public void setStageController(ParentStageController stageController) {
@@ -96,6 +95,10 @@ public class WorkspaceModel {
 
     public void setLoadingController(ConcatenatedRecordingLoader loadingController) {
         this.loadingController = loadingController;
+    }
+
+    public ConcatenatedRecordingLoader getLoadingController() {
+        return loadingController;
     }
 
     public void notifyOfConcatenateCompletion() {

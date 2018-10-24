@@ -22,75 +22,75 @@ import namesayer.recordingTypes.ConcatenatedRecording;
 import namesayer.recordingTypes.DemoRecording;
 
 public class PlaylistController implements Initializable, ConcatenatedRecordingLoader {
+	//All the buttons representing playlists
+	@FXML
+	private Button playlist1;
+	@FXML
+	private Button playlist2;
+	@FXML
+	private Button playlist3;
+	@FXML
+	private Button playlist4;
+	@FXML
+	private Button playlist5;
+	@FXML
+	private Button playlist6;
+	//All the buttons used to delete playlists
+	@FXML
+	private Button delete1;
+	@FXML
+	private Button delete2;
+	@FXML
+	private Button delete3;
+	@FXML
+	private Button delete4;
+	@FXML
+	private Button delete5;
+	@FXML
+	private Button delete6;
 
 	@FXML
-	Button playlist1;
+	private Button uploadButton;
 	@FXML
-	Button playlist2;
+	private Button backButton;
 	@FXML
-	Button playlist3;
+	private Button practiceButton;
 	@FXML
-	Button playlist4;
+	private CheckBox randomiseBox;
+	//Displayed if there are no playlists available
 	@FXML
-	Button playlist5;
+	private Label noPlaylistText;
+	//Indicates a playlist is loading in
 	@FXML
-	Button playlist6;
-
-	@FXML
-	Button delete1;
-	@FXML
-	Button delete2;
-	@FXML
-	Button delete3;
-	@FXML
-	Button delete4;
-	@FXML
-	Button delete5;
-	@FXML
-	Button delete6;
-
-	@FXML
-	Button uploadButton;
-	@FXML
-	Button backButton;
-	@FXML
-	Button practiceButton;
-
-	@FXML
-	CheckBox randomiseBox;
-
-	@FXML
-	Label noPlaylistText;
-
-	@FXML
-	ProgressIndicator loadingIndicator;
+	private ProgressIndicator loadingIndicator;
 
 	//Place the buttons in a list for easier handling.
-	List<Button> playlistButtons = new ArrayList<>();
+	private List<Button> playlistButtons = new ArrayList<>();
 
 	//Place the delete buttons in a list for easier handling.
-	List<Button> deleteButtons = new ArrayList<>();
+	private List<Button> deleteButtons = new ArrayList<>();
 
 	//List of all the current playlist names.
-	List<String> playlistNames = new ArrayList<>();
+	private List<String> playlistNames = new ArrayList<>();
 
 
 	//Number of playlists.
-	int playlistNum = 0;
+	private int playlistNum = 0;
 
 	//Reference to the current clicked playlistFile
-	File currentPlaylistFile;
+	private File currentPlaylistFile;
 
 	//List of recording objects to be passed to the workspaceController.
-	DatabaseList workspaceRecordings;
+	private DatabaseList workspaceRecordings;
 
 	//Concatenated recordings are created using multithreading which can cause issues if the user quickly moves to the
 	//next scene. In order to alleviate this we keep this number of names to load and once the number of names in the
 	//list matches this number the continue/upload button is re-enabled.
 	private int namesToLoad;
-
+	//True if the playlist contains a concatenated recording, indicates it should wait for the recording to finish
+	//processing
 	private boolean hasConcatenated;
-
+	//model to pass information
 	private WorkspaceModel model;
 
 
@@ -99,6 +99,7 @@ public class PlaylistController implements Initializable, ConcatenatedRecordingL
 	public void initialize(URL location, ResourceBundle resources) {
 		model = WorkspaceModel.getInstance();
 		model.setLoadingController(this);
+		//empties the workspacerecordings in the model
 		model.setCurrentWorkspaceRecordings(new DatabaseList());
 
 		loadingIndicator.setVisible(false);
@@ -134,6 +135,7 @@ public class PlaylistController implements Initializable, ConcatenatedRecordingL
 		//currently are.
 		setplaylistButtons();
 
+		//Displays the label is no playlists are available
 		if(playlistNum == 0) {
 			noPlaylistText.setVisible(true);
 		}else {
@@ -142,11 +144,11 @@ public class PlaylistController implements Initializable, ConcatenatedRecordingL
 	}
 
 	/*
-	 * This method would iterate through the file containing the list of playlists and
-	 * count how many playlists there are. Or perhaps returns the names of all the playlists??.
+	 * This method iterates through the file containing the list of playlists and
+	 * count how many playlists there are and sets the buttons accordingly
 	 */
-	public void setplaylistButtons(){
-
+	private void setplaylistButtons(){
+		//Get all files in the playlists folder
 		File folder = new File("Resources/Playlists/");
 		File[] listOfFiles = folder.listFiles();
 
@@ -157,7 +159,7 @@ public class PlaylistController implements Initializable, ConcatenatedRecordingL
 		}
 
 		if (listOfFiles.length == 0) {
-			//have a label saying there are no current playlists
+			//label saying there are no current playlists visible
 		}else {
 			for(File file : listOfFiles) {
 
@@ -177,17 +179,20 @@ public class PlaylistController implements Initializable, ConcatenatedRecordingL
 
 	}
 
+	/**
+	 * This method is called when any of the delete buttons are clicked and deletes the corresponding playlist
+	 * @param event
+	 */
 	@FXML
-	public void deleteButtonClicked(ActionEvent event) {
+	private void deleteButtonClicked(ActionEvent event) {
 
 		//Get a reference to the current selected file and find the playlist text file that corresponds to it.
 		Button clickedDeleteButton = (Button) event.getSource();
 		int index = deleteButtons.indexOf(clickedDeleteButton);
-
+		//Gets the names of the playlist to delete.
 		Button currentPlaylist = playlistButtons.get(index);
-
 		String playlist = currentPlaylist.getText() + ".txt";
-
+		//Confirms with the user they want to delete the playlist
 		Alert alert = new Alert(AlertType.CONFIRMATION);
 		alert.setTitle("Delete Confirmation");
 		alert.setHeaderText(null);
@@ -196,11 +201,12 @@ public class PlaylistController implements Initializable, ConcatenatedRecordingL
 
 		if (action.get() == ButtonType.OK) {
 			File playlistFiles = new File("Resources/Playlists/");
-
+			//Iterates through the playlist folder and deletes the corresponding playlist
 			for (final File fileEntry : playlistFiles.listFiles()) {
 				String currentFile = fileEntry.getName();
 				if (currentFile.equals(playlist)) {
 					fileEntry.delete();
+					//makes the button invisible again
 					currentPlaylist.setVisible(false);
 					clickedDeleteButton.setVisible(false);
 					playlistNum--;
@@ -217,7 +223,7 @@ public class PlaylistController implements Initializable, ConcatenatedRecordingL
 	 * that was clicked in the workspace.
 	 */
 	@FXML
-	public void playlistClicked(ActionEvent event) {
+	private void playlistClicked(ActionEvent event) {
 		disableAllButtons();
 		loadingIndicator.setVisible(true);
 		//Get a reference to the current selected file and find the playlist text file that corresponds to it.
@@ -230,11 +236,16 @@ public class PlaylistController implements Initializable, ConcatenatedRecordingL
 		List<String> names = loader.loadPlaylist(currentPlaylistFile);
 		addNames(names);
 		model.addToCurrentWorkspaceRecordings(workspaceRecordings);
+		//If there are no concatenated names loading
 		if (!hasConcatenated) {
 			moveToWorkspace();
 		}
 	}
 
+	/**
+	 * Changes scenes to the workspace, first checks if the randomise box is checked and sets the recording display
+	 * accordingly
+	 */
 	private void moveToWorkspace() {
 		WorkspaceModel.getInstance().setCurrentWorkspaceRecordings(workspaceRecordings);
 		if (randomiseBox.isSelected()) {
@@ -252,7 +263,7 @@ public class PlaylistController implements Initializable, ConcatenatedRecordingL
 	 * to practice.
 	 */
 	@FXML
-	public void uploadButtonClicked() {
+	private void uploadButtonClicked() {
 		UIManager.changeScenes("fxmlFiles/UploadScreen.fxml");
 	}
 
@@ -260,7 +271,7 @@ public class PlaylistController implements Initializable, ConcatenatedRecordingL
 	 * This button takes the user to the workspace creator where they can select which names they want to practice.
 	 */
 	@FXML
-	public void practiceButtonClicked() {
+	private void practiceButtonClicked() {
 		UIManager.changeScenes("fxmlFiles/PlaylistCreator.fxml");
 	}
 
@@ -268,14 +279,14 @@ public class PlaylistController implements Initializable, ConcatenatedRecordingL
 	 * This button takes the user back to the menu scene.
 	 */
 	@FXML
-	public void backButtonClicked() {
+	private void backButtonClicked() {
 		UIManager.changeScenes("fxmlFiles/StartMenu.fxml");
 	}
 
 	/*
-	 * This method will add all the names in the list of found names to the workspace.
+	 * This method will add all the names in the playlist to the workspacemodel.
 	 */
-	public void addNames(List<String> namesList) {
+	private void addNames(List<String> namesList) {
 
 		//A list to get the file names of all recordings to create a concatenated recording
 		DatabaseList referenceList = new DatabaseList();
@@ -296,7 +307,7 @@ public class PlaylistController implements Initializable, ConcatenatedRecordingL
 				for (String recording : updatedNames) {
 					fileNames.add(referenceList.getRecording(recording).getFileName());
 				}
-				//Creates the concatenated recording and adds it to the workspace
+				//Creates the concatenated recording
 				DemoRecording concatenatedRecording = new ConcatenatedRecording(fileNames, name, this);
 				namesToLoad++;
 				hasConcatenated = true;
@@ -309,6 +320,10 @@ public class PlaylistController implements Initializable, ConcatenatedRecordingL
 		}
 	}
 
+	/**
+	 * When a concatenated recording has finished processing, it checks if the model contains all the recordings it needs
+	 * to load and if it does changes to the workspace scene
+	 */
 	@Override
 	public void concatenationComplete() {
 		workspaceRecordings = model.getCurrentWorkspaceRecordings();
@@ -317,6 +332,9 @@ public class PlaylistController implements Initializable, ConcatenatedRecordingL
 		}
 	}
 
+	/**
+	 * disables all buttons for once a playlist has been selected, and is being loaded in.
+	 */
 	private void disableAllButtons() {
 		for (Button button : playlistButtons) {
 			button.setDisable(true);

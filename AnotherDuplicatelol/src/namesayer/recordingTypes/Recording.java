@@ -16,7 +16,7 @@ public abstract class Recording {
     
     //Path to the audio file of the name.
     protected String path;
-    
+
     private PlayController controller;
 
     private Thread playThread;

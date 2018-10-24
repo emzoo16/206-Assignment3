@@ -150,8 +150,8 @@ public abstract class DemoRecording extends Recording {
      */
     private void removeFromBadFile() {
 
-        File tmpFile = new File("./Resources/Reviewtemp.txt");
-        File file = new File("./Resources/ReviewBadRecordings.txt");
+        File tmpFile = new File("./Resources/Review/Reviewtemp.txt");
+        File file = new File("./Resources/Review/ReviewBadRecordings.txt");
         try {
             BufferedReader reader = new BufferedReader(new FileReader(file));
             BufferedWriter writer = new BufferedWriter(new FileWriter(tmpFile));
@@ -166,6 +166,8 @@ public abstract class DemoRecording extends Recording {
             }
             writer.close();
             reader.close();
+            file.delete();
+            tmpFile.renameTo(file);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -176,7 +178,7 @@ public abstract class DemoRecording extends Recording {
      * below 2.5
      */
     private void addToBadFile() {
-        File file = new File("./Resources/ReviewBadRecordings.txt");
+        File file = new File("./Resources/Review/ReviewBadRecordings.txt");
 
         //Append the given name to the BadRecordings file.
         if (file.exists()) {
@@ -204,7 +206,7 @@ public abstract class DemoRecording extends Recording {
      * This method checks if the recording of the name passed is in the BadRecordings file.
      */
     private Boolean isBadRecording() {
-        File file = new File("./Resources/ReviewBadRecordings.txt");
+        File file = new File("./Resources/Review/ReviewBadRecordings.txt");
 
         //Scans the file line by line to check if the given name is in the file.
         if (file.exists()) {
